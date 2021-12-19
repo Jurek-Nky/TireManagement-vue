@@ -2,12 +2,10 @@
   <input type="text" id="inputUsername" class="form-content" placeholder="username" ref="username">
   <input type="password" id="inputPassword" class="form-content" placeholder="password" ref="pw">
   <button v-on:click="login()" ref="btnLogin">login</button>
-  <button v-on:click="test()" ref="btnTest">test</button>
   <textarea ref="testTextArea"></textarea>
 </template>
 
 <script>
-import Button from "@/components/Button"
 
 export default {
   name: "Login",
@@ -16,13 +14,10 @@ export default {
       btnColor: "green"
     }
   },
-  components: {
-    Button
-  },
   methods: {
     login() {
       const data = {
-        firstName: this.$refs.username.value,
+        username: this.$refs.username.value,
         password: this.$refs.pw.value
       }
       const requestOptions = {
