@@ -3,18 +3,19 @@
     <Header title="Login"/>
   </div>
   <div class="container">
-    <Login/>
+    <Profile/>
   </div>
 </template>
 
 <script>
 import Header from "@/components/Header";
-import Login from "@/components/Login";
+import Profile from "@/components/profile/Profile";
+
 export default {
   name: 'App',
   components: {
     Header,
-    Login
+    Profile
   }
 }
 </script>
@@ -34,15 +35,13 @@ body {
 
 .container {
   margin: 5px auto;
-  overflow: auto;
-  /*border: 2px solid black;*/
   padding: 5px;
   border-radius: 10px;
 }
 
 .btn {
   display: inline-block;
-  background: #000;
+  background: dodgerblue;
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -59,11 +58,23 @@ body {
 }
 
 .btn:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 .btn-block {
   display: block;
   width: 100%;
+}
+
+.form-control{
+  background: white;
+  color: #252525;
+  border: none;
+  padding: 10px 20px;
+  margin: 10px;
+  border-radius: 5px;
+  cursor: text;
+  font-size: 15px;
+  font-family: inherit;
 }
 </style>
