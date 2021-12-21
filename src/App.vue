@@ -1,26 +1,34 @@
 <template>
-  <div class="container">
-    <Header title="Login"/>
+  <div id="nav">
+    <router-link to="/">Login</router-link>
+    |
+    <router-link to="/profile">Profile</router-link>
   </div>
-  <div class="container">
-    <Profile/>
-  </div>
+  <router-view/>
 </template>
 
-<script>
-import Header from "@/components/Header";
-import Profile from "@/components/profile/Profile";
-
-export default {
-  name: 'App',
-  components: {
-    Header,
-    Profile
-  }
-}
-</script>
-
 <style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+
+#nav {
+  padding: 30px;
+}
+
+#nav a {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+#nav a.router-link-exact-active {
+  color: #42b983;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap');
 
 * {
@@ -66,7 +74,7 @@ body {
   width: 100%;
 }
 
-.form-control{
+.form-control {
   background: white;
   color: #252525;
   border: none;
