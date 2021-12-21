@@ -1,26 +1,38 @@
 <template>
-  <div class="container">
-    <Header title="Login"/>
-  </div>
-  <div class="container">
-    <Profile/>
-  </div>
+  <NavBar/>
 </template>
 
 <script>
-import Header from "@/components/Header";
-import Profile from "@/components/profile/Profile";
+import NavBar from "../NavBar";
 
 export default {
-  name: 'App',
-  components: {
-    Header,
-    Profile
-  }
+  components: {NavBar}
 }
-</script>
 
+
+</script>
 <style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+
+#nav {
+  padding: 30px;
+}
+
+#nav a {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+#nav a.router-link-exact-active {
+  color: #42b983;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap');
 
 * {
@@ -65,7 +77,6 @@ body {
   display: block;
   width: 100%;
 }
-
 .form-control{
   background: white;
   color: #252525;
