@@ -2,22 +2,38 @@
   <div class="container">
     <div class="component" ref="loginForm">
       <h2 style="color: white; padding: 0 0 20px 15px">Passwort ändern:</h2>
-      <input disabled type="text" class="form-control" id="userName" ref="nameLable"
+      <input disabled type="text"
+             class="form-control"
+             id="userName"
+             ref="nameLable"
              style="background-color:#b8b8b8;  color: black">
-      <input type="password" class="form-control" id="inputPwOld" placeholder="Passwort" ref="oldPasswordField"
+      <input type="password"
+             class="form-control"
+             id="inputPwOld"
+             placeholder="Passwort"
+             ref="oldPasswordField"
              @input="clearError">
       <small ref="smallOldPw" :hidden=true>falsches Passwort</small>
-      <input type="password" class="form-control" id="inputPwNew" placeholder="neues Passwort" ref="newPasswordField"
+      <input type="password"
+             class="form-control"
+             id="inputPwNew"
+             placeholder="neues Passwort"
+             ref="newPasswordField"
              @input="clearError">
       <small ref="smallNewPw" :hidden=true>Passwort muss mindestens 8 Buchstaben lang sein</small>
-      <input type="password" class="form-control" id="inputPwVerify" placeholder="Passwort wiederholen"
-             ref="verifyPasswordField" @input="clearError">
+      <input type="password"
+             class="form-control"
+             id="inputPwVerify"
+             placeholder="Passwort wiederholen"
+             ref="verifyPasswordField"
+             @input="clearError">
       <small ref="smallVerifyPw" :hidden=true>Passwörter stimmen nicht überein</small>
-      <button type="button" class="btn" @click="resetPw" ref="resetButton">Passwort ändern
+      <button type="button"
+              class="btn"
+              @click="resetPw"
+              ref="resetButton">Passwort ändern
       </button>
     </div>
-
-
     <div class="component">
     </div>
   </div>
@@ -72,7 +88,6 @@ export default {
       for (let k in data) {
         url.searchParams.append(k, data[k]);
       }
-
       const requestOptions = {
         method: 'PUT',
         headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}`},
