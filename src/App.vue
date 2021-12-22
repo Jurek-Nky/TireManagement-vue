@@ -1,12 +1,85 @@
 <template>
-  <NavBar/>
+  <v-app id="app">
+    <span class="bg"></span>
+    <v-navigation-drawer
+        v-model="drawer"
+        app>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title class="text-h6">
+            Menu
+          </v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-divider></v-divider>
+
+      <v-list
+          dense
+          nav
+      >
+        <v-list-item
+            v-for="item in items"
+            :key="item.title"
+            link
+            :to="item.to"
+        >
+          <v-list-item-icon>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-app-bar
+    >
+      <v-app-bar-nav-icon
+          @click="drawer = !drawer"
+      ></v-app-bar-nav-icon>
+
+      <v-toolbar-title>Reifenverwaltung</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn @click="this.$router.push('/profile')">
+        <v-icon left>mdi-account-box</v-icon>
+        <span>profile</span>
+      </v-btn>
+      <v-btn color="red" @click="logout">
+        <v-icon left>mdi-logout-variant</v-icon>
+        <span>logout</span>
+      </v-btn>
+    </v-app-bar>
+
+    <v-main>
+
+      <router-view></router-view>
+
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import NavBar from "../NavBar";
-
 export default {
-  components: {NavBar}
+  data: () => ({
+    drawer: null,
+    items: [
+      {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/'},
+      {title: 'Bestellungen', icon: 'mdi-order-bool-ascending-variant', to: '/bestellungen'},
+      {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
+      {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
+
+    ]
+  }),
+  methods: {
+    logout() {
+      localStorage.clear()
+      this.$router.push('/login')
+    }
+  }
+
 }
 
 
@@ -77,7 +150,8 @@ body {
   display: block;
   width: 100%;
 }
-.form-control{
+
+.form-control {
   background: white;
   color: #252525;
   border: none;
@@ -87,5 +161,15 @@ body {
   cursor: text;
   font-size: 15px;
   font-family: inherit;
+}
+
+.bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: url("../public/background.jpg");
+  background-size: cover;
 }
 </style>
