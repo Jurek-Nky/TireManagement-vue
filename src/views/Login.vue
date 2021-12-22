@@ -59,6 +59,7 @@ export default {
                   localStorage.setItem("authToken", data)
                   this.token = data
                   await this.setNameAndRole(this.username)
+                  await this.$router.push('/')
                 }
               }
           )
