@@ -79,9 +79,11 @@ export default {
       this.$router.push('/login')
     }
   }
-}
-</script>
 
+}
+
+
+</script>
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
