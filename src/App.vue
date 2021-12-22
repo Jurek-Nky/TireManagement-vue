@@ -1,24 +1,22 @@
 <template>
-  <div class="container">
-    <Header title="Login"/>
-  </div>
-  <div class="container">
-    <Login/>
-  </div>
+  <Sidebar/>
 </template>
 
 <script>
-import Header from "@/components/Header";
-import Login from "@/components/Login";
+import Bestellformular from "./components/bestellung/Bestellformular";
+import Sidebar from "./components/Sidebar";
 export default {
   name: 'App',
   components: {
-    Header,
-    Login
+
+    Bestellformular,
+    Sidebar,
+
   }
 }
-</script>
 
+
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap');
 
