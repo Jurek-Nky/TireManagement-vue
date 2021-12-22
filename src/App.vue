@@ -75,8 +75,7 @@ body {
   display: block;
   width: 100%;
 }
-
-.form-control {
+.form-control{
   background: white;
   color: #252525;
   border: none;
