@@ -6,7 +6,7 @@ import { loadFonts } from './plugins/webfontloader'
 
 loadFonts()
 
-createApp(App)
+createApp(App).use(router)
   .use(router)
   .use(vuetify)
   .mount('#app')
