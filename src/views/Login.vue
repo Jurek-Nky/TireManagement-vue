@@ -1,22 +1,26 @@
 <template>
-  <div class="center">
-    <h2>Login:</h2>
-    <input type="text"
-           id="inputUsername"
-           class="form-control"
-           placeholder="username"
-           ref="username">
-    <br>
-    <input type="password"
-           id="inputPassword"
-           class="form-control"
-           placeholder="password"
-           ref="pw">
-    <button class="btn"
-            v-on:click="login()"
-            ref="btnLogin">Login
-    </button>
+  <div class="wallpaper">
+    <div class="center">
+
+      <h2>Login:</h2>
+      <input type="text"
+             id="inputUsername"
+             class="form-control"
+             placeholder="username"
+             ref="username">
+      <br>
+      <input type="password"
+             id="inputPassword"
+             class="form-control"
+             placeholder="password"
+             ref="pw">
+      <button class="btn"
+              v-on:click="login()"
+              ref="btnLogin">Login
+      </button>
+    </div>
   </div>
+
 </template>
 
 <script>
@@ -27,7 +31,8 @@ export default {
     return {
       username: '',
       password: '',
-      token: ''
+      token: '',
+      overlay: true
     }
   },
   methods: {
@@ -59,7 +64,9 @@ export default {
                   localStorage.setItem("authToken", data)
                   this.token = data
                   await this.setNameAndRole(this.username)
-                  await this.$router.push('/')
+                  await this.$emit("authenticated", true)
+                  await this.$router.replace('/dashboard')
+
                 }
               }
           )
@@ -103,10 +110,17 @@ template {
 .center {
   max-width: 400px;
   display: grid;
-  /*margin-top: 20vh;*/
   margin-right: auto;
   margin-left: auto;
   border: 5px;
+
+}
+
+.wallpaper {
+  width: 100%;
+  height: 100%;
+  background-image: url('../../public/background.jpg');
+  background-size: cover;
 }
 
 h2 {
