@@ -1,6 +1,5 @@
 <template>
   <v-app id="app">
-    <span class="bg"></span>
     <v-navigation-drawer
         v-model="drawer"
         app>
@@ -54,19 +53,19 @@
     </v-app-bar>
 
     <v-main>
-
-      <router-view></router-view>
-
+      <router-view/>
     </v-main>
   </v-app>
 </template>
 
 <script>
+import router from "@/router";
+
 export default {
   data: () => ({
     drawer: null,
     items: [
-      {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/'},
+      {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
       {title: 'Bestellungen', icon: 'mdi-order-bool-ascending-variant', to: '/bestellungen'},
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
@@ -76,8 +75,11 @@ export default {
   methods: {
     logout() {
       localStorage.clear()
-      this.$router.push('/login')
+      this.$router.replace({name: 'login'})
     }
+  },
+  mounted() {
+    this.drawer = false
   }
 
 }
@@ -163,13 +165,5 @@ body {
   font-family: inherit;
 }
 
-.bg {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-image: url("../public/background.jpg");
-  background-size: cover;
-}
+
 </style>
