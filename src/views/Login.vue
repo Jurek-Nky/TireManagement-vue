@@ -66,6 +66,7 @@ export default {
                   await this.setNameAndRole(this.username)
                   await this.$emit("authenticated", true)
                   await this.$router.replace('/dashboard')
+
                 }
               }
           )

@@ -60,7 +60,6 @@
 
 <script>
 import router from "@/router";
-
 export default {
   data: () => ({
     drawer: null,
@@ -164,6 +163,5 @@ body {
   font-size: 15px;
   font-family: inherit;
 }
-
 
 </style>
