@@ -1,5 +1,6 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
 import Dashboard from "@/views/Dashboard";
+import {el} from "vuetify/lib/locale";
 
 const routes = [
     {
@@ -17,50 +18,74 @@ const routes = [
         path: '/profile',
         name: 'profile',
         component: () => import('../views/Profile.vue'),
-        meta: {
-            login: true
+        beforeEnter: (to, from, next) => {
+            const role = localStorage.getItem("role")
+            if (role !== null) {
+                next()
+            } else {
+                next(false)
+            }
         }
-    }, {
+    }
+    , {
         path: '/dashboard',
         name: 'dashboard',
         component: () => import('../views/Dashboard.vue'),
-        meta: {
-            login: true,
-            reqAdmin: true,
-            reqManager: true,
-            reqEmployee: true
+        beforeEnter: (to, from, next) => {
+            const role = localStorage.getItem("role")
+            if (role !== null) {
+                next()
+            } else {
+                next(false)
+            }
         }
     }, {
         path: '/bestellungen',
         name: 'bestellung',
         component: () => import('../views/Order.vue'),
-        meta: {
-            reqAdmin: true,
-            reqManager: true,
+        beforeEnter: (to, from, next) => {
+            const role = localStorage.getItem("role")
+            if (role === "Admin" || role === "Manager") {
+                next()
+            } else {
+                next(false)
+            }
         }
     }, {
         path: '/wetter',
         name: 'wetter',
         component: () => import('../views/Weather.vue'),
-        meta: {
-            reqAdmin: true,
-            reqManager: true,
-            reqEmployee: true
+        beforeEnter: (to, from, next) => {
+            const role = localStorage.getItem("role")
+            if (role !== null) {
+                next()
+            } else {
+                next(false)
+            }
         }
     }, {
         path: '/bestand',
         name: 'bestand',
         component: () => import('../views/Tires.vue'),
-        meta: {
-            reqAdmin: true,
-            reqManager: true
+        beforeEnter: (to, from, next) => {
+            const role = localStorage.getItem("role")
+            if (role === "Admin" || role === "Manager") {
+                next()
+            } else {
+                next(false)
+            }
         }
     }, {
         path: '/admin',
         name: 'admin',
         component: () => import('../views/Admin.vue'),
-        meta: {
-            reqAdmin: true,
+        beforeEnter: (to, from, next) => {
+            const role = localStorage.getItem("role")
+            if (role === "Admin") {
+                next()
+            } else {
+                next(false)
+            }
         }
     },
 ]
@@ -69,42 +94,5 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes
 })
-router.beforeEach((to, from, next) => {
-    if (to.meta.reqAdmin) {
-        if (localStorage.getItem("role") !== "Admin") {
-            next({
-                name: 'login'
-            });
-        } else {
-            next()
-        }
-    } else if (to.meta.reqManager) {
-        if (localStorage.getItem("role") !== "Manager") {
-            next({
-                name: 'login'
-            });
-        } else {
-            next()
-        }
-    } else if (to.meta.reqEmployee) {
-        if (localStorage.getItem("role") !== "Employee") {
-            next({
-                name: 'login'
-            });
-        } else {
-            next()
-        }
-    }else if (to.meta.login) {
-        if (localStorage.getItem("role") === null) {
-            next({
-                name: 'login'
-            });
-        } else {
-            next()
-        }
-    } else {
-        next();
-    }
-});
 
 export default router
