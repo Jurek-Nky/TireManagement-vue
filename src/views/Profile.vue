@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <div class="component" ref="loginForm">
-      <h2 style="color: white; padding: 0 0 20px 15px">Passwort ändern:</h2>
       <input disabled type="text"
              class="form-control"
              id="userName"
@@ -33,8 +32,6 @@
               @click="resetPw"
               ref="resetButton">Passwort ändern
       </button>
-    </div>
-    <div class="component">
     </div>
   </div>
 </template>
@@ -114,11 +111,17 @@ export default {
             this.$refs.resetButton.innerText = "Passwort wurde erfolgreich geändert"
             this.$refs.resetButton.disabled = true
             let button = this.$refs.resetButton
+            let oldPw = this.$refs.oldPasswordField
+            let newPw = this.$refs.newPasswordField
+            let veriPw = this.$refs.verifyPasswordField
             setTimeout(function () {
               button.classList.remove("btn-change-success")
               button.innerText = "Passwort ändern"
               button.disabled = false
-            }, 2000)
+              oldPw.value = ""
+              newPw.value = ""
+              veriPw.value = ""
+            }, 1800)
           }).catch(error => {
         console.log(error)
       })
@@ -128,7 +131,7 @@ export default {
   },
   mounted() {
     // this.username = localStorage.getItem("username")
-    this.username = "admin"
+    this.username = localStorage.getItem("username")
     this.$refs.nameLable.placeholder = 'Username: ' + this.username
     this.token = localStorage.getItem("authToken");
   }
@@ -144,7 +147,7 @@ template {
 .container {
   margin: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
 }
 
 .component {

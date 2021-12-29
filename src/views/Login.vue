@@ -64,8 +64,9 @@ export default {
                   localStorage.setItem("authToken", data)
                   this.token = data
                   await this.setNameAndRole(this.username)
-                  await this.$emit("authenticated", true)
-                  await this.$router.replace('/dashboard')
+                  setTimeout(() => {
+                    this.$router.push('/dashboard')
+                  }, 50)
 
                 }
               }
