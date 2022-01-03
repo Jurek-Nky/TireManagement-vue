@@ -1,4 +1,4 @@
-# tiremanagement-vue
+# test-vue
 
 ## Project setup
 ```
