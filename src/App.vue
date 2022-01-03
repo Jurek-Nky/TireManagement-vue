@@ -46,7 +46,7 @@
         <v-icon left>mdi-account-box</v-icon>
         <span>profile</span>
       </v-btn>
-      <v-btn color="red" @click="logout">
+      <v-btn color="red" @click="logout" elevation="2">
         <v-icon left>mdi-logout-variant</v-icon>
         <span>logout</span>
       </v-btn>
@@ -90,8 +90,10 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
+}
+h1 {
+  text-align: center;
 }
 
 #nav {

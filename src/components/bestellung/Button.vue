@@ -1,10 +1,14 @@
 <template>
-<h1 style="align-content: center">Dashboard</h1>
+  <v-btn
+      depressed
+      color="primary"
+  >
+  </v-btn>
 </template>
 
 <script>
 export default {
-  name: "Dashboard"
+  name: "Button"
 }
 </script>
 

@@ -1,10 +1,10 @@
 <template>
-<h1 style="align-content: center">Dashboard</h1>
+
 </template>
 
 <script>
 export default {
-  name: "Dashboard"
+  name: "Tabelle"
 }
 </script>
 
