@@ -8,10 +8,10 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" class="bg-blue-grey-2">
+    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" class="bg-accent">
       <!-- drawer content -->
       <q-list padding class="rounded-borders">
-        <q-item clickable v-ripple v-for="item in items" :key="item.title" link :to="item.to">
+        <q-item class="text-white" clickable v-ripple v-for="item in items" :key="item.title" link :to="item.to">
           <q-item-section avatar>
             <q-icon :name="item.icon"></q-icon>
           </q-item-section>
@@ -22,7 +22,7 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container>
+    <q-page-container style="background-color: #1E1E2F">
       <router-view/>
     </q-page-container>
   </q-layout>

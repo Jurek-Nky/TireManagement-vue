@@ -2,18 +2,24 @@
   <q-page class="row justify-center items-center">
     <div class="column">
       <div class="row">
-        <h5 class="q-ma-md">Passwort ändern</h5>
+        <h5 class="password-h5 q-my-md text-white">Passwort aendern</h5>
       </div>
       <div class="row">
-        <q-card rounded bordered class="q-pa-lg shadow-5">
+        <q-card rounded bordered class="q-pa-lg shadow-5 bg-primary">
           <q-card-section>
             <q-form class="q-gutter-md">
-              <q-input disable filled v-model="username" type="text" label="username"/>
-              <q-input filled v-model="passwordOld" type="password" label="Altes Passwort" :hint="pwOldHint"
+              <q-input label-color="accent" dark disable filled v-model="username" type="text"
+                       label="username"/>
+              <q-input label-color="accent" dark filled v-model="passwordOld" type="password"
+                       label="Altes Passwort"
+                       :hint="pwOldHint"
                        ref="passwordOld" @keydown="resetHints"/>
-              <q-input filled v-model="passwordNew" type="password" label="Neues Password" :hint="pwNewHint"
+              <q-input label-color="accent" dark filled v-model="passwordNew" type="password"
+                       label="Neues Password"
+                       :hint="pwNewHint"
                        ref="passwordNew" @keydown="resetHints"/>
-              <q-input filled v-model="passwordVerify" type="password" label="Password wiederholen" :hint="pwVerifyHint"
+              <q-input label-color="accent" dark filled v-model="passwordVerify" type="password"
+                       label="Password wiederholen" :hint="pwVerifyHint"
                        ref="passwordVerify" @keydown="resetHints"/>
             </q-form>
           </q-card-section>
@@ -40,7 +46,7 @@ export default {
       pwNewHint: '',
       pwVerifyHint: '',
       changeBtnIcon: 'mdi-autorenew',
-      changeBtnColor: 'secondary'
+      changeBtnColor: 'accent'
     }
   },
   methods: {
@@ -110,7 +116,7 @@ export default {
     resetButtonColorAndIcon() {
       setTimeout(() => {
         this.changeBtnIcon = "mdi-autorenew"
-        this.changeBtnColor = "secondary"
+        this.changeBtnColor = "accent"
       }, 1400)
     }
   }
