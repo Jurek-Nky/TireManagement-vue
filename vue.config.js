@@ -1,16 +1,11 @@
 module.exports = {
-    devServer:{
-        proxy: 'http://limla.ml:8081'
-    },
-
-    pluginOptions: {
-      vuetify: {
-			// https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vuetify-loader
-		}
+  pluginOptions: {
+    quasar: {
+      importStrategy: 'kebab',
+      rtlSupport: false
     }
-}
-module.exports = {
-    pluginOptions: {
-        vuetify: {}
-    }
+  },
+  transpileDependencies: [
+    'quasar'
+  ]
 }
