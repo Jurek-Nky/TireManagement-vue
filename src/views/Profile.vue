@@ -2,10 +2,8 @@
   <q-page class="row justify-center items-center">
     <div class="column">
       <div class="row">
-        <h5 class="password-h5 q-my-md text-white">Passwort aendern</h5>
-      </div>
-      <div class="row">
         <q-card rounded bordered class="q-pa-lg shadow-5 bg-primary">
+          <q-card-section class="text-white text-h5">Passwort aendern</q-card-section>
           <q-card-section>
             <q-form class="q-gutter-md">
               <q-input label-color="accent" dark disable filled v-model="username" type="text"

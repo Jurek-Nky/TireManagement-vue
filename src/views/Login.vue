@@ -2,15 +2,19 @@
   <q-page class="row justify-center items-center bg-image">
     <div class="column">
       <div class="row">
-        <q-card rounded bordered class="q-pa-lg shadow-5">
+        <q-card rounded bordered class="q-pa-lg shadow-5 bg-primary">
+          <q-card-section>
+            <div class="text-white text-h5">Login</div>
+          </q-card-section>
           <q-card-section>
             <q-form class="q-gutter-md">
-              <q-input filled v-model="username" type="text" label="username"/>
-              <q-input filled v-model="password" type="password" label="password"/>
+
+              <q-input label-color="accent" dark filled v-model="username" type="text" label="username"/>
+              <q-input label-color="accent" dark filled v-model="password" type="password" label="password"/>
             </q-form>
           </q-card-section>
           <q-card-actions class="q-px-md">
-            <q-btn color="positive" size="lg" class="full-width" label="Login" @click="login"/>
+            <q-btn color="accent" size="lg" class="full-width" label="Login" @click="login"/>
           </q-card-actions>
         </q-card>
       </div>

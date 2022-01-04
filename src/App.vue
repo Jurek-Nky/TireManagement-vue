@@ -56,6 +56,7 @@ export default {
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
       {title: 'Profil', icon: 'mdi-account', to: '/profile'},
+      {title: 'Admin', icon: 'mdi-account-lock', to: '/admin'},
 
     ],
   }),
