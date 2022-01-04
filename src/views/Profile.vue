@@ -2,7 +2,7 @@
   <q-page class="row justify-center items-center">
     <div class="column">
       <div class="row">
-        <h5 class="password-h5 q-my-md">Passwort aendern</h5>
+        <h5 class="q-ma-md">Passwort ändern</h5>
       </div>
       <div class="row">
         <q-card rounded bordered class="q-pa-lg shadow-5">
