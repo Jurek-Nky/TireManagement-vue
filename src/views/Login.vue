@@ -1,44 +1,35 @@
 <template>
-  <div class="wallpaper">
-    <div class="center">
-
-      <h2>Login:</h2>
-      <input type="text"
-             id="inputUsername"
-             class="form-control"
-             placeholder="username"
-             ref="username">
-      <br>
-      <input type="password"
-             id="inputPassword"
-             class="form-control"
-             placeholder="password"
-             ref="pw">
-      <button class="btn"
-              v-on:click="login()"
-              ref="btnLogin">Login
-      </button>
+  <q-page class="row justify-center items-center bg-image">
+    <div class="column">
+      <div class="row">
+        <q-card rounded bordered class="q-pa-lg shadow-5">
+          <q-card-section>
+            <q-form class="q-gutter-md">
+              <q-input filled v-model="username" type="text" label="username"/>
+              <q-input filled v-model="password" type="password" label="password"/>
+            </q-form>
+          </q-card-section>
+          <q-card-actions class="q-px-md">
+            <q-btn color="positive" size="lg" class="full-width" label="Login" @click="login"/>
+          </q-card-actions>
+        </q-card>
+      </div>
     </div>
-  </div>
 
+  </q-page>
 </template>
 
 <script>
-
 export default {
-  name: "Login",
+  name: 'Login',
   data() {
     return {
       username: '',
-      password: '',
-      token: '',
-      overlay: true
+      password: ''
     }
   },
   methods: {
     login() {
-      this.username = this.$refs.username.value
-      this.password = this.$refs.pw.value
       const data = {
         username: this.username,
         password: this.password
@@ -47,7 +38,7 @@ export default {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
-      };
+      }
       let resp;
       const url = 'http://limla.ml:8081/api/v1/user/login'
       fetch(url, requestOptions)
@@ -56,27 +47,24 @@ export default {
             return response.json()
           })
           .then(async (data) => {
-                if (data.status === 401) {
-                  alert(data.message)
-                  return
-                }
-                if (resp.status === 200) {
-                  localStorage.setItem("authToken", data)
-                  this.token = data
-                  await this.setNameAndRole(this.username)
-                  setTimeout(() => {
-                    this.$router.push('/dashboard')
-                  }, 50)
-
-                }
-              }
-          )
+            if (data.status === 401) {
+              alert(data.message)
+              return
+            }
+            if (resp.status === 200) {
+              localStorage.setItem("authToken", data)
+              await this.setNameAndRole(this.username)
+              setTimeout(() => {
+                this.$router.push('/dashboard')
+              }, 100)
+            }
+          })
           .catch(error => {
             console.log(error)
-            alert(error)
+            alert("an error occurred check the console for further information")
           })
     },
-    async setNameAndRole(username) {
+    setNameAndRole(username) {
       const url = new URL('http://limla.ml:8081/api/v1/user/role')
       const data = {
         u: username
@@ -84,9 +72,10 @@ export default {
       for (let k in data) {
         url.searchParams.append(k, data[k]);
       }
+      const token = localStorage.getItem("authToken")
       const requestOptions = {
         method: 'GET',
-        headers: {'Authorization': 'Bearer ' + this.token},
+        headers: {'Authorization': 'Bearer ' + token},
       }
       let resp;
       fetch(url, requestOptions)
@@ -103,29 +92,10 @@ export default {
 }
 </script>
 
-<style scoped>
-template {
-  margin: 0;
-}
-
-.center {
-  max-width: 400px;
-  display: grid;
-  margin-right: auto;
-  margin-left: auto;
-  border: 5px;
-
-}
-
-.wallpaper {
-  width: 100%;
-  height: 100%;
-  background-image: url('../../public/background.jpg');
-  background-size: cover;
-}
-
-h2 {
-  color: dodgerblue;
-  padding: 0 0 10px 15px;
+<style>
+.bg-image {
+  background-image: url('../assets/background.jpg');
+  background-repeat: no-repeat;
+  background-size: auto 100%;
 }
 </style>
