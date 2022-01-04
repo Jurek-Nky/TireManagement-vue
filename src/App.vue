@@ -1,30 +1,63 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view/>
+  <q-layout view="lHh lpR fFf">
+    <q-header elevated>
+      <q-toolbar class="bg-primary">
+        <q-btn flat @click="toggleLeftDrawer" round dense icon="mdi-menu"/>
+        <q-toolbar-title>Reifenverwaltung</q-toolbar-title>
+        <q-btn flat @click="logout" dense icon="mdi-logout">logout</q-btn>
+      </q-toolbar>
+    </q-header>
+
+    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" class="bg-blue-grey-2">
+      <!-- drawer content -->
+      <q-list padding class="rounded-borders">
+        <q-item clickable v-ripple v-for="item in items" :key="item.title" link :to="item.to">
+          <q-item-section avatar>
+            <q-icon :name="item.icon"></q-icon>
+          </q-item-section>
+          <q-item-section>
+            {{ item.title }}
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-drawer>
+
+    <q-page-container>
+      <router-view/>
+    </q-page-container>
+  </q-layout>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import {ref} from 'vue'
 
-#nav {
-  padding: 30px;
-}
+export default {
+  setup() {
+    const leftDrawerOpen = ref(false)
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+    return {
+      leftDrawerOpen,
+      toggleLeftDrawer() {
+        leftDrawerOpen.value = !leftDrawerOpen.value
+      }
+    }
+  },
+  methods: {
+    logout() {
+      localStorage.clear()
+      this.$router.push('/login')
+    }
+  },
+  data: () => ({
+    drawer: null,
+    items: [
+      {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
+      {title: 'Bestellungen', icon: 'mdi-timer', to: '/bestellungen'},
+      {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
+      {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
+      {title: 'Profil', icon: 'mdi-account', to: '/profile'},
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+    ],
+  }),
 }
-</style>
+</script>
