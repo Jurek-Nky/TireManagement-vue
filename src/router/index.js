@@ -1,4 +1,5 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
+
 const routes = [
     {
         path: '/',
@@ -70,8 +71,19 @@ const routes = [
                 next(false)
             }
         }
+    }, {
+        path: '/admin',
+        name: 'admin',
+        component: () => import('../views/Admin'),
+        beforeEnter: (to, from, next) => {
+            const role = localStorage.getItem("role")
+            if (role === "Admin") {
+                next()
+            } else {
+                next(false)
+            }
+        }
     }
-    ,
 ]
 
 const router = createRouter({
