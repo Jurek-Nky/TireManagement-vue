@@ -1,12 +1,10 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
 import router from './router'
-import vuetify from './plugins/vuetify'
-import { loadFonts } from './plugins/webfontloader'
+import {Quasar} from 'quasar'
+import quasarUserOptions from './quasar-user-options'
 
-loadFonts()
-
-createApp(App).use(router)
-  .use(router)
-  .use(vuetify)
-  .mount('#app')
+createApp(App)
+    .use(Quasar, quasarUserOptions)
+    .use(router)
+    .mount('#app')

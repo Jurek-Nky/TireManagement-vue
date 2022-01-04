@@ -1,5 +1,5 @@
 <template>
-<h1 style="align-content: center">Dashboard</h1>
+<h2>dashboard</h2>
 </template>
 
 <script>
