@@ -56,7 +56,7 @@ export default {
               return
             }
             if (resp.status === 200) {
-              localStorage.setItem("authToken", data)
+              this.$store.dispatch("setUserToken", data)
               await this.setNameAndRole(this.username)
               setTimeout(() => {
                 this.$router.push('/dashboard')
@@ -68,7 +68,7 @@ export default {
             alert("an error occurred check the console for further information")
           })
     },
-    setNameAndRole(username) {
+    async setNameAndRole(username) {
       const url = new URL('http://limla.ml:8081/api/v1/user/role')
       const data = {
         u: username
@@ -76,7 +76,8 @@ export default {
       for (let k in data) {
         url.searchParams.append(k, data[k]);
       }
-      const token = localStorage.getItem("authToken")
+      const token = this.$store.getters.getUserToken
+      console.log(token)
       const requestOptions = {
         method: 'GET',
         headers: {'Authorization': 'Bearer ' + token},
@@ -88,8 +89,9 @@ export default {
             return response.json()
           })
           .then(data => {
-            localStorage.setItem("username", username)
-            localStorage.setItem("role", data.roleName)
+            this.$store.dispatch("setUserName",username)
+            this.$store.dispatch("setUserRole",data.roleName)
+            console.log('Username: ' + this.$store.getters.getUserName + ', Userrole:  ' + this.$store.getters.getUserRole + ', Token:  ' + this.$store.getters.getUserToken)
           })
     }
   }

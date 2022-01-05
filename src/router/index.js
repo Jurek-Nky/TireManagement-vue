@@ -1,4 +1,5 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
+import store from '../store'
 
 const routes = [
     {
@@ -12,8 +13,8 @@ const routes = [
         name: 'Dashboard',
         component: () => import('@/views/Dashboard'),
         beforeEnter: (to, from, next) => {
-            const role = localStorage.getItem("role")
-            if (role !== null) {
+            const role = store.getters.getUserRole
+            if (role !== '') {
                 next()
             } else {
                 next(false)
@@ -24,7 +25,7 @@ const routes = [
         name: 'Order',
         component: () => import('@/views/Order'),
         beforeEnter: (to, from, next) => {
-            const role = localStorage.getItem("role")
+            const role = store.getters.getUserRole
             if (role === "Admin" || role === "Manager") {
                 next()
             } else {
@@ -36,8 +37,8 @@ const routes = [
         name: 'Weather',
         component: () => import('@/views/Weather'),
         beforeEnter: (to, from, next) => {
-            const role = localStorage.getItem("role")
-            if (role !== null) {
+            const role = store.getters.getUserRole
+            if (role !== '') {
                 next()
             } else {
                 next(false)
@@ -48,7 +49,7 @@ const routes = [
         name: 'Tires',
         component: () => import('@/views/Tires'),
         beforeEnter: (to, from, next) => {
-            const role = localStorage.getItem("role")
+            const role = store.getters.getUserRole
             if (role === "Admin" || role === "Manager") {
                 next()
             } else {
@@ -64,8 +65,8 @@ const routes = [
         name: 'profile',
         component: () => import('../views/Profile.vue'),
         beforeEnter: (to, from, next) => {
-            const role = localStorage.getItem("role")
-            if (role !== null) {
+            const role = store.getters.getUserRole
+            if (role !== '') {
                 next()
             } else {
                 next(false)
@@ -76,7 +77,7 @@ const routes = [
         name: 'admin',
         component: () => import('../views/Admin'),
         beforeEnter: (to, from, next) => {
-            const role = localStorage.getItem("role")
+            const role = store.getters.getUserRole
             if (role === "Admin") {
                 next()
             } else {
