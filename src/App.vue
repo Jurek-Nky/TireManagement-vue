@@ -4,7 +4,8 @@
       <q-toolbar class="bg-primary">
         <q-btn flat @click="toggleLeftDrawer" round dense icon="mdi-menu"/>
         <q-toolbar-title>Reifenverwaltung</q-toolbar-title>
-        <q-badge class="q-mr-lg text-subtitle1" outline color="accent" :label="username" v-if="(usernameComp !== '')"/>
+        <q-btn class="q-mr-lg text-subtitle1" color="accent" :label="username" v-if="(usernameComp !== '')"
+               @click="this.$router.push('/profile')"/>
         <q-btn class="text-subtitle1" color="negative" @click="logout" dense icon="mdi-logout">logout</q-btn>
       </q-toolbar>
     </q-header>
@@ -77,8 +78,6 @@ export default {
         leftDrawerOpen.value = !leftDrawerOpen.value
       }
     }
-  },mounted() {
-    console.log(this.$store.state.user.userName)
   },
   methods: {
     logout() {
@@ -103,28 +102,23 @@ export default {
       {title: 'Bestellungen', icon: 'mdi-timer', to: '/bestellungen'},
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
-      {title: 'Profil', icon: 'mdi-account', to: '/profile'},
       {title: 'Admin', icon: 'mdi-account-lock', to: '/admin'},
     ],
     ingItems: [
       {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
-      {title: 'Profil', icon: 'mdi-account', to: '/profile'},
-
     ],
     manItems: [
       {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
       {title: 'Bestellungen', icon: 'mdi-timer', to: '/bestellungen'},
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
-      {title: 'Profil', icon: 'mdi-account', to: '/profile'},
     ],
     empItems: [
       {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
       {title: 'Bestellungen', icon: 'mdi-timer', to: '/bestellungen'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
-      {title: 'Profil', icon: 'mdi-account', to: '/profile'},
     ],
   }),
 }
