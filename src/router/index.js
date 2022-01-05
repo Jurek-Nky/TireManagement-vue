@@ -13,7 +13,7 @@ const routes = [
         name: 'Dashboard',
         component: () => import('@/views/Dashboard'),
         beforeEnter: (to, from, next) => {
-            const role = store.getters.getUserRole
+            const role = store.state.user.userRole
             if (role !== '') {
                 next()
             } else {
@@ -25,8 +25,8 @@ const routes = [
         name: 'Order',
         component: () => import('@/views/Order'),
         beforeEnter: (to, from, next) => {
-            const role = store.getters.getUserRole
-            if (role === "Admin" || role === "Manager") {
+            const role = store.state.user.userRole
+            if (role === "Admin" || role === "Manager" || role === "Employee") {
                 next()
             } else {
                 next(false)
@@ -37,7 +37,7 @@ const routes = [
         name: 'Weather',
         component: () => import('@/views/Weather'),
         beforeEnter: (to, from, next) => {
-            const role = store.getters.getUserRole
+            const role = store.state.user.userRole
             if (role !== '') {
                 next()
             } else {
@@ -49,7 +49,7 @@ const routes = [
         name: 'Tires',
         component: () => import('@/views/Tires'),
         beforeEnter: (to, from, next) => {
-            const role = store.getters.getUserRole
+            const role = store.state.user.userRole
             if (role === "Admin" || role === "Manager") {
                 next()
             } else {
@@ -65,7 +65,7 @@ const routes = [
         name: 'profile',
         component: () => import('../views/Profile.vue'),
         beforeEnter: (to, from, next) => {
-            const role = store.getters.getUserRole
+            const role = store.state.user.userRole
             if (role !== '') {
                 next()
             } else {
@@ -77,7 +77,7 @@ const routes = [
         name: 'admin',
         component: () => import('../views/Admin'),
         beforeEnter: (to, from, next) => {
-            const role = store.getters.getUserRole
+            const role = store.state.user.userRole
             if (role === "Admin") {
                 next()
             } else {

@@ -50,17 +50,13 @@ export default {
             resp = response
             return response.json()
           })
-          .then(async (data) => {
+          .then((data) => {
             if (data.status === 401) {
               alert(data.message)
               return
             }
             if (resp.status === 200) {
-              this.$store.dispatch("setUserToken", data)
-              await this.setNameAndRole(this.username)
-              setTimeout(() => {
-                this.$router.push('/dashboard')
-              }, 100)
+              this.setNameAndRole(this.username)
             }
           })
           .catch(error => {
@@ -77,7 +73,6 @@ export default {
         url.searchParams.append(k, data[k]);
       }
       const token = this.$store.getters.getUserToken
-      console.log(token)
       const requestOptions = {
         method: 'GET',
         headers: {'Authorization': 'Bearer ' + token},
@@ -89,9 +84,11 @@ export default {
             return response.json()
           })
           .then(data => {
-            this.$store.dispatch("setUserName",username)
-            this.$store.dispatch("setUserRole",data.roleName)
-            console.log('Username: ' + this.$store.getters.getUserName + ', Userrole:  ' + this.$store.getters.getUserRole + ', Token:  ' + this.$store.getters.getUserToken)
+            this.$store.commit('login', {
+              name: username,
+              role: data.roleName
+            })
+            this.$router.push('/dashboard')
           })
     }
   }

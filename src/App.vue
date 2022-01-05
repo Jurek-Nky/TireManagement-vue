@@ -1,16 +1,18 @@
 <template>
-  <q-layout view="lHh lpR fFf">
-    <q-header elevated>
+  <q-layout view="hHh lpR fFf">
+    <q-header elevated v-if="(usernameComp !== '')">
       <q-toolbar class="bg-primary">
         <q-btn flat @click="toggleLeftDrawer" round dense icon="mdi-menu"/>
         <q-toolbar-title>Reifenverwaltung</q-toolbar-title>
-        <q-btn flat @click="logout" dense icon="mdi-logout">logout</q-btn>
+        <q-badge class="q-mr-lg text-subtitle1" outline color="accent" :label="username" v-if="(usernameComp !== '')"/>
+        <q-btn class="text-subtitle1" color="negative" @click="logout" dense icon="mdi-logout">logout</q-btn>
       </q-toolbar>
     </q-header>
 
-    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" class="bg-accent">
+    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" class="bg-accent" v-if="(usernameComp !== '')">
       <!-- drawer content -->
-      <q-list padding class="rounded-borders" v-if="(this.$store.getters.getUserRole === 'Admin')">
+      <!-- admin items-->
+      <q-list padding class="rounded-borders" v-if="(this.$store.state.user.userRole === 'Admin')">
         <q-item class="text-white" clickable v-ripple v-for="item in adminItems" :key="item.title" link :to="item.to">
           <q-item-section avatar>
             <q-icon :name="item.icon"></q-icon>
@@ -20,8 +22,8 @@
           </q-item-section>
         </q-item>
       </q-list>
-
-      <q-list padding class="rounded-borders" v-if="this.$store.getters.getUserRole === 'Manager'">
+      <!--manager items-->
+      <q-list padding class="rounded-borders" v-if="this.$store.state.user.userRole === 'Manager'">
         <q-item class="text-white" clickable v-ripple v-for="item in manItems" :key="item.title" link :to="item.to">
           <q-item-section avatar>
             <q-icon :name="item.icon"></q-icon>
@@ -31,8 +33,8 @@
           </q-item-section>
         </q-item>
       </q-list>
-
-      <q-list padding class="rounded-borders" v-if="this.$store.getters.getUserRole === 'Ingenieur'">
+      <!--ingenieur items-->
+      <q-list padding class="rounded-borders" v-if="this.$store.state.user.userRole === 'Ingenieur'">
         <q-item class="text-white" clickable v-ripple v-for="item in ingItems" :key="item.title" link :to="item.to">
           <q-item-section avatar>
             <q-icon :name="item.icon"></q-icon>
@@ -42,8 +44,8 @@
           </q-item-section>
         </q-item>
       </q-list>
-
-      <q-list padding class="rounded-borders" v-if="this.$store.getters.getUserRole === 'Employee'">
+      <!--employee items-->
+      <q-list padding class="rounded-borders" v-if="this.$store.state.user.userRole === 'Employee'">
         <q-item class="text-white" clickable v-ripple v-for="item in empItems" :key="item.title" link :to="item.to">
           <q-item-section avatar>
             <q-icon :name="item.icon"></q-icon>
@@ -53,7 +55,7 @@
           </q-item-section>
         </q-item>
       </q-list>
-
+      <!-- drawer content -->
     </q-drawer>
 
     <q-page-container style="background-color: #1E1E2F">
@@ -75,18 +77,27 @@ export default {
         leftDrawerOpen.value = !leftDrawerOpen.value
       }
     }
+  },mounted() {
+    console.log(this.$store.state.user.userName)
   },
   methods: {
     logout() {
-      this.$store.dispatch("setUserRole", '')
-      this.$store.dispatch("setUserName", '')
-      this.$store.dispatch("setUserToken", '')
+      this.$store.commit('logout')
       console.log('Username: ' + this.$store.getters.getUserName + ', Userrole:  ' + this.$store.getters.getUserRole + ', Token:  ' + this.$store.getters.getUserToken)
       this.$router.push('/login')
+    }
+  }, computed: {
+    usernameComp() {
+      if (this.$store.state.user.userName !== '') {
+        this.username = this.$store.state.user.userName
+        return this.username
+      }
+      return ''
     }
   },
   data: () => ({
     drawer: null,
+    username: '',
     adminItems: [
       {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
       {title: 'Bestellungen', icon: 'mdi-timer', to: '/bestellungen'},
