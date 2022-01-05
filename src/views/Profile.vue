@@ -36,7 +36,7 @@ export default {
   name: "Profile",
   data: () => {
     return {
-      username: localStorage.getItem("username"),
+      username: '',
       passwordOld: '',
       passwordNew: '',
       passwordVerify: '',
@@ -46,7 +46,10 @@ export default {
       changeBtnIcon: 'mdi-autorenew',
       changeBtnColor: 'accent'
     }
-  },
+  }, mounted() {
+    this.username = this.$store.state.user.userName
+  }
+  ,
   methods: {
     changePassword() {
       if (this.passwordOld === '') {

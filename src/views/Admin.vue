@@ -57,8 +57,8 @@
                      label="username" ref="username" :hint="userNameHint" @keydown="clearUserHints"/>
             <q-input dense label-color="accent" dark filled v-model="password" type="password"
                      label="password" ref="password" :hint="passwordHint" @keydown="clearUserHints"/>
-            <q-select dark outlined color="accent" label-color="accent" transition-show="flip-up"
-                      transition-hide="flip-down"
+            <q-select dark outlined color="accent" label-color="accent" transition-show="jump-down"
+                      transition-hide="jump-up"
                       v-model="role" :options="options"
                       label="Rolle"/>
           </q-form>
