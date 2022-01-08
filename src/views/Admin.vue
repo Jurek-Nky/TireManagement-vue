@@ -44,7 +44,24 @@
       <q-card rounded bordered class="q-pa-lg q-ma-lg shadow-5 bg-primary">
         <q-card-section class="text-white text-h5">Benutzer</q-card-section>
         <q-card-section>
-
+          <div class="q-pa-md">
+            <q-table
+                :rows="rows"
+                :columns="columns"
+                row-key="name"
+                hide-bottom
+                dark
+                card-class="bg-primary bordered"
+                separator="vertical"
+            >
+              <template v-slot:body-cell-action="props">
+                <q-td :props="props">
+                  <q-btn icon="mdi-delete" @click="userDelete(props.row)" color="negative" dense
+                         v-if="props.row.rolle.roleName !== 'Admin'"></q-btn>
+                </q-td>
+              </template>
+            </q-table>
+          </div>
         </q-card-section>
       </q-card>
     </div>
@@ -77,9 +94,16 @@
 <script>
 import {ref} from 'vue'
 
+const columns = [
+  {name: 'name', required: true, label: 'username:', align: 'left', field: row => row.username, sortable: true},
+  {name: 'role', align: 'left', label: 'role', field: row => row.rolle.roleName, sortable: true},
+  {name: 'id', align: 'left', label: 'id', field: row => row.userid, sortable: true},
+  {name: 'action', label: 'actions', align: 'left'},
+]
 export default {
   name: "Admin",
   setup() {
+    const selected = ref([])
     return {
       date: ref('2022/01/01'),
       role: ref(null),
@@ -89,6 +113,7 @@ export default {
     }
   },
   data: () => {
+
     return {
       raceName: '',
       location: '',
@@ -98,7 +123,10 @@ export default {
       password: '',
       passwordHint: '',
       userAddBtnColor: 'accent',
-      userAddBtnIcon: 'mdi-plus'
+      userAddBtnIcon: 'mdi-plus',
+      rows: [],
+      columns,
+
     }
   },
   methods: {
@@ -114,12 +142,12 @@ export default {
           roleName: this.role
         }
       }
-      const token = localStorage.getItem("authToken")
+      const jwt = this.$store.state.user.jwt
       const requestOptions = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
+          'Authorization': 'Bearer ' + jwt
         },
         body: JSON.stringify(data)
       }
@@ -131,6 +159,7 @@ export default {
           })
           .then(data => {
             if (resp.ok) {
+              this.getUserData()
               this.clearUserFields()
               this.userAddBtnColor = "positive"
               this.userAddBtnIcon = "mdi-check"
@@ -163,7 +192,48 @@ export default {
         this.userAddBtnIcon = "mdi-plus"
         this.userAddBtnColor = "accent"
       }, 1500)
+    },
+    getUserData() {
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      let resp
+      fetch('http://limla.ml:8081/api/v1/user/all', requestOptions)
+          .then(response => {
+            resp = response
+            return response.json()
+          })
+          .then(data => {
+            if (resp.ok) {
+              this.rows = data
+            }
+          })
+    },
+    userDelete(user) {
+      const jwt = this.$store.state.user.jwt
+      const url = `http://limla.ml:8081/api/v1/user/${user.userid}/delete`
+      const requestOptions = {
+        method: 'Delete',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
+          .then(response => {
+            if (response.ok) {
+              this.getUserData()
+            }
+          })
+
     }
+  },
+  mounted() {
+    this.getUserData()
   }
 }
 </script>
