@@ -42,10 +42,10 @@
     </div>
     <div class="column">
       <q-card rounded bordered class="q-pa-lg q-ma-lg shadow-5 bg-primary">
-        <q-card-section class="text-white text-h5">Benutzer</q-card-section>
         <q-card-section>
           <div class="q-pa-md">
             <q-table
+                title="Benutzer"
                 :rows="rows"
                 :columns="columns"
                 row-key="name"
