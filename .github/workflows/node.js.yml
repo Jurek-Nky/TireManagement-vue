@@ -15,11 +15,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [12.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - name: SSH Remote Commands
       # You may pin to the exact commit or the version.
@@ -38,7 +33,6 @@ jobs:
           npm install
           npm run build
           cd ./..
-          docker-compose build
           docker-compose up -d
           
         
