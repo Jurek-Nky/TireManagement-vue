@@ -28,6 +28,7 @@ jobs:
         key: ${{secrets.OPENSSH_KEY}}
         host: ${{secrets.IP_ADDR}}
         username: ${{secrets.USER_NAME}}
+        port: ${{secrets.SSH_PORT}}
         script: |
           cd /home/docky/tiremanagementWebService
           docker-compose down
