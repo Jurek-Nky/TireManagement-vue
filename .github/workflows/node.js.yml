@@ -26,7 +26,7 @@ jobs:
       # uses: appleboy/ssh-action@1d1b21ca96111b1eb4c03c21c14ebb971d2200f6
       uses: appleboy/ssh-action@v0.1.4
       with:
-        key: ${{secrets.OPENSSH_KEY}}
+        password: ${{secrets.PASSWORD}}
         host: ${{secrets.HOST}}
         username: ${{secrets.USER_NAME}}
         port: ${{secrets.SSH_PORT}}
