@@ -56,13 +56,12 @@ export default {
           })
           .then((data) => {
             if (resp.status === 200) {
-              this.setNameAndRole(this.username)
+              this.setNameAndRole(this.username, data)
             } else if (data.status !== 200) {
               this.error = true
               setTimeout(() => {
                 this.error = false
               }, 1000)
-              return
             }
 
           })
@@ -70,7 +69,7 @@ export default {
             console.log(error)
           })
     },
-    async setNameAndRole(username) {
+    async setNameAndRole(username, jwt) {
       const url = new URL('http://limla.ml:8081/api/v1/user/role')
       const data = {
         u: username
@@ -78,10 +77,9 @@ export default {
       for (let k in data) {
         url.searchParams.append(k, data[k]);
       }
-      const token = this.$store.getters.getUserToken
       const requestOptions = {
         method: 'GET',
-        headers: {'Authorization': 'Bearer ' + token},
+        headers: {'Authorization': 'Bearer ' + jwt},
       }
       let resp;
       fetch(url, requestOptions)
@@ -92,7 +90,8 @@ export default {
           .then(data => {
             this.$store.commit('login', {
               name: username,
-              role: data.roleName
+              role: data.roleName,
+              jwt: jwt
             })
             this.$router.push('/dashboard')
           })
