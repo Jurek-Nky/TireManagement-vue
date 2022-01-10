@@ -82,7 +82,6 @@ export default {
   methods: {
     logout() {
       this.$store.commit('logout')
-      console.log('Username: ' + this.$store.getters.getUserName + ', Userrole:  ' + this.$store.getters.getUserRole + ', Token:  ' + this.$store.getters.getUserToken)
       this.$router.push('/login')
     }
   }, computed: {
