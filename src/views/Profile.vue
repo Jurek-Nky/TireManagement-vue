@@ -70,7 +70,8 @@ export default {
       }
 
       // create url and add params
-      const url = new URL('http://limla.ml:8081/api/v1/user/resetpw')
+      const apiUrl = this.$store.state.host.api_url
+      const url = new URL(apiUrl + '/user/resetpw')
       const data = {
         pwold: this.passwordOld,
         pwnew: this.passwordNew,
