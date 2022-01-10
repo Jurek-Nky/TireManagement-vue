@@ -48,7 +48,8 @@ export default {
         body: JSON.stringify(data)
       }
       let resp;
-      const url = 'http://limla.ml:8081/api/v1/user/login'
+      const apiUrl = this.$store.state.host.api_url
+      const url = apiUrl + '/user/login'
       fetch(url, requestOptions)
           .then(response => {
             resp = response
@@ -70,7 +71,8 @@ export default {
           })
     },
     async setNameAndRole(username, jwt) {
-      const url = new URL('http://limla.ml:8081/api/v1/user/role')
+      const apiUrl = this.$store.state.host.api_url
+      const url = new URL(apiUrl + '/user/role')
       const data = {
         u: username
       }

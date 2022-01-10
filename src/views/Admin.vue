@@ -134,7 +134,8 @@ export default {
       alert("test")
     },
     createUser() {
-      const url = 'http://limla.ml:8081/api/v1/user/register'
+      const apiUrl = this.$store.state.host.api_url
+      const url = apiUrl + '/user/register'
       const data = {
         username: this.username,
         password: this.password,
@@ -194,6 +195,8 @@ export default {
       }, 1500)
     },
     getUserData() {
+      const apiUrl = this.$store.state.host.api_url
+      const url = apiUrl + '/user/all'
       const jwt = this.$store.state.user.jwt
       const requestOptions = {
         method: 'GET',
@@ -203,7 +206,7 @@ export default {
         },
       }
       let resp
-      fetch('http://limla.ml:8081/api/v1/user/all', requestOptions)
+      fetch(url, requestOptions)
           .then(response => {
             resp = response
             return response.json()
@@ -216,7 +219,8 @@ export default {
     },
     userDelete(user) {
       const jwt = this.$store.state.user.jwt
-      const url = `http://limla.ml:8081/api/v1/user/${user.userid}/delete`
+      const apiUrl = this.$store.state.host.api_url
+      const url = `${apiUrl}/user/${user.userid}/delete`
       const requestOptions = {
         method: 'Delete',
         headers: {

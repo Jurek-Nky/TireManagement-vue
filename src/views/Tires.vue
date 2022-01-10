@@ -233,7 +233,8 @@ export default {
       this.tireSetRows_used = []
       this.tireSetRows_inStock = []
       // get all tires with status "auf lager"
-      let url = new URL('http://limla.ml:8081/api/v1/tireset/status')
+      const apiUrl = this.$store.state.host.api_url
+      let url = new URL(apiUrl + '/tireset/status')
       let data = {
         status: 'auf lager'
       }
@@ -265,7 +266,7 @@ export default {
               }
           )
       // get all tires with status "benutzt"
-      url = new URL('http://limla.ml:8081/api/v1/tireset/status')
+      url = new URL(apiUrl + '/tireset/status')
       data = {
         status: 'benutzt'
       }
@@ -291,7 +292,8 @@ export default {
           )
     },
     tireSetDelete(tireSet) {
-      const url = `http://limla.ml:8081/api/v1/tireset/delete/${tireSet.id}`
+      const apiUrl = this.$store.state.host.api_url
+      const url = `${apiUrl}/tireset/delete/${tireSet.id}`
       const jwt = this.$store.state.user.jwt
       const requestOptions = {
         method: 'PUT',
@@ -316,7 +318,8 @@ export default {
     }
     ,
     tireSetStartHeatingTimer(tireSet) {
-      const url = `http://limla.ml:8081/api/v1/tireset/update/${tireSet.id}/heatingStart`
+      const apiUrl = this.$store.state.host.api_url
+      const url = `${apiUrl}/tireset/update/${tireSet.id}/heatingStart`
       const jwt = this.$store.state.user.jwt
       const requestOptions = {
         method: 'PUT',
@@ -341,7 +344,8 @@ export default {
     }
     ,
     tireSetEndHeatingTimer(tireSet) {
-      const url = `http://limla.ml:8081/api/v1/tireset/update/${tireSet.id}/heatingStop`
+      const apiUrl = this.$store.state.host.api_url
+      const url = `${apiUrl}/tireset/update/${tireSet.id}/heatingStop`
       const jwt = this.$store.state.user.jwt
       const requestOptions = {
         method: 'PUT',
@@ -366,7 +370,8 @@ export default {
     }
     ,
     tireSetStatusUsed(tireSet) {
-      const url = new URL(`http://limla.ml:8081/api/v1/tireset/update/${tireSet.id}/status`)
+      const apiUrl = this.$store.state.host.api_url
+      const url = new URL(`${apiUrl}/tireset/update/${tireSet.id}/status`)
       let data = {
         status: 'benutzt'
       }
