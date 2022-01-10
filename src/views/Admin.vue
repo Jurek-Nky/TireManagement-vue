@@ -24,19 +24,35 @@
                      label="Ort" ref="location"/>
             <q-input dense label-color="accent" dark filled v-model="cont" type="number"
                      label="Kontingent" ref="cont"/>
+            <q-input dense label-color="accent" dark filled v-model="raceLength" type="number"
+                     label="Laenge" ref="cont"/>
           </q-form>
         </q-card-section>
         <q-card-section>
-          <q-btn color="accent" size="md" class="full-width" icon="mdi-plus"
+          <q-btn :color="raceAddBtnColor" size="md" class="full-width" :icon="raceAddBtnIcon"
                  @click="createRace"></q-btn>
         </q-card-section>
       </q-card>
     </div>
     <div class="column">
       <q-card rounded bordered class="q-pa-lg q-ma-lg shadow-5 bg-primary">
-        <q-card-section class="text-white text-h5">Rennen</q-card-section>
         <q-card-section>
-
+          <q-table
+              title="Rennen"
+              :rows="race_rows"
+              :columns="race_columns"
+              row-key="name"
+              hide-bottom
+              dark
+              card-class="bg-primary bordered"
+              separator="vertical"
+          >
+            <template v-slot:body-cell-action="props">
+              <q-td :props="props">
+                <q-btn icon="mdi-delete" @click="raceDelete(props.row)" color="negative" dense></q-btn>
+              </q-td>
+            </template>
+          </q-table>
         </q-card-section>
       </q-card>
     </div>
@@ -100,6 +116,15 @@ const columns = [
   {name: 'id', align: 'left', label: 'id', field: row => row.userid, sortable: true},
   {name: 'action', label: 'actions', align: 'left'},
 ]
+const race_columns = [
+  {name: 'name', required: true, label: 'Name', align: 'left', field: row => row.name, sortable: true},
+  {name: 'date', align: 'left', label: 'Datum', field: row => row.date, sortable: true},
+  {name: 'location', align: 'left', label: 'Ort', field: row => row.location, sortable: true},
+  {name: 'length', align: 'left', label: 'Laenge', field: row => row.length, sortable: true},
+  {name: 'contingent', align: 'left', label: 'Kontingent', field: row => row.tireContingent, sortable: true},
+  {name: 'id', align: 'left', label: 'ID', field: row => row.raceID, sortable: true},
+  {name: 'action', label: 'actions', align: 'left'},
+]
 export default {
   name: "Admin",
   setup() {
@@ -118,20 +143,68 @@ export default {
       raceName: '',
       location: '',
       cont: null,
+      raceLength: '',
       username: '',
       userNameHint: '',
       password: '',
       passwordHint: '',
       userAddBtnColor: 'accent',
       userAddBtnIcon: 'mdi-plus',
+      raceAddBtnColor: 'accent',
+      raceAddBtnIcon: 'mdi-plus',
       rows: [],
+      race_rows: [],
       columns,
+      race_columns,
 
     }
   },
   methods: {
     createRace() {
-      alert("test")
+      const apiUrl = this.$store.state.host.api_url
+      const url = apiUrl + '/race/new'
+      const data = {
+        date: this.date.replaceAll('/', '-'),
+        length: this.length,
+        location: this.location,
+        name: this.raceName,
+        tireContingent: this.cont
+      }
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + jwt
+        },
+        body: JSON.stringify(data)
+      }
+      let resp;
+      fetch(url, requestOptions)
+          .then(response => {
+            resp = response
+            if (response.status !== 200) {
+              console.log(response)
+              return
+            }
+            return response.json()
+          })
+          .then(() => {
+            this.getRaceData()
+            this.clearRaceFields()
+            this.raceAddBtnIcon = 'mdi-check'
+            this.raceAddBtnColor = 'positive'
+            setTimeout(() => {
+              this.raceAddBtnColor = 'accent'
+              this.raceAddBtnIcon = 'mdi-plus'
+            }, 1500)
+          })
+    },
+    clearRaceFields() {
+      this.raceName = ''
+      this.location = ''
+      this.cont = ''
+      this.raceLength = ''
     },
     createUser() {
       const apiUrl = this.$store.state.host.api_url
@@ -205,16 +278,16 @@ export default {
           'Authorization': 'Bearer ' + jwt
         },
       }
-      let resp
       fetch(url, requestOptions)
           .then(response => {
-            resp = response
+            if (response.status !== 200) {
+              console.log(response)
+              return
+            }
             return response.json()
           })
           .then(data => {
-            if (resp.ok) {
-              this.rows = data
-            }
+            this.rows = data
           })
     },
     userDelete(user) {
@@ -234,10 +307,52 @@ export default {
             }
           })
 
+    },
+    getRaceData() {
+      this.race_rows = []
+      const apiUrl = this.$store.state.host.api_url
+      const url = apiUrl + '/race/all'
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
+          .then(response => {
+            if (response.status !== 200) {
+              return
+            }
+            return response.json()
+          })
+          .then(data => {
+            this.race_rows = data
+          })
+    },
+    raceDelete(race) {
+      const jwt = this.$store.state.user.jwt
+      const apiUrl = this.$store.state.host.api_url
+      const url = `${apiUrl}/race/delete/${race.raceID}`
+      const requestOptions = {
+        method: 'Delete',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
+          .then(response => {
+            if (response.ok) {
+              this.getRaceData()
+            }
+          })
+
     }
   },
   mounted() {
     this.getUserData()
+    this.getRaceData()
   }
 }
 </script>
