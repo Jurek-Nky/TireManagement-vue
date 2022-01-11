@@ -1,23 +1,23 @@
 <template>
   <div class="q-pa-sm">
-    <q-card rounded bordered class="q-pa-md shadow-5">
+    <q-card rounded bordered class="q-pa-md shadow-5 bg-primary">
       <q-card-section>
         <div class="row">
           <div class="col-sm-6" style="padding: 5px">
             <div class="q-gutter-y-sm">
                 <strong>Bestellformular</strong>
-                <q-select outlined dense v-model="model" :options="reifenart" label="Reifenart auswählen"/>
-                <q-select outlined dense v-model="model" :options="mischung" label="Mischung auswählen"/>
-                <q-select outlined dense v-model="model" :options="bearbeitungsvariante" label="Bearbeitungsvariante auswählen"/>
-                <q-btn class="full-width" color="primary" label="Bestellen" />
+                <q-select dark filled label-color="accent" outlined dense v-model="model" :options="reifenart" label="Reifenart auswählen"/>
+                <q-select dark filled label-color="accent" outlined dense v-model="model" :options="mischung" label="Mischung auswählen"/>
+                <q-select dark filled label-color="accent" outlined dense v-model="model" :options="bearbeitungsvariante" label="Bearbeitungsvariante auswählen"/>
+                <q-btn label-color="accent" class="full-width" color="primary" label="Bestellen" />
             </div>
           </div>
           <div class="col-sm-6" style="padding: 5px">
             <div class="q-gutter-y-sm">
               <strong>Timer setzen</strong>
-              <q-input outlined dense type="text" disable/>
-              <q-input outlined dense type="number" label="Zeit eingeben"/>
-              <q-btn class="full-width" color="primary" label="Timer setzen" />
+              <q-input dark filled label-color="accent" outlined dense type="text" disable/>
+              <q-input dark filled label-color="accent" outlined dense type="number" label="Zeit eingeben"/>
+              <q-btn v-model="model" label-color="accent" class="full-width" color="primary" label="Timer setzen" />
             </div>
           </div>
         </div>
