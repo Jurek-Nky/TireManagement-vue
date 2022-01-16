@@ -84,6 +84,10 @@ const routes = [
                 next(false)
             }
         }
+    }, {
+        path: '/statistic',
+        name: 'statistic',
+        component: () => import('../views/Statistic')
     }
 ]
 

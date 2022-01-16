@@ -102,17 +102,20 @@ export default {
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
       {title: 'Admin', icon: 'mdi-account-lock', to: '/admin'},
+      {title: 'Statistic', icon: 'mdi-history', to: '/statistic'},
     ],
     ingItems: [
       {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
+      {title: 'Statistic', icon: 'mdi-history', to: '/statistic'},
     ],
     manItems: [
       {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
       {title: 'Bestellungen', icon: 'mdi-timer', to: '/bestellungen'},
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
+      {title: 'Statistic', icon: 'mdi-history', to: '/statistic'},
     ],
     empItems: [
       {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
