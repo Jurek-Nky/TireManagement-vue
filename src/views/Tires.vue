@@ -71,7 +71,7 @@
                         row-key="tireID"
                         hide-bottom
                         dark
-                        class="bg-secondary"
+                        class="bg-primary"
                     >
                     </q-table>
                   </q-td>
@@ -133,7 +133,7 @@
                         row-key="tireID"
                         hide-bottom
                         dark
-                        class="bg-secondary"
+                        class="bg-primary"
                     >
                     </q-table>
                   </q-td>
@@ -144,7 +144,6 @@
         </q-card-section>
       </q-card>
     </div>
-
   </q-page>
 </template>
 
