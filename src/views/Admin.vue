@@ -3,20 +3,18 @@
     <q-tabs
         v-model="tab"
         dense
-        active-color="white"
-        indicator-color="secondary"
+        active-bg-color="accent"
+        indicator-color="white"
         align="justify"
-        class="text-white bg-accent"
-        narrow-indicator
+        class="text-white bg-primary"
     >
       <q-tab name="race" label="Rennen"/>
       <q-tab name="user" label="Benutzer"/>
     </q-tabs>
-    <q-separator/>
     <q-tab-panels v-model="tab" animated class="transparent">
-      <q-tab-panel name="race" class="row justify-center items-center window-height">
+      <q-tab-panel name="race" class="row justify-center full-height q-gutter-lg">
         <div class="column">
-          <q-card rounded bordered class="q-pa-lg q-ma-lg shadow-5 bg-primary">
+          <q-card rounded bordered class="shadow-5 bg-primary">
             <q-card-section class="text-white text-h5">Rennen erstellen</q-card-section>
             <q-card-section>
               <q-input filled v-model="date" dark mask="date" :rules="['date']">
@@ -50,7 +48,7 @@
           </q-card>
         </div>
         <div class="column">
-          <q-card rounded bordered class="q-pa-lg q-ma-lg shadow-5 bg-primary">
+          <q-card rounded bordered class="shadow-5 bg-primary">
             <q-card-section class="text-h5 text-white">Prefixes</q-card-section>
             <q-card-section>
               <q-input v-model="prefix_hot" label="Hot" :dense="dense" dark type="number"/>
@@ -68,31 +66,27 @@
           </q-card>
         </div>
         <div class="column">
-          <q-card rounded bordered class="q-pa-lg q-ma-lg shadow-5 bg-primary">
-            <q-card-section>
-              <q-table
-                  title="Rennen"
-                  :rows="race_rows"
-                  :columns="race_columns"
-                  row-key="name"
-                  hide-bottom
-                  dark
-                  card-class="bg-primary bordered"
-                  separator="vertical"
-              >
-                <template v-slot:body-cell-action="props">
-                  <q-td :props="props">
-                    <q-btn icon="mdi-delete" @click="raceDelete(props.row)" color="negative" dense></q-btn>
-                  </q-td>
-                </template>
-              </q-table>
-            </q-card-section>
-          </q-card>
+          <q-table
+              title="Rennen"
+              :rows="race_rows"
+              :columns="race_columns"
+              row-key="name"
+              hide-bottom
+              dark
+              card-class="bg-primary bordered"
+              separator="vertical"
+          >
+            <template v-slot:body-cell-action="props">
+              <q-td :props="props">
+                <q-btn icon="mdi-delete" @click="raceDelete(props.row)" color="white" flat dense></q-btn>
+              </q-td>
+            </template>
+          </q-table>
         </div>
       </q-tab-panel>
-      <q-tab-panel name="user" class="row justify-center items-center window-height">
+      <q-tab-panel name="user" class="row justify-center full-height q-gutter-lg">
         <div class="column">
-          <q-card rounded bordered class="q-pa-lg q-ma-lg shadow-5 bg-primary">
+          <q-card rounded bordered class="shadow-5 bg-primary">
             <q-card-section class="text-white text-h5">Benutzer erstellen</q-card-section>
             <q-card-section>
               <q-form class="q-gutter-md">
@@ -114,29 +108,23 @@
           </q-card>
         </div>
         <div class="column">
-          <q-card rounded bordered class="q-pa-lg q-ma-lg shadow-5 bg-primary">
-            <q-card-section>
-              <div class="q-pa-md">
-                <q-table
-                    title="Benutzer"
-                    :rows="rows"
-                    :columns="columns"
-                    row-key="name"
-                    hide-bottom
-                    dark
-                    card-class="bg-primary bordered"
-                    separator="vertical"
-                >
-                  <template v-slot:body-cell-action="props">
-                    <q-td :props="props">
-                      <q-btn icon="mdi-delete" @click="userDelete(props.row)" color="negative" dense
-                             v-if="props.row.rolle.roleName !== 'Admin'"></q-btn>
-                    </q-td>
-                  </template>
-                </q-table>
-              </div>
-            </q-card-section>
-          </q-card>
+          <q-table
+              title="Benutzer"
+              :rows="rows"
+              :columns="columns"
+              row-key="name"
+              hide-bottom
+              dark
+              card-class="bg-primary bordered"
+              separator="horizontal"
+          >
+            <template v-slot:body-cell-action="props">
+              <q-td :props="props">
+                <q-btn icon="mdi-delete" @click="userDelete(props.row)" color="white" flat dense
+                       v-if="props.row.rolle.roleName !== 'Admin'"></q-btn>
+              </q-td>
+            </template>
+          </q-table>
         </div>
       </q-tab-panel>
     </q-tab-panels>
@@ -147,7 +135,7 @@
 import {ref} from 'vue'
 
 const columns = [
-  {name: 'name', required: true, label: 'username:', align: 'left', field: row => row.username, sortable: true},
+  {name: 'name', required: true, label: 'username', align: 'left', field: row => row.username, sortable: true},
   {name: 'role', align: 'left', label: 'role', field: row => row.rolle.roleName, sortable: true},
   {name: 'id', align: 'left', label: 'id', field: row => row.userid, sortable: true},
   {name: 'action', label: 'actions', align: 'left'},
