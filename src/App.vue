@@ -10,7 +10,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" class="bg-accent" v-if="(usernameComp !== '')">
+    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" class="bg-secondary" v-if="(usernameComp !== '')">
       <!-- drawer content -->
       <!-- admin items-->
       <q-list padding class="rounded-borders" v-if="(this.$store.state.user.userRole === 'Admin')">
@@ -59,7 +59,7 @@
       <!-- drawer content -->
     </q-drawer>
 
-    <q-page-container style="background-color: #1E1E2F">
+    <q-page-container style="background-color: #00111c">
       <router-view/>
     </q-page-container>
   </q-layout>
@@ -102,17 +102,20 @@ export default {
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
       {title: 'Admin', icon: 'mdi-account-lock', to: '/admin'},
+      {title: 'Statistic', icon: 'mdi-history', to: '/statistic'},
     ],
     ingItems: [
       {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
+      {title: 'Statistic', icon: 'mdi-history', to: '/statistic'},
     ],
     manItems: [
       {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
       {title: 'Bestellungen', icon: 'mdi-timer', to: '/bestellungen'},
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
+      {title: 'Statistic', icon: 'mdi-history', to: '/statistic'},
     ],
     empItems: [
       {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
