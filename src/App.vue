@@ -10,7 +10,8 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" class="bg-secondary" v-if="(usernameComp !== '')">
+    <q-drawer class="bg-primary" show-if-above v-model="leftDrawerOpen" side="left"
+              v-if="(usernameComp !== '')">
       <!-- drawer content -->
       <!-- admin items-->
       <q-list padding class="rounded-borders" v-if="(this.$store.state.user.userRole === 'Admin')">
@@ -59,7 +60,7 @@
       <!-- drawer content -->
     </q-drawer>
 
-    <q-page-container style="background-color: #00111c">
+    <q-page-container style="background-color: #2C363F">
       <router-view/>
     </q-page-container>
   </q-layout>

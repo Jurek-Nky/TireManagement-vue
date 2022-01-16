@@ -3,11 +3,10 @@
     <q-tabs
         v-model="tab"
         dense
-        active-color="white"
-        indicator-color="secondary"
+        active-bg-color="accent"
+        indicator-color="white"
         align="justify"
-        class="text-white bg-accent"
-        narrow-indicator
+        class="text-white bg-primary"
     >
       <q-tab name="race" label="Rennen"/>
       <q-tab name="user" label="Benutzer"/>
