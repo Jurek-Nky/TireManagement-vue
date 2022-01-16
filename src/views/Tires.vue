@@ -372,7 +372,7 @@ export default {
     tireSetStatusUsed(tireSet) {
       const apiUrl = this.$store.state.host.api_url
       const url = new URL(`${apiUrl}/tireset/update/${tireSet.id}/status`)
-      let data = {
+      const data = {
         status: 'benutzt'
       }
       for (let k in data

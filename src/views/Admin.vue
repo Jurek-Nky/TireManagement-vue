@@ -274,9 +274,8 @@ export default {
       const requestOptions = {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + jwt
-        },
+        }
       }
       fetch(url, requestOptions)
           .then(response => {
