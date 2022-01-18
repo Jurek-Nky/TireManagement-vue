@@ -9,10 +9,8 @@
         <q-btn class="text-subtitle1" color="negative" @click="logout" dense icon="mdi-logout">logout</q-btn>
       </q-toolbar>
     </q-header>
-
     <q-drawer class="bg-primary" show-if-above v-model="leftDrawerOpen" side="left"
               v-if="(usernameComp !== '')">
-      <!-- drawer content -->
       <!-- admin items-->
       <q-list padding class="rounded-borders" v-if="(this.$store.state.user.userRole === 'Admin')">
         <q-item class="text-white" clickable v-ripple v-for="item in adminItems" :key="item.title" link :to="item.to">
@@ -57,9 +55,7 @@
           </q-item-section>
         </q-item>
       </q-list>
-      <!-- drawer content -->
     </q-drawer>
-
     <q-page-container style="background-color: #2C363F">
       <router-view/>
     </q-page-container>
@@ -102,6 +98,7 @@ export default {
       {title: 'Bestellungen', icon: 'mdi-timer', to: '/bestellungen'},
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
+      {title: 'Statistic', icon: 'mdi-information-outline', to: '/statistic'},
       {title: 'Admin', icon: 'mdi-account-lock', to: '/admin'},
       {title: 'Statistic', icon: 'mdi-history', to: '/statistic'},
     ],
