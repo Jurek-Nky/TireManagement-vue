@@ -16,30 +16,29 @@
           >
             <template v-slot:body="props">
               <q-tr :props="props">
-                <q-td
-                  v-for="col in props.cols"
-                  :key="col.name"
-                  :props="props"
-                > 
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                >
                   <div>
                     {{ col.value }}
                   </div>
                 </q-td>
-                <q-td auto-width>
-                  <q-btn outline rounded size="sm" color="white" class="use-address" @click="check(race_rows.indexOf(props.row)); toggleExpanded(props.row.name)"
-                    :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
+                  <q-btn outline rounded size="sm" color="white" class="use-address"
+                         @click="check(race_rows.indexOf(props.row)); toggleExpanded(props.row.name)"
+                         :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
                 </q-td>
               </q-tr>
               <q-tr v-show="props.expand" :props="props">
                 <q-td colspan="100%">
                   <q-table
-                    title="Tires"
-                    :rows="tireSetRows_used"
-                    :columns="tireSetColumns_used"
-                    row-key="tireID"
-                    hide-bottom
-                    dark
-                    class="bg-primary"
+                      title="Tires"
+                      :rows="tireSetRows_used"
+                      :columns="tireSetColumns_used"
+                      row-key="tireID"
+                      hide-bottom
+                      dark
+                      class="bg-primary"
                   >
                     <template v-slot:loading>
                       <q-inner-loading showing color="primary"/>
@@ -57,19 +56,19 @@
                         </q-td>
                         <q-td auto-width>
                           <q-btn outline rounded size="sm" color="white" @click="props.expand = !props.expand"
-                            :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
+                                 :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
                         </q-td>
                       </q-tr>
                       <q-tr v-show="props.expand" :props="props">
                         <q-td colspan="100%">
                           <q-table
-                            title="Tires"
-                            :rows="props.row.tires"
-                            :columns="tireColumns"
-                            row-key="tireID"
-                            hide-bottom
-                            dark
-                            class="bg-primary"
+                              title="Tires"
+                              :rows="props.row.tires"
+                              :columns="tireColumns"
+                              row-key="tireID"
+                              hide-bottom
+                              dark
+                              class="bg-primary"
                           >
                           </q-table>
                         </q-td>
@@ -79,13 +78,13 @@
 
                   <br>
                   <q-table
-                    title="Wetter"
-                    :rows="weather_rows"
-                    :columns="weather_columns"
-                    row-key="tireID"
-                    hide-bottom
-                    dark
-                    class="bg-primary"
+                      title="Wetter"
+                      :rows="weather_rows"
+                      :columns="weather_columns"
+                      row-key="tireID"
+                      hide-bottom
+                      dark
+                      class="bg-primary"
                   >
                     <template v-slot:loading>
                       <q-inner-loading showing color="primary"/>
@@ -139,7 +138,14 @@ const tireSetColumns_used = [
   {name: 'race', align: 'left', label: 'RaceID', field: row => row.race.raceID, sortable: true}
 ]
 const weather_columns = [
-  {name: 'weatherConditions', required: true, label: 'Weather cond', align: 'left', field: row => row.weatherConditions, sortable: true},
+  {
+    name: 'weatherConditions',
+    required: true,
+    label: 'Weather cond',
+    align: 'left',
+    field: row => row.weatherConditions,
+    sortable: true
+  },
   {name: 'tracktemperatur', align: 'left', label: 'Track temp', field: row => row.tracktemperatur, sortable: true},
   {name: 'airtemperatur', align: 'left', label: 'Air Temp', field: row => row.airtemperatur, sortable: true},
   {name: 'time', align: 'left', label: 'Time', field: row => row.time, sortable: true},
@@ -210,27 +216,22 @@ export default {
       race_rows: [],
       columns,
       race_columns,
-
       loading_used: false,
       tireSetColumns_used,
       tireColumns,
       tireSetRows_used: [],
-
       weather_rows: [],
       weather_columns: [],
-
       tireIds: [],
       raceIds: [],
-
       showTire: false,
       showWeather: false,
-
       expanded: [],
     }
   },
-  watch: {  
+  watch: {
     tireSetRows_used(v) {
-      if(v != null) {
+      if (v != null) {
         setTimeout(() => {
           for (let index = 0; index < v.length; index++) {
             //const element = array[index];
@@ -345,19 +346,18 @@ export default {
 
     check(val) {
       this.tireIds.forEach(id => {
-        if (id == this.raceIds[val]) {
+        if (id === this.raceIds[val]) {
           console.log(id)
           this.showTire = true
           this.getWeatherData(id)
-        }
-        else {
+        } else {
           console.log(id)
           this.showTire = false
           this.getWeatherData(this.raceIds[val])
         }
       });
     },
-    toggleExpanded (val) {
+    toggleExpanded(val) {
       this.expanded = this.expanded[0] === val ? [] : [val]
     }
   },

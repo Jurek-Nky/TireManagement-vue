@@ -1,27 +1,26 @@
 <template>
   <q-page class="row justify-center">
-
-    <div class ="my-card q-gutter-md">
+    <div class="my-card q-gutter-md">
       <div class="q-pa-md">
         <q-card class="bg-primary text-white q-pa-lg shadow-5" dark>
           <q-card-section>
             <q-form class="q-gutter-md">
-              <q-input  color="accent" v-model.number="airtemp" type="number" label="Luftemperatur in °C" label-color="accent" dark ref="airtemp" />
-              <q-input  color="accent" v-model.number="tracktemp" type="number"  label="Streckentemperatur in °C" label-color="accent" dark ref="tracktemp"/>
-              <q-select color="accent" filled v-model="cond" :options="optionstrack" label="Streckenverhältnis" label-color="accent" dark ref="cond"/>
+              <q-input color="accent" v-model.number="airtemp" type="number" label="Luftemperatur in °C"
+                       label-color="accent" dark ref="airtemp"/>
+              <q-input color="accent" v-model.number="tracktemp" type="number" label="Streckentemperatur in °C"
+                       label-color="accent" dark ref="tracktemp"/>
+              <q-select color="accent" filled v-model="cond" :options="optionstrack" label="Streckenverhältnis"
+                        label-color="accent" dark ref="cond"/>
             </q-form>
           </q-card-section>
-
-          <q-separator dark />
-
+          <q-separator dark/>
           <q-card-actions>
-            <q-btn class="bg-accent" @click="createWeather"  :color="weatherAddBtnColor" :label="weatherAddBtnLabel"/>
+            <q-btn class="bg-accent" @click="createWeather" :color="weatherAddBtnColor" :label="weatherAddBtnLabel"/>
           </q-card-actions>
         </q-card>
       </div>
     </div>
-
-    <div class ="my-card2 q-gutter-md">
+    <div class="my-card2 q-gutter-md">
       <div class="my-card2 q-pa-md" dark>
 
         <q-card class="bg-primary text-white q-pa-lg shadow-5" dark>
@@ -34,42 +33,37 @@
                      binary-state-sort
             />
           </q-card-section>
-
         </q-card>
       </div>
     </div>
-
-    <div class ="my-card2 q-gutter-md">
+    <div class="my-card2 q-gutter-md">
       <div class="my-card2 q-pa-md" dark>
-
         <q-card class="bg-primary text-white q-pa-lg shadow-5" dark>
           <q-card-section>
             <apexchart type="area" height="350" :options="chartOptions" :series="series"></apexchart>
           </q-card-section>
-
         </q-card>
       </div>
     </div>
-
-
-
   </q-page>
-
 </template>
 
 <script>
-import { ref } from 'vue'
-
+import {ref} from 'vue'
 
 
 const columns = [
-  { name: 'time', label: 'Uhrzeit', align: 'left', field: row => row.time, sortable: true  },
-  { name: 'airtemp', label: 'Lufttemperatur in °C', align: 'left', field: row => row.airtemperatur, sortable: true },
-  { name: 'tracktemp', label: 'Streckentemperatur in °C', align: 'left', field: row => row.tracktemperatur, sortable: true },
-  { name: 'cond', label: 'Streckenverhältnis', align: 'left', field: row => row.weatherConditions, sortable: true },
-
+  {name: 'time', label: 'Uhrzeit', align: 'left', field: row => row.time, sortable: true},
+  {name: 'airtemp', label: 'Lufttemperatur in °C', align: 'left', field: row => row.airtemperatur, sortable: true},
+  {
+    name: 'tracktemp',
+    label: 'Streckentemperatur in °C',
+    align: 'left',
+    field: row => row.tracktemperatur,
+    sortable: true
+  },
+  {name: 'cond', label: 'Streckenverhältnis', align: 'left', field: row => row.weatherConditions, sortable: true},
 ]
-
 
 export default {
   name: "Weather",
@@ -86,8 +80,6 @@ export default {
       columns,
       weatherAddBtnColor: 'accent',
       weatherAddBtnLabel: 'Eintragen',
-
-
       options: {
         chart: {
           id: 'chart'
@@ -107,9 +99,7 @@ export default {
         },
 
         dataLabels: {
-          style: {
-
-          },
+          style: {},
           enabled: false
         },
         stroke: {
@@ -133,7 +123,6 @@ export default {
     sendandget() {
       this.getData();
       this.createWeather();
-
     },
     createWeather() {
       const apiUrl = this.$store.state.host.api_url
@@ -142,7 +131,6 @@ export default {
         airtemp: this.airtemp,
         tracktemp: this.tracktemp,
         cond: this.cond,
-
       }
       const jwt = this.$store.state.user.jwt
       const requestOptions = {
@@ -172,7 +160,6 @@ export default {
               this.orderAddBtnColor = 'accent'
               this.orderAddBtnLabel = 'Eintragen'
             }, 1500)
-
           })
     },
     clearWeatherFields() {
@@ -204,7 +191,7 @@ export default {
           })
     },
   },
-  mounted(){
+  mounted() {
     this.getWeatherData()
   }
 }
