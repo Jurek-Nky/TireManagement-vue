@@ -44,7 +44,15 @@
               hide-bottom
               dark
               card-class="bg-primary bordered"
-              separator="vertical">
+              separator="horizontal"
+              no-data-label="Keine Einträge verfügbar!">
+
+            <template v-slot:body-cell-aktion="props">
+              <q-td :props="props">
+                <q-btn icon="mdi-delete" @click="deleteTireSet(props.row)" color="negative"></q-btn>
+              </q-td>
+            </template>
+
           </q-table>
         </q-card-section>
       </div>
@@ -56,17 +64,18 @@
 import {ref} from 'vue'
 
 const columns = [
-  {name: 'uhrzeit', label: 'Uhrzeit', align: 'center', field: row => row.tires[0].bestelltUm},
-  {name: 'bezeichnung', label: 'Bezeichnung', align: 'center', field: row => row.tires[0].bezeichnung},
-  {name: 'art', label: 'Reifenart', align: 'center', field: row => row.tires[0].art},
-  {name: 'mischung', label: 'Mischung', align: 'center', field: row => row.tires[0].mischung},
+  {name: 'uhrzeit', sortable: true, label: 'Uhrzeit', align: 'center', field: row => row.tires[0].bestelltUm},
+  {name: 'bezeichnung', sortable: true,label: 'Bezeichnung', align: 'center', field: row => row.tires[0].bezeichnung},
+  {name: 'art', sortable: true, label: 'Reifenart', align: 'center', field: row => row.tires[0].art},
+  {name: 'mischung', sortable: true, label: 'Mischung', align: 'center', field: row => row.tires[0].mischung},
   {
     name: 'bearbeitungsvariante',
     label: 'Bearbeitungsvariante',
     align: 'center',
     field: row => row.bearbeitungsvariante
   },
-  {name: 'status', label: 'Status', align: 'center', field: row => row.status}
+  {name: 'status', label: 'Status', align: 'center', field: row => row.status},
+  {name: 'aktion', label: 'Aktion', align: 'center'}
 ]
 
 export default {
@@ -90,7 +99,13 @@ export default {
       rows: [],
       orderAddBtnColor: 'accent',
       orderAddBtnLabel: 'Bestellen',
-      uhrzeit: ref('17:30')
+      uhrzeit: ref('17:30'),
+      initialPagination: {
+        sortBy: 'desc',
+        descending: true,
+
+        // rowsNumber: xx if getting data from a server
+      },
     }
   },
   methods: {
@@ -177,6 +192,30 @@ export default {
       this.art = ""
       this.mischung = ""
       this.bearbeitungsvariante = ""
+    },
+    deleteTireSet(tireSet){
+      const apiUrl = this.$store.state.host.api_url
+      const url = `${apiUrl}/tireset/delete/${tireSet.id}`
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
+          .then(response => {
+            this.getOrderData()
+            return response.json()
+          })
+          .then(data => {
+                if (response.ok) {
+                  this.getAllTireSets()
+                } else {
+                  console.log(data)
+                }
+              }
+          )
     }
   },
   mounted() {
