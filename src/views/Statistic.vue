@@ -16,7 +16,6 @@
           >
             <template v-slot:body="props">
               <q-tr :props="props">
-                <q-td
                     v-for="col in props.cols"
                     :key="col.name"
                     :props="props"
@@ -25,7 +24,6 @@
                     {{ col.value }}
                   </div>
                 </q-td>
-                <q-td auto-width>
                   <q-btn outline rounded size="sm" color="white" class="use-address"
                          @click="check(race_rows.indexOf(props.row)); toggleExpanded(props.row.name)"
                          :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>

@@ -36,7 +36,6 @@
         </q-card>
       </div>
     </div>
-
     <div class="my-card2 q-gutter-md">
       <div class="my-card2 q-pa-md" dark>
         <q-card class="bg-primary text-white q-pa-lg shadow-5" dark>
@@ -196,6 +195,9 @@ export default {
     this.getWeatherData()
   }
 }
+
+
+
 </script>
 
 
