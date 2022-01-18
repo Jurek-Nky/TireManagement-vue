@@ -102,6 +102,7 @@ export default {
       {title: 'Bestellungen', icon: 'mdi-timer', to: '/bestellungen'},
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
+      {title: 'Statistic', icon: 'mdi-information-outline', to: '/statistic'},
       {title: 'Admin', icon: 'mdi-account-lock', to: '/admin'},
       {title: 'Statistic', icon: 'mdi-history', to: '/statistic'},
     ],
