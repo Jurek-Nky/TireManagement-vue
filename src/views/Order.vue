@@ -45,14 +45,15 @@
               dark
               card-class="bg-primary bordered"
               separator="horizontal"
-              no-data-label="Keine Einträge verfügbar!">
+              no-data-label="Keine Einträge verfügbar">
 
             <template v-slot:body-cell-aktion="props">
               <q-td :props="props">
-                <q-btn icon="mdi-delete" @click="deleteTireSet(props.row)" color="negative"></q-btn>
+                <q-btn icon="mdi-delete" @click="deleteTireSet(props.row)" color="negative" dense></q-btn>
+                <q-btn style="margin-left: 5px" icon="mdi-truck-check" @click="tireSetStatusInStorage(props.row)" color="accent"
+                       dense></q-btn>
               </q-td>
             </template>
-
           </q-table>
         </q-card-section>
       </div>
@@ -99,13 +100,8 @@ export default {
       rows: [],
       orderAddBtnColor: 'accent',
       orderAddBtnLabel: 'Bestellen',
-      uhrzeit: ref('17:30'),
-      initialPagination: {
-        sortBy: 'desc',
-        descending: true,
+      uhrzeit: ref('17:30')
 
-        // rowsNumber: xx if getting data from a server
-      },
     }
   },
   methods: {
@@ -216,8 +212,41 @@ export default {
                 }
               }
           )
+    },
+    tireSetStatusInStorage(tireSet) {
+      const apiUrl = this.$store.state.host.api_url
+      const url = new URL(`${apiUrl}/tireset/update/${tireSet.id}/status`)
+      let data = {
+        status: 'auf Lager'
+      }
+      for (let k in data
+          ) {
+        url.searchParams.append(k, data[k]);
+      }
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      let resp
+      fetch(url, requestOptions)
+          .then(response => {
+            resp = response
+            return response.json()
+          })
+          .then(data => {
+                if (resp.ok) {
+                  this.getOrderData()
+                } else {
+                  console.log(data)
+                }
+              }
+          )
     }
   },
+
   mounted() {
     this.getOrderData()
   }
