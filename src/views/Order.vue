@@ -6,10 +6,14 @@
           <q-card-section class="text-white text-h5">Bestellformular</q-card-section>
           <q-card-section>
             <div class="q-gutter-y-sm">
-              <q-select dark filled label-color="accent" outlined dense v-model="art" :options="reifenartOptions" label="Reifenart auswählen"/>
-              <q-select dark filled label-color="accent" outlined dense v-model="mischung" :options="mischungOptions" label="Mischung auswählen"/>
-              <q-select dark filled label-color="accent" outlined dense v-model="bearbeitungsvariante" :options="bearbeitungsvarianteOptions" label="Bearbeitungsvariante auswählen"/>
-              <q-btn label-color="accent" class="full-width" :color="orderAddBtnColor" :label="orderAddBtnLabel" @click="setOrderData"/>
+              <q-select dark filled label-color="accent" outlined dense v-model="art" :options="reifenartOptions"
+                        label="Reifenart auswählen"/>
+              <q-select dark filled label-color="accent" outlined dense v-model="mischung" :options="mischungOptions"
+                        label="Mischung auswählen"/>
+              <q-select dark filled label-color="accent" outlined dense v-model="bearbeitungsvariante"
+                        :options="bearbeitungsvarianteOptions" label="Bearbeitungsvariante auswählen"/>
+              <q-btn label-color="accent" class="full-width" :color="orderAddBtnColor" :label="orderAddBtnLabel"
+                     @click="setOrderData"/>
             </div>
           </q-card-section>
         </q-card>
@@ -29,7 +33,6 @@
         </q-card>
       </div>
     </div>
-    <!-- Bestellformular -->
     <q-card rounded bordered class="q-pa-md q-ma-lg shadow-5 bg-primary">
       <div class="column">
         <q-card-section>
@@ -42,9 +45,7 @@
               dark
               card-class="bg-primary bordered"
               separator="vertical">
-
           </q-table>
-
         </q-card-section>
       </div>
     </q-card>
@@ -55,11 +56,16 @@
 import {ref} from 'vue'
 
 const columns = [
-  {name: 'uhrzeit', label: 'Uhrzeit', align: 'center', field: row => row.bestelltUm},
-  {name: 'bezeichnung', label: 'Bezeichnung', align: 'center', field: row => row.bezeichnung},
-  {name: 'art', label: 'Reifenart', align: 'center', field: row => row.art},
-  {name: 'mischung', label: 'Mischung', align: 'center', field: row => row.tires.mischung},
-  {name: 'bearbeitungsvariante', label: 'Bearbeitungsvariante', align: 'center', field: row => row.bearbeitungsvariante},
+  {name: 'uhrzeit', label: 'Uhrzeit', align: 'center', field: row => row.tires[0].bestelltUm},
+  {name: 'bezeichnung', label: 'Bezeichnung', align: 'center', field: row => row.tires[0].bezeichnung},
+  {name: 'art', label: 'Reifenart', align: 'center', field: row => row.tires[0].art},
+  {name: 'mischung', label: 'Mischung', align: 'center', field: row => row.tires[0].mischung},
+  {
+    name: 'bearbeitungsvariante',
+    label: 'Bearbeitungsvariante',
+    align: 'center',
+    field: row => row.bearbeitungsvariante
+  },
   {name: 'status', label: 'Status', align: 'center', field: row => row.status}
 ]
 
@@ -70,12 +76,11 @@ export default {
     return {
       art: ref(null),
       reifenartOptions: [
-        'Slicks','Inters', 'Rains'
+        'Slicks', 'Inters', 'Rains'
       ],
-
       mischung: ref(null),
       mischungOptions: [
-        'Cold', 'Medium', 'Hot', 'Intermediate', 'Dry_Wet', 'Heavy-Wet'
+        'Cold', 'Medium', 'Hot', 'Intermediate', 'Dry_wet', 'Heavy-wet'
       ],
       bearbeitungsvariante: ref(null),
       bearbeitungsvarianteOptions: [
@@ -88,14 +93,14 @@ export default {
       uhrzeit: ref('17:30')
     }
   },
-  methods:{
+  methods: {
 
-    getOrderData(){
+    getOrderData() {
       this.rows = []
       const apiUrl = this.$store.state.host.api_url
       const url = new URL(`${apiUrl}/tireset/status`)
       const data = {
-        status: 'benutzt'
+        status: 'bestellt'
       }
       for (let k in data
           ) {
@@ -118,36 +123,22 @@ export default {
             console.log(data)
             this.rows = data
           })
-
     },
-    setOrderData(){
+    setOrderData() {
       const apiUrl = this.$store.state.host.api_url
       const url = new URL(`${apiUrl}/tireset/new`)
+      const exempleTire = {
+        art: this.art,
+        mischung: this.mischung,
+      }
       const data = {
         status: 'bestellt',
-        tires: [{
-            art: this.art,
-            mischung: this.mischung,
-            bearbeitungsvariante: this.bearbeitungsvariante
-        },
-          {
-            art: this.art,
-            mischung: this.mischung,
-            bearbeitungsvariante: this.bearbeitungsvariante
-          },
-          {
-            art: this.art,
-            mischung: this.mischung,
-            bearbeitungsvariante: this.bearbeitungsvariante
-          },
-          {
-            art: this.art,
-            mischung: this.mischung,
-            bearbeitungsvariante: this.bearbeitungsvariante
-          }
-
-        ],
-
+        tires: [
+          exempleTire,
+          exempleTire,
+          exempleTire,
+          exempleTire
+        ]
       }
       const jwt = this.$store.state.user.jwt
       const requestOptions = {
@@ -168,28 +159,29 @@ export default {
             }
             return response.json()
           })
-          .then(()=> {
-            this.getOrderData()
-            this.clearOrderFields()
-            this.orderAddBtnLabel = 'Erfolgreich bestellt'
-            this.orderAddBtnColor = 'positive'
-            setTimeout(() => {
-              this.orderAddBtnColor = 'accent'
-              this.orderAddBtnLabel = 'Bestellen'
-            }, 1500)
+          .then(() => {
+            if (resp.status === 200) {
+              this.getOrderData()
+              this.clearOrderFields()
+              this.orderAddBtnLabel = 'Erfolgreich bestellt'
+              this.orderAddBtnColor = 'positive'
+              setTimeout(() => {
+                this.orderAddBtnColor = 'accent'
+                this.orderAddBtnLabel = 'Bestellen'
+              }, 1500)
+            }
           })
 
     },
-    clearOrderFields(){
+    clearOrderFields() {
       this.art = ""
       this.mischung = ""
       this.bearbeitungsvariante = ""
     }
   },
-  mounted(){
+  mounted() {
     this.getOrderData()
   }
-
 
 
 }
