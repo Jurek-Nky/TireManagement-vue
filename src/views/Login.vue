@@ -98,6 +98,11 @@ export default {
             this.$router.push('/dashboard')
           })
     }
+  },
+  mounted() {
+    if (this.$store.state.user.jwt !== ''){
+      this.$router.push('/dashboard')
+    }
   }
 }
 </script>

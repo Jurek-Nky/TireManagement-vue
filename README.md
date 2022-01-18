@@ -1,4 +1,5 @@
-# test-vue
+# TireManagement-Vue
+The frontend for the tire management system by Land Motorsport
 
 ## Project setup
 ```

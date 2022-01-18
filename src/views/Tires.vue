@@ -1,150 +1,155 @@
 <template>
-  <q-page class="row justify-center items-center">
-    <div class="column">
-      <q-card rounded bordered class="q-pa-lg q-ma-lg shadow-5 bg-primary">
-        <q-card-section>
-          <div class="q-pa-md">
-            <q-table
-                title="Auf Lager:"
-                :rows="tireSetRows_inStock"
-                :columns="tireSetColumns_inStock"
-                row-key="id"
-                class="bg-accent"
-                dark
-                no-data-label="Table is empty"
-                :loading="loading_inStock"
-            >
-              <template v-slot:loading>
-                <q-inner-loading showing color="primary"/>
-              </template>
-              <template v-slot:header="props">
-                <q-tr :props="props">
-                  <q-th auto-width/>
-                  <q-th
-                      v-for="col in props.cols"
-                      :key="col.name"
-                      :props="props"
+  <q-page>
+    <q-tabs
+        v-model="tab"
+        dense
+        active-bg-color="accent"
+        indicator-color="white"
+        align="justify"
+        class="text-white bg-primary"
+    >
+      <q-tab name="in_store" label="Auf Lager"/>
+      <q-tab name="used" label="Benutzt"/>
+    </q-tabs>
+    <q-tab-panels v-model="tab" animated class="transparent">
+      <q-tab-panel name="in_store" class="row justify-center full-height q-gutter-lg">
+        <div class="column">
+          <q-table
+              title="Auf Lager"
+              :rows="tireSetRows_inStock"
+              :columns="tireSetColumns_inStock"
+              row-key="id"
+              class="bg-primary"
+              dark
+              no-data-label="Table is empty"
+              :loading="loading_inStock"
+          >
+            <template v-slot:loading>
+              <q-inner-loading showing color="primary"/>
+            </template>
+            <template v-slot:header="props">
+              <q-tr :props="props">
+                <q-th auto-width/>
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                >
+                  {{ col.label }}
+                </q-th>
+              </q-tr>
+            </template>
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td auto-width>
+                  <q-btn outline rounded size="sm" color="white" @click="props.expand = !props.expand"
+                         :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
+                </q-td>
+                <q-td
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                >
+
+                  <div v-if="col.name==='delete'" class="q-gutter-sm">
+                    <q-btn icon="mdi-delete" @click="tireSetDelete(props.row)" flat color="white"
+                           dense></q-btn>
+                  </div>
+                  <div v-else-if="col.name==='heating'">
+                    <q-btn icon="mdi-fire" @click="tireSetStartHeatingTimer(props.row)" color="white" flat
+                           dense></q-btn>
+                    <q-btn icon="mdi-stop" @click="tireSetEndHeatingTimer(props.row)" color="white" flat
+                           dense></q-btn>
+                  </div>
+                  <div v-else-if="col.name==='used'">
+                    <q-btn icon="mdi-swap-horizontal" @click="tireSetStatusUsed(props.row)" color="white" flat
+                           dense></q-btn>
+                  </div>
+                  <div v-else>
+                    {{ col.value }}
+                  </div>
+
+                </q-td>
+
+              </q-tr>
+              <q-tr v-show="props.expand" :props="props">
+                <q-td colspan="100%">
+                  <q-table
+                      title="Tires"
+                      :rows="props.row.tires"
+                      :columns="tireColumns"
+                      row-key="tireID"
+                      hide-bottom
+                      dark
+                      class="bg-primary"
+                      bordered
                   >
-                    {{ col.label }}
-                  </q-th>
-                </q-tr>
-              </template>
-              <template v-slot:body="props">
-                <q-tr :props="props">
-                  <q-td auto-width>
-                    <q-btn outline rounded size="sm" color="white" @click="props.expand = !props.expand"
-                           :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
-                  </q-td>
-                  <q-td
-                      v-for="col in props.cols"
-                      :key="col.name"
-                      :props="props"
+                  </q-table>
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
+        </div>
+
+      </q-tab-panel>
+      <q-tab-panel name="used" class="row justify-center full-height q-gutter-lg">
+        <div class="column">
+          <q-table
+              title="Benutzt"
+              :rows="tireSetRows_used"
+              :columns="tireSetColumns_used"
+              row-key="id"
+              class="bg-primary"
+              dark
+              no-data-label="Table is empty"
+              :loading="loading_used"
+          >
+            <template v-slot:loading>
+              <q-inner-loading showing color="primary"/>
+            </template>
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td auto-width>
+                  <q-btn outline rounded size="sm" color="white" @click="props.expand = !props.expand"
+                         :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
+                </q-td>
+                <q-td
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                >
+
+                  <div v-if="col.name==='delete'" class="q-gutter-sm">
+                    <q-btn icon="mdi-delete" @click="tireSetDeletBtn(props.row)" flat color="white"
+                           dense></q-btn>
+                  </div>
+                  <div v-else>
+                    {{ col.value }}
+                  </div>
+
+                </q-td>
+
+              </q-tr>
+              <q-tr v-show="props.expand" :props="props">
+                <q-td colspan="100%">
+                  <q-table
+                      title="Tires"
+                      :rows="props.row.tires"
+                      :columns="tireColumns"
+                      row-key="tireID"
+                      hide-bottom
+                      dark
+                      class="bg-primary"
+                      bordered
                   >
-
-                    <div v-if="col.name==='delete'" class="q-gutter-sm">
-                      <q-btn icon="mdi-delete" @click="tireSetDelete(props.row)" flat color="negative"
-                             dense></q-btn>
-                    </div>
-                    <div v-else-if="col.name==='heating'">
-                      <q-btn icon="mdi-fire" @click="tireSetStartHeatingTimer(props.row)" color="orange" flat
-                             dense></q-btn>
-                      <q-btn icon="mdi-stop" @click="tireSetEndHeatingTimer(props.row)" color="negative" flat
-                             dense></q-btn>
-                    </div>
-                    <div v-else-if="col.name==='used'">
-                      <q-btn icon="mdi-swap-horizontal" @click="tireSetStatusUsed(props.row)" color="secondary" flat
-                             dense></q-btn>
-                    </div>
-                    <div v-else>
-                      {{ col.value }}
-                    </div>
-
-                  </q-td>
-
-                </q-tr>
-                <q-tr v-show="props.expand" :props="props">
-                  <q-td colspan="100%">
-                    <q-table
-                        title="Tires"
-                        :rows="props.row.tires"
-                        :columns="tireColumns"
-                        row-key="tireID"
-                        hide-bottom
-                        dark
-                        class="bg-secondary"
-                    >
-                    </q-table>
-                  </q-td>
-                </q-tr>
-              </template>
-            </q-table>
-          </div>
-        </q-card-section>
-      </q-card>
-      <q-card rounded bordered class="q-pa-lg q-ma-lg shadow-5 bg-primary">
-        <q-card-section>
-          <div class="q-pa-md">
-            <q-table
-                title="Benutzt:"
-                :rows="tireSetRows_used"
-                :columns="tireSetColumns_used"
-                row-key="id"
-                class="bg-accent"
-                dark
-                no-data-label="Table is empty"
-                :loading="loading_used"
-            >
-              <template v-slot:loading>
-                <q-inner-loading showing color="primary"/>
-              </template>
-              <template v-slot:body="props">
-                <q-tr :props="props">
-                  <q-td auto-width>
-                    <q-btn outline rounded size="sm" color="white" @click="props.expand = !props.expand"
-                           :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
-                  </q-td>
-                  <q-td
-                      v-for="col in props.cols"
-                      :key="col.name"
-                      :props="props"
-                  >
-
-                    <div v-if="col.name==='delete'" class="q-gutter-sm">
-                      <q-btn icon="mdi-delete" @click="tireSetDeletBtn(props.row)" flat color="negative"
-                             dense></q-btn>
-                    </div>
-                    <div v-if="col.name==='startHeating'" class="q-gutter-sm">
-                      <q-btn icon="mdi-fire" @click="tireSetHeatingTimer(props.row)" color="orange" flat
-                             dense></q-btn>
-                    </div>
-                    <div v-else>
-                      {{ col.value }}
-                    </div>
-
-                  </q-td>
-
-                </q-tr>
-                <q-tr v-show="props.expand" :props="props">
-                  <q-td colspan="100%">
-                    <q-table
-                        title="Tires"
-                        :rows="props.row.tires"
-                        :columns="tireColumns"
-                        row-key="tireID"
-                        hide-bottom
-                        dark
-                        class="bg-secondary"
-                    >
-                    </q-table>
-                  </q-td>
-                </q-tr>
-              </template>
-            </q-table>
-          </div>
-        </q-card-section>
-      </q-card>
-    </div>
-
+                  </q-table>
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
+        </div>
+      </q-tab-panel>
+    </q-tab-panels>
   </q-page>
 </template>
 
@@ -217,6 +222,7 @@ const tireColumns = [
 export default {
   data: () => {
     return {
+      tab: 'in_store',
       loading_inStock: false,
       loading_used: false,
       tireSetColumns_inStock,
@@ -372,7 +378,7 @@ export default {
     tireSetStatusUsed(tireSet) {
       const apiUrl = this.$store.state.host.api_url
       const url = new URL(`${apiUrl}/tireset/update/${tireSet.id}/status`)
-      let data = {
+      const data = {
         status: 'benutzt'
       }
       for (let k in data
