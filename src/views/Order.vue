@@ -225,7 +225,7 @@ export default {
       const apiUrl = this.$store.state.host.api_url
       const url = new URL(`${apiUrl}/tireset/update/${tireSet.id}/status`)
       let data = {
-        status: 'auf Lager'
+        status: 'auf lager'
       }
       for (let k in data
           ) {
