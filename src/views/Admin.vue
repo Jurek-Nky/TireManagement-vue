@@ -1,13 +1,11 @@
 <template>
   <q-page>
-    <q-tabs
-        v-model="tab"
-        dense
-        active-bg-color="accent"
-        indicator-color="white"
-        align="justify"
-        class="text-white bg-primary"
-    >
+    <q-tabs v-model="tab"
+            dense
+            active-bg-color="accent"
+            indicator-color="white"
+            align="justify"
+            class="text-white bg-primary">
       <q-tab name="race" label="Rennen"/>
       <q-tab name="user" label="Benutzer"/>
     </q-tabs>
@@ -66,16 +64,14 @@
           </q-card>
         </div>
         <div class="column">
-          <q-table
-              title="Rennen"
-              :rows="race_rows"
-              :columns="race_columns"
-              row-key="name"
-              hide-bottom
-              dark
-              card-class="bg-primary bordered"
-              separator="vertical"
-          >
+          <q-table title="Rennen"
+                   :rows="race_rows"
+                   :columns="race_columns"
+                   row-key="name"
+                   hide-bottom
+                   dark
+                   card-class="bg-primary bordered"
+                   separator="vertical">
             <template v-slot:body-cell-action="props">
               <q-td :props="props">
                 <q-btn icon="mdi-delete" @click="raceDelete(props.row)" color="white" flat dense></q-btn>
@@ -108,16 +104,14 @@
           </q-card>
         </div>
         <div class="column">
-          <q-table
-              title="Benutzer"
-              :rows="rows"
-              :columns="columns"
-              row-key="name"
-              hide-bottom
-              dark
-              card-class="bg-primary bordered"
-              separator="horizontal"
-          >
+          <q-table title="Benutzer"
+                   :rows="rows"
+                   :columns="columns"
+                   row-key="name"
+                   hide-bottom
+                   dark
+                   card-class="bg-primary bordered"
+                   separator="horizontal">
             <template v-slot:body-cell-action="props">
               <q-td :props="props">
                 <q-btn icon="mdi-delete" @click="userDelete(props.row)" color="white" flat dense
@@ -132,8 +126,6 @@
 </template>
 
 <script>
-import {ref} from 'vue'
-
 const columns = [
   {name: 'name', required: true, label: 'username', align: 'left', field: row => row.username, sortable: true},
   {name: 'role', align: 'left', label: 'role', field: row => row.rolle.roleName, sortable: true},
@@ -467,7 +459,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>
