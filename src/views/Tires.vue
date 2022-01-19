@@ -91,7 +91,7 @@
                             <q-popup-edit v-model="props.row.kaltdruck" v-slot="scope" title="Kaltdruck"
                                           color="accent" class="column" buttons
                                           @save="setColdPressure(props.row)" persistent>
-                              <q-input v-model="scope.value" dense autofocus type="number"/>
+                              <q-input v-model="scope.value" dense autofocus type="number" @keydown.enter="scope.set()"/>
                             </q-popup-edit>
                           </div>
                           <div v-else>
