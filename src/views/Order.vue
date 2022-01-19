@@ -66,7 +66,7 @@ import {ref} from 'vue'
 
 const columns = [
   {name: 'uhrzeit', sortable: true, label: 'Uhrzeit', align: 'center', field: row => row.tires[0].bestelltUm},
-  {name: 'bezeichnung', sortable: true,label: 'Bezeichnung', align: 'center', field: row => row.tires[0].bezeichnung},
+  {name: 'bezeichnung', sortable: true, label: 'Bezeichnung', align: 'center', field: row => row.tires[0].bezeichnung},
   {name: 'art', sortable: true, label: 'Reifenart', align: 'center', field: row => row.tires[0].art},
   {name: 'mischung', sortable: true, label: 'Mischung', align: 'center', field: row => row.tires[0].mischung},
   {
@@ -138,17 +138,26 @@ export default {
     setOrderData() {
       const apiUrl = this.$store.state.host.api_url
       const url = new URL(`${apiUrl}/tireset/new`)
-      const exempleTire = {
-        art: this.art,
-        mischung: this.mischung,
-      }
       const data = {
         status: 'bestellt',
         tires: [
-          exempleTire,
-          exempleTire,
-          exempleTire,
-          exempleTire
+          {
+            art: this.art,
+            mischung: this.mischung,
+            position: 'FL'
+          }, {
+            art: this.art,
+            mischung: this.mischung,
+            position: 'FR'
+          }, {
+            art: this.art,
+            mischung: this.mischung,
+            position: 'RL'
+          }, {
+            art: this.art,
+            mischung: this.mischung,
+            position: 'RR'
+          },
         ]
       }
       const jwt = this.$store.state.user.jwt
@@ -165,7 +174,6 @@ export default {
           .then(response => {
             resp = response
             if (response.status !== 200) {
-              console.log(response)
               return
             }
             return response.json()
@@ -189,7 +197,7 @@ export default {
       this.mischung = ""
       this.bearbeitungsvariante = ""
     },
-    deleteTireSet(tireSet){
+    deleteTireSet(tireSet) {
       const apiUrl = this.$store.state.host.api_url
       const url = `${apiUrl}/tireset/delete/${tireSet.id}`
       const jwt = this.$store.state.user.jwt

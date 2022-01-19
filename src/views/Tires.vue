@@ -14,7 +14,7 @@
     <q-tab-panels v-model="tab" animated class="transparent">
       <q-tab-panel name="in_store" class="row justify-center full-height q-gutter-lg">
         <div class="column">
-          <q-table title="Auf Lager"
+          <q-table title="Reifensets"
                    :rows="tireSetRows_inStock"
                    :columns="tireSetColumns_inStock"
                    row-key="id"
@@ -60,6 +60,9 @@
                     <q-btn icon="mdi-swap-horizontal" @click="tireSetStatusUsed(props.row)" color="white" flat
                            dense></q-btn>
                   </div>
+                  <div v-else-if="col.name === 'pressure'">
+                    <q-btn icon="mdi-check" @click="tireSetCalcPressure(props.row)" color="white" flat dense/>
+                  </div>
                   <div v-else>
                     {{ col.value }}
                   </div>
@@ -69,14 +72,34 @@
               </q-tr>
               <q-tr v-show="props.expand" :props="props">
                 <q-td colspan="100%">
-                  <q-table title="Tires"
+                  <q-table title="Reifen"
                            :rows="props.row.tires"
                            :columns="tireColumns"
                            row-key="tireID"
                            hide-bottom
                            dark
                            class="bg-primary"
-                           bordered>
+                           bordered
+                           dense>
+                    <template v-slot:body="props">
+                      <q-tr :props="props">
+                        <q-td v-for="col in props.cols"
+                              :key="col.name"
+                              :props="props">
+                          <div v-if="col.name === 'kaltdruck'">
+                            {{ col.value }}
+                            <q-popup-edit v-model="props.row.kaltdruck" v-slot="scope" title="Kaltdruck"
+                                          color="accent" class="column" buttons
+                                          @save="setColdPressure(props.row)" persistent>
+                              <q-input v-model="scope.value" dense autofocus type="number"/>
+                            </q-popup-edit>
+                          </div>
+                          <div v-else>
+                            {{ col.value }}
+                          </div>
+                        </q-td>
+                      </q-tr>
+                    </template>
                   </q-table>
                 </q-td>
               </q-tr>
@@ -133,20 +156,29 @@
             <template v-slot:loading>
               <q-inner-loading showing color="primary"/>
             </template>
+            <template v-slot:header="props">
+              <q-tr :props="props">
+                <q-th auto-width/>
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                >
+                  {{ col.label }}
+                </q-th>
+              </q-tr>
+            </template>
             <template v-slot:body="props">
               <q-tr :props="props">
                 <q-td auto-width>
                   <q-btn outline rounded size="sm" color="white" @click="props.expand = !props.expand"
                          :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
                 </q-td>
-                <q-td
-                    v-for="col in props.cols"
-                    :key="col.name"
-                    :props="props"
-                >
-
+                <q-td v-for="col in props.cols"
+                      :key="col.name"
+                      :props="props">
                   <div v-if="col.name==='delete'" class="q-gutter-sm">
-                    <q-btn icon="mdi-delete" @click="tireSetDeletBtn(props.row)" flat color="white"
+                    <q-btn icon="mdi-delete" @click="tireSetDelete(props.row)" flat color="white"
                            dense></q-btn>
                   </div>
                   <div v-else>
@@ -180,23 +212,23 @@
 <script>
 
 const tireSetColumns_inStock = [
-  {name: 'name', required: true, label: 'ID:', align: 'left', field: row => row.id, sortable: true},
+  {name: 'tireSetID', required: true, label: 'ID:', align: 'left', field: row => row.id, sortable: true},
   {name: 'status', align: 'left', label: 'Status', field: row => row.status, sortable: true},
   {name: 'nr', align: 'left', label: 'SetNr', field: row => row.tireSetNr, sortable: true},
   {name: 'delete', label: 'Delete', align: 'center'},
   {name: 'heating', label: 'Heizen', align: 'center'},
   {name: 'used', label: 'Benutzt', align: 'center'},
+  {name: 'pressure', label: 'Druck berechnen', align: 'center'},
 ]
 const tireSetColumns_used = [
-  {name: 'name', required: true, label: 'ID:', align: 'left', field: row => row.id, sortable: true},
+  {name: 'tireSetID', required: true, label: 'ID:', align: 'left', field: row => row.id, sortable: true},
   {name: 'status', align: 'left', label: 'Status', field: row => row.status, sortable: true},
   {name: 'nr', align: 'left', label: 'SetNr', field: row => row.tireSetNr, sortable: true},
   {name: 'delete', label: 'Delete', align: 'center'},
-  {name: 'heating', label: 'Heizen', align: 'center'},
-  {name: 'used', label: 'Benutzt', align: 'center'},
 ]
 const tireColumns = [
-  {name: 'name', required: true, label: 'ID', align: 'left', field: row => row.tireID, sortable: true},
+  {name: 'tireID', required: true, label: 'ID', align: 'left', field: row => row.tireID, sortable: true},
+  {name: 'position', required: true, label: 'Position', align: 'left', field: row => row.position, sortable: true},
   {
     name: 'bezeichnung',
     required: true,
@@ -220,6 +252,13 @@ const tireColumns = [
     align: 'left',
     field: row => row.mischung,
     sortable: true
+  }, {
+    name: 'modification',
+    required: true,
+    label: 'Bearbeitungsvariante',
+    align: 'left',
+    field: row => row.modification,
+    sortable: true
   },
   {name: 'bestellt', required: true, label: 'Bestellt', align: 'left', field: row => row.bestelltUm, sortable: true},
   {name: 'erhalten', required: true, label: 'Erhalten', align: 'left', field: row => row.erhaltenUm, sortable: true},
@@ -238,6 +277,13 @@ const tireColumns = [
     label: 'Temperatur',
     align: 'left',
     field: row => row.heatingTemp,
+    sortable: true
+  }, {
+    name: 'kaltdruck',
+    required: true,
+    label: 'Kaltdruck',
+    align: 'left',
+    field: row => row.kaltdruck,
     sortable: true
   },
 ]
@@ -290,14 +336,16 @@ export default {
         },
       }
       let resp1
+      this.tireSetRows_inStock = []
+      this.loading_inStock = true
       fetch(url, requestOptions)
           .then(response => {
+            this.loading_inStock = false
             resp1 = response
             return response.json()
           })
           .then(
               data => {
-                this.loading_inStock = false
                 if (resp1.status === 200) {
                   this.tireSetRows_inStock = data
                 } else if (resp1.status === 500) {
@@ -315,14 +363,15 @@ export default {
         url.searchParams.append(k, data[k]);
       }
       let resp2
+      this.tireSetRows_used = []
+      this.loading_used = true
       fetch(url, requestOptions)
           .then(response => {
+            this.loading_used = false
             resp2 = response
             return response.json()
           })
-          .then(
-              data => {
-                this.loading_used = false
+          .then(data => {
                 if (resp2.status === 200) {
                   this.tireSetRows_used = data
                 } else if (resp2.status === 500) {
@@ -336,25 +385,20 @@ export default {
       const url = `${apiUrl}/tireset/delete/${tireSet.id}`
       const jwt = this.$store.state.user.jwt
       const requestOptions = {
-        method: 'PUT',
+        method: 'DELETE',
         headers: {
           'Authorization': 'Bearer ' + jwt
         },
       }
-      let resp
       fetch(url, requestOptions)
           .then(response => {
-            resp = response
-            return response.json()
+            if (response.status === 200) {
+              this.getAllTireSets()
+            } else if (response.status === 500) {
+              console.log(response.message)
+            }
           })
-          .then(data => {
-                if (resp.ok) {
-                  this.getAllTireSets()
-                } else {
-                  console.log(data)
-                }
-              }
-          )
+
     },
     tireSetStartHeatingTimer(tireSet) {
       const apiUrl = this.$store.state.host.api_url
@@ -460,7 +504,6 @@ export default {
     },
     setAllPressure() {
       if (this.pressureFL !== null) {
-        console.log('fl')
         this.pressureCalcFL = Number(this.pressureFL) * (Number(this.tireTempCold) + this.pressureVars[0]) /
             this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
                 this.pressureVars[3]) / this.pressureVars[1]
@@ -504,6 +547,42 @@ export default {
           break
         }
       }
+    },
+    tireSetCalcPressure(tireset) {
+      this.pressureFL = tireset.tires[0].kaltdruck
+      this.pressureFR = tireset.tires[1].kaltdruck
+      this.pressureRL = tireset.tires[2].kaltdruck
+      this.pressureRR = tireset.tires[3].kaltdruck
+      this.setAllPressure()
+    },
+    setColdPressure(tire) {
+      setTimeout(() => {
+        const apiUrl = this.$store.state.host.api_url
+        let url = new URL(`${apiUrl}/tire/update/${tire.tireID}`)
+        url.searchParams.append('kaltdruck', tire.kaltdruck)
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        let resp
+        fetch(url, requestOptions)
+            .then(response => {
+              resp = response
+              return response.json()
+            })
+            .then(data => {
+                  if (resp.ok) {
+                    this.getAllTireSets()
+                  } else {
+                    console.log(data)
+                  }
+                }
+            )
+      }, 5)
+
     }
   }
   ,
