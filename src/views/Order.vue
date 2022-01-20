@@ -49,9 +49,9 @@
 
             <template v-slot:body-cell-aktion="props">
               <q-td :props="props">
-                <q-btn icon="mdi-delete" @click="deleteTireSet(props.row)" color="negative" dense></q-btn>
-                <q-btn style="margin-left: 5px" icon="mdi-truck-check" @click="tireSetStatusInStorage(props.row)" color="accent"
-                       dense></q-btn>
+                <q-btn icon="mdi-delete" @click="deleteTireSet(props.row)" color="negative" dense flat></q-btn>
+                <q-btn icon="mdi-truck-check" @click="tireSetStatusInStorage(props.row)" color="accent"
+                       dense flat></q-btn>
               </q-td>
             </template>
           </q-table>
