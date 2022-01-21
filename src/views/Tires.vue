@@ -87,7 +87,10 @@
                               :key="col.name"
                               :props="props">
                           <div v-if="col.name === 'kaltdruck'">
-                            {{ col.value }}
+<!--                            {{ col.value }}-->
+                            <q-badge color="accent" outline text-color="white">
+                              {{ col.value }}
+                            </q-badge>
                             <q-popup-edit v-model="props.row.kaltdruck" v-slot="scope" title="Kaltdruck"
                                           color="accent" class="column" buttons
                                           @save="setColdPressure(props.row)" persistent>
