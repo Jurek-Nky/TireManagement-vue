@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hHh LpR fff">
     <q-header elevated v-if="(usernameComp !== '')">
       <q-toolbar class="bg-primary">
         <q-btn flat @click="toggleLeftDrawer" round dense icon="mdi-menu"/>
