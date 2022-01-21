@@ -1,13 +1,12 @@
 <template>
   <q-page>
-    <q-tabs
-        v-model="tab"
-        dense
-        active-bg-color="accent"
-        indicator-color="white"
-        align="justify"
-        class="text-white bg-primary"
-    >
+    <q-tabs v-model="tab"
+            dense
+            active-bg-color="accent"
+            indicator-color="white"
+            align="justify"
+            class="text-white bg-primary"
+            no-caps>
       <q-tab name="in_store" label="Auf Lager"/>
       <q-tab name="used" label="Benutzt"/>
     </q-tabs>
@@ -57,11 +56,11 @@
                            dense></q-btn>
                   </div>
                   <div v-else-if="col.name==='used'">
-                    <q-btn icon="mdi-swap-horizontal" @click="tireSetStatusUsed(props.row)" color="white" flat
+                    <q-btn icon="mdi-checkbox-marked-circle" @click="tireSetStatusUsed(props.row)" color="white" flat
                            dense></q-btn>
                   </div>
                   <div v-else-if="col.name === 'pressure'">
-                    <q-btn icon="mdi-check" @click="tireSetCalcPressure(props.row)" color="white" flat dense/>
+                    <q-btn icon="mdi-checkbox-marked-circle" @click="tireSetCalcPressure(props.row)" color="white" flat dense/>
                   </div>
                   <div v-else>
                     {{ col.value }}
@@ -87,14 +86,15 @@
                               :key="col.name"
                               :props="props">
                           <div v-if="col.name === 'kaltdruck'">
-<!--                            {{ col.value }}-->
+                            <!--                            {{ col.value }}-->
                             <q-badge color="accent" outline text-color="white">
                               {{ col.value }}
                             </q-badge>
                             <q-popup-edit v-model="props.row.kaltdruck" v-slot="scope" title="Kaltdruck"
                                           color="accent" class="column" buttons
                                           @save="setColdPressure(props.row)" persistent>
-                              <q-input v-model="scope.value" dense autofocus type="number" @keydown.enter="scope.set()"/>
+                              <q-input v-model="scope.value" dense autofocus type="number"
+                                       @keydown.enter="scope.set()"/>
                             </q-popup-edit>
                           </div>
                           <div v-else>
