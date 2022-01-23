@@ -20,7 +20,8 @@
                    class="bg-primary"
                    dark
                    no-data-label="Table is empty"
-                   :loading="loading_inStock">
+                   :loading="loading_inStock"
+                   :pagination="{rowsPerPage: 0}">
             <template v-slot:loading>
               <q-inner-loading showing color="primary"/>
             </template>
@@ -52,16 +53,13 @@
                   <div v-else-if="col.name==='heating'">
                     <q-btn icon="mdi-fire" @click="tireSetStartHeatingTimer(props.row)" color="white" flat
                            dense></q-btn>
-                    <q-btn icon="mdi-stop" @click="tireSetEndHeatingTimer(props.row)" color="white" flat
-                           dense></q-btn>
+                    <q-btn icon="mdi-stop" @click="tireSetEndHeatingTimer(props.row)" color="white" flat dense></q-btn>
                   </div>
                   <div v-else-if="col.name==='used'">
-                    <q-btn icon="mdi-checkbox-marked-circle" @click="tireSetStatusUsed(props.row)" color="white" flat
-                           dense></q-btn>
+                    <q-btn icon="mdi-cached" @click="tireSetStatusUsed(props.row)" flat color="white" dense></q-btn>
                   </div>
                   <div v-else-if="col.name === 'pressure'">
-                    <q-btn icon="mdi-checkbox-marked-circle" @click="tireSetCalcPressure(props.row)" color="white" flat
-                           dense/>
+                    <q-btn icon="mdi-tune" @click="tireSetCalcPressure(props.row)" color="white" flat dense/>
                   </div>
                   <div v-else>
                     {{ col.value }}
@@ -105,7 +103,6 @@
                             <q-badge v-else color="accent" outline text-color="white">
                               {{ col.value }}
                             </q-badge>
-
                             <q-popup-edit v-model="props.row.modification" v-slot="scope" color="accent"
                                           title="Bearbeitungsvariante" buttons @save="setModification(props.row)"
                                           persistent>
@@ -128,25 +125,9 @@
         </div>
         <div class="column">
           <q-card class="bg-primary">
-            <q-card-section class="q-gutter-y-sm">
-              <div class="row justify-center text-white text-subtitle1">Kaltdruck</div>
-              <div class="row items-center q-gutter-x-sm q-mb-md">
-                <q-input dense dark filled v-model="tireTempCold" type="number"
-                         label="Felgentemperatur" @keyup="setAllPressure"/>
-              </div>
-              <div class="row q-gutter-x-sm">
-                <q-input dense dark filled v-model="pressureFL" type="number" label="Vorne Links"
-                         @keyup="setSinglePressure(pressureFL,'FL')"/>
-                <q-input dense dark filled v-model=" pressureFR" type="number" label="Vorne Rechts"
-                         @keyup="setSinglePressure(pressureFR,'FR')"/>
-
-              </div>
-              <div class="row q-gutter-x-sm">
-                <q-input dense dark filled v-model="pressureRL" type="number" label="Hinten Links"
-                         @keyup="setSinglePressure(pressureRL,'RL')"/>
-                <q-input dense dark filled v-model="pressureRR" type="number" label="Hinten Rechts"
-                         @keyup="setSinglePressure(pressureRR,'RR')"/>
-              </div>
+            <q-card-section>
+              <q-input dense dark filled v-model="tireTempCold" type="number"
+                       label="Felgentemperatur" @keyup="setAllPressure"/>
             </q-card-section>
             <q-separator dark></q-separator>
             <q-card-section class="q-gutter-y-sm">
@@ -172,7 +153,8 @@
                    class="bg-primary"
                    dark
                    no-data-label="Table is empty"
-                   :loading="loading_used">
+                   :loading="loading_used"
+                   :pagination="{rowsPerPage: 0}">
             <template v-slot:loading>
               <q-inner-loading showing color="primary"/>
             </template>
@@ -510,31 +492,31 @@ export default {
     },
     setAllPressure() {
       if (this.pressureFL !== null) {
-        this.pressureCalcFL = Number(this.pressureFL) * (Number(this.tireTempCold) + this.pressureVars[0]) /
+        this.pressureCalcFL = (Number(this.pressureFL) * (Number(this.tireTempCold) + this.pressureVars[0]) /
             this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
-                this.pressureVars[3]) / this.pressureVars[1]
+                this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
       }
       if (this.pressureFR !== null) {
-        this.pressureCalcFR = Number(this.pressureFR) * (Number(this.tireTempCold) + this.pressureVars[0]) /
+        this.pressureCalcFR = (Number(this.pressureFR) * (Number(this.tireTempCold) + this.pressureVars[0]) /
             this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
-                this.pressureVars[3]) / this.pressureVars[1]
+                this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
       }
       if (this.pressureRL !== null) {
-        this.pressureCalcRL = Number(this.pressureRL) * (Number(this.tireTempCold) + this.pressureVars[0]) /
+        this.pressureCalcRL = (Number(this.pressureRL) * (Number(this.tireTempCold) + this.pressureVars[0]) /
             this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
-                this.pressureVars[3]) / this.pressureVars[1]
+                this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
       }
       if (this.pressureRR !== null) {
-        this.pressureCalcRR = Number(this.pressureRR) * (Number(this.tireTempCold) + this.pressureVars[0]) /
+        this.pressureCalcRR = (Number(this.pressureRR) * (Number(this.tireTempCold) + this.pressureVars[0]) /
             this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
-                this.pressureVars[3]) / this.pressureVars[1]
+                this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
       }
     },
     setSinglePressure(pressure, tire) {
       if (this.tireTempCold === null) return
-      const calcValue = Number(pressure) * (Number(this.tireTempCold) + this.pressureVars[0]) /
+      const calcValue = (Number(pressure) * (Number(this.tireTempCold) + this.pressureVars[0]) /
           this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
-              this.pressureVars[3]) / this.pressureVars[1]
+              this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
       switch (tire) {
         case 'FL': {
           this.pressureCalcFL = calcValue
@@ -581,13 +563,15 @@ export default {
             })
             .then(data => {
                   if (resp.ok) {
+                    this.setSinglePressure(tire.kaltdruck, tire.position)
+                    console.log(tire.kaltdruck, tire.position)
                     this.getAllTireSets()
                   } else {
                     console.log(data)
                   }
                 }
             )
-      }, 10)
+      }, 1)
 
     },
     setModification(tire) {
@@ -616,7 +600,7 @@ export default {
                   }
                 }
             )
-      }, 10)
+      }, 1)
     }
   }
   ,
