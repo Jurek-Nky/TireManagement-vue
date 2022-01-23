@@ -100,7 +100,6 @@ export default {
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
       {title: 'Statistic', icon: 'mdi-information-outline', to: '/statistic'},
       {title: 'Admin', icon: 'mdi-account-lock', to: '/admin'},
-      {title: 'Statistic', icon: 'mdi-history', to: '/statistic'},
     ],
     ingItems: [
       {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
