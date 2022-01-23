@@ -60,7 +60,8 @@
                            dense></q-btn>
                   </div>
                   <div v-else-if="col.name === 'pressure'">
-                    <q-btn icon="mdi-checkbox-marked-circle" @click="tireSetCalcPressure(props.row)" color="white" flat dense/>
+                    <q-btn icon="mdi-checkbox-marked-circle" @click="tireSetCalcPressure(props.row)" color="white" flat
+                           dense/>
                   </div>
                   <div v-else>
                     {{ col.value }}
@@ -86,16 +87,32 @@
                               :key="col.name"
                               :props="props">
                           <div v-if="col.name === 'kaltdruck'">
-                            <!--                            {{ col.value }}-->
                             <q-badge color="accent" outline text-color="white">
                               {{ col.value }}
                             </q-badge>
                             <q-popup-edit v-model="props.row.kaltdruck" v-slot="scope" title="Kaltdruck"
-                                          color="accent" class="column" buttons
+                                          color="accent" buttons
                                           @save="setColdPressure(props.row)" persistent>
                               <q-input v-model="scope.value" dense autofocus type="number"
                                        @keydown.enter="scope.set()"/>
                             </q-popup-edit>
+                          </div>
+                          <div v-else-if="col.name === 'modification'">
+                            <q-badge v-if="col.value === null || col.value === ''" color="accent" outline
+                                     text-color="white">
+                              {{ "----" }}
+                            </q-badge>
+                            <q-badge v-else color="accent" outline text-color="white">
+                              {{ col.value }}
+                            </q-badge>
+
+                            <q-popup-edit v-model="props.row.modification" v-slot="scope" color="accent"
+                                          title="Bearbeitungsvariante" buttons @save="setModification(props.row)"
+                                          persistent>
+                              <q-select v-model="scope.value" :options="modificationOptions" emit-value>
+                              </q-select>
+                            </q-popup-edit>
+
                           </div>
                           <div v-else>
                             {{ col.value }}
@@ -265,6 +282,7 @@ const tireColumns = [
   },
   {name: 'bestellt', required: true, label: 'Bestellt', align: 'left', field: row => row.bestelltUm, sortable: true},
   {name: 'erhalten', required: true, label: 'Erhalten', align: 'left', field: row => row.erhaltenUm, sortable: true},
+  {name: 'benutzt', required: true, label: 'Benutzt', align: 'left', field: row => row.benutztUm, sortable: true},
   {
     name: 'heizbeginn',
     required: true,
@@ -313,6 +331,11 @@ export default {
       pressureCalcRR: null,
       pressureCalcFR: null,
       pressureVars: [],
+      modificationOptions: [
+        {label: 'Siped', value: 'Siped'},
+        {label: 'Extra Grooved', value: 'Extra Grooved'},
+        {label: 'Extra Grooved & Siped', value: 'Extra Grooved & Siped'},
+        {label: 'none', value: ''}],
     }
   },
   methods: {
@@ -584,8 +607,36 @@ export default {
                   }
                 }
             )
-      }, 5)
+      }, 10)
 
+    },
+    setModification(tire) {
+      setTimeout(() => {
+        const apiUrl = this.$store.state.host.api_url
+        let url = new URL(`${apiUrl}/tire/update/${tire.tireID}/modification`)
+        url.searchParams.append('mod', tire.modification)
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        let resp
+        fetch(url, requestOptions)
+            .then(response => {
+              resp = response
+              return response.json()
+            })
+            .then(data => {
+                  if (resp.ok) {
+                    this.getAllTireSets()
+                  } else {
+                    console.log(data)
+                  }
+                }
+            )
+      }, 10)
     }
   }
   ,
