@@ -233,8 +233,9 @@
 
 const tireSetColumns_inStock = [
   {name: 'tireSetID', required: true, label: 'ID:', align: 'left', field: row => row.id, sortable: true},
-  {name: 'status', align: 'left', label: 'Status', field: row => row.status, sortable: true},
   {name: 'nr', align: 'left', label: 'SetNr', field: row => row.tireSetNr, sortable: true},
+  {name: 'type', align: 'left', label: 'Art', field: row => row.tires[0].art},
+  {name: 'mixture', align: 'left', label: 'Mischung', field: row => row.tires[0].mischung},
   {name: 'delete', label: 'Delete', align: 'center'},
   {name: 'heating', label: 'Heizen', align: 'center'},
   {name: 'used', label: 'Benutzt', align: 'center'},
@@ -250,29 +251,6 @@ const tireColumns = [
   {name: 'tireID', required: true, label: 'ID', align: 'left', field: row => row.tireID, sortable: true},
   {name: 'position', required: true, label: 'Position', align: 'left', field: row => row.position, sortable: true},
   {
-    name: 'bezeichnung',
-    required: true,
-    label: 'Bezeichnung',
-    align: 'left',
-    field: row => row.bezeichnung,
-    sortable: true
-  },
-  {
-    name: 'art',
-    required: true,
-    label: 'Art',
-    align: 'left',
-    field: row => row.art,
-    sortable: true
-  },
-  {
-    name: 'mischung',
-    required: true,
-    label: 'Mischung',
-    align: 'left',
-    field: row => row.mischung,
-    sortable: true
-  }, {
     name: 'modification',
     required: true,
     label: 'Bearbeitungsvariante',
