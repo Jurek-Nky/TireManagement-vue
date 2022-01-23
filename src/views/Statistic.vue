@@ -3,112 +3,138 @@
     <div class="column">
       <q-card rounded bordered class="q-pa-lg q-ma-lg shadow-5 bg-primary">
         <q-card-section>
-          <q-table
-              title="Rennen"
-              :rows="race_rows"
-              :columns="race_columns"
-              row-key="name"
-              hide-bottom
-              dark
-              card-class="bg-primary bordered"
-              separator="vertical"
-              :expanded="expanded"
-          >
-            <template v-slot:body="props">
-              <q-tr :props="props">
-                <q-td
-                  v-for="col in props.cols"
-                  :key="col.name"
-                  :props="props"
-                > 
-                  <div>
-                    {{ col.value }}
-                  </div>
-                </q-td>
-                <q-td auto-width>
-                  <q-btn outline rounded size="sm" color="white" class="use-address" @click="check(race_rows.indexOf(props.row)); toggleExpanded(props.row.name)"
-                    :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
-                </q-td>
-              </q-tr>
-              <q-tr v-show="props.expand" :props="props">
-                <q-td colspan="100%">
-                  <q-table
-                    title="Tires"
-                    :rows="tireSetRows_used"
-                    :columns="tireSetColumns_used"
-                    row-key="tireID"
-                    hide-bottom
-                    dark
-                    class="bg-primary"
-                  >
+          <div class="q-pa-md" style="max-width: 300px">
+            <div class="q-gutter-md">
+              <q-select  filled v-model="model" :options="options" label="Race Options" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <q-card rounded bordered class="q-pa-md q-ma-lg shadow-5 bg-primary">
+                <q-card-section>
+                  <q-table title="Tires"
+                           :rows="tireSetRows_used"
+                           :columns="tireSetColumns_used"
+                           row-key="id"
+                           class="bg-primary"
+                           dark
+                           no-data-label="Table is empty"
+                           :loading="loading_used">
                     <template v-slot:loading>
                       <q-inner-loading showing color="primary"/>
                     </template>
-                    <template v-slot:body="props">
-                      <q-tr v-if="this.showTire" :props="props">
-                        <q-td
+                    <template v-slot:header="props">
+                      <q-tr :props="props">
+                        <q-th auto-width/>
+                        <q-th
                             v-for="col in props.cols"
                             :key="col.name"
                             :props="props"
                         >
+                          {{ col.label }}
+                        </q-th>
+                      </q-tr>
+                    </template>
+                    <template v-slot:body="props">
+                      <q-tr v-if="this.showTire" :props="props">
+                        <q-td auto-width>
+                          <q-btn outline rounded size="sm" color="white" @click="props.expand = !props.expand"
+                                 :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
+                        </q-td>
+                        <q-td v-for="col in props.cols"
+                              :key="col.name"
+                              :props="props">
                           <div>
                             {{ col.value }}
                           </div>
+
                         </q-td>
-                        <q-td auto-width>
-                          <q-btn outline rounded size="sm" color="white" @click="props.expand = !props.expand"
-                            :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
-                        </q-td>
+
                       </q-tr>
                       <q-tr v-show="props.expand" :props="props">
                         <q-td colspan="100%">
-                          <q-table
-                            title="Tires"
-                            :rows="props.row.tires"
-                            :columns="tireColumns"
-                            row-key="tireID"
-                            hide-bottom
-                            dark
-                            class="bg-primary"
-                          >
+                          <q-table title="Tires"
+                                   :rows="props.row.tires"
+                                   :columns="tireColumns"
+                                   row-key="tireID"
+                                   hide-bottom
+                                   dark
+                                   class="bg-primary"
+                                   bordered>
                           </q-table>
                         </q-td>
                       </q-tr>
                     </template>
                   </q-table>
-
-                  <br>
-                  <q-table
-                    title="Wetter"
-                    :rows="weather_rows"
-                    :columns="weather_columns"
-                    row-key="tireID"
-                    hide-bottom
-                    dark
-                    class="bg-primary"
-                  >
+                </q-card-section>
+              </q-card>
+            </div>
+            <div class="col-md-6">
+              <q-card rounded bordered class="q-pa-lg q-ma-lg shadow-5 bg-primary">
+                <q-card-section>
+                  <q-table title="Wetter"
+                           :rows="weather_rows"
+                           :columns="weather_columns"
+                           row-key="id"
+                           class="bg-primary"
+                           dark
+                           no-data-label="Table is empty"
+                           :loading="loading_used">
                     <template v-slot:loading>
                       <q-inner-loading showing color="primary"/>
                     </template>
-                    <template v-slot:body="props">
-                      <q-tr v-if="this.showWeather" :props="props">
-                        <q-td
+                    <template v-slot:header="props">
+                      <q-tr :props="props">
+                        <q-th auto-width/>
+                        <q-th
                             v-for="col in props.cols"
                             :key="col.name"
                             :props="props"
                         >
-                          <div>
+                          {{ col.label }}
+                        </q-th>
+                      </q-tr>
+                    </template>
+                    <template v-slot:body="props">
+                      <q-tr :props="props">
+                        <q-td auto-width>
+                          <q-btn outline rounded size="sm" color="white" @click="props.expand = !props.expand"
+                                 :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
+                        </q-td>
+                        <q-td v-for="col in props.cols"
+                              :key="col.name"
+                              :props="props">
+                          <div v-if="col.name==='delete'" class="q-gutter-sm">
+                            <q-btn icon="mdi-delete" @click="tireSetDelete(props.row)" flat color="white"
+                                   dense></q-btn>
+                          </div>
+                          <div v-else>
                             {{ col.value }}
                           </div>
+
+                        </q-td>
+
+                      </q-tr>
+                      <q-tr v-show="props.expand" :props="props">
+                        <q-td colspan="100%">
+                          <q-table title="Tires"
+                                   :rows="props.row.tires"
+                                   :columns="tireColumns"
+                                   row-key="tireID"
+                                   hide-bottom
+                                   dark
+                                   class="bg-primary"
+                                   bordered>
+                          </q-table>
                         </q-td>
                       </q-tr>
                     </template>
                   </q-table>
-
-                </q-td>
-              </q-tr>
-            </template>
-          </q-table>
+                </q-card-section>
+              </q-card>
+            </div>
+          </div>
         </q-card-section>
       </q-card>
     </div>
@@ -123,6 +149,7 @@ const columns = [
   {name: 'role', align: 'left', label: 'role', field: row => row.rolle.roleName, sortable: true},
   {name: 'id', align: 'left', label: 'id', field: row => row.userid, sortable: true},
   {name: 'action', label: 'actions', align: 'left'},
+  {name: 'cond', label: 'Race options', align: 'left', field: row => row.name, sortable: true},
 ]
 const race_columns = [
   {name: 'name', required: true, label: 'Name', align: 'left', field: row => row.name, sortable: true},
@@ -139,7 +166,14 @@ const tireSetColumns_used = [
   {name: 'race', align: 'left', label: 'RaceID', field: row => row.race.raceID, sortable: true}
 ]
 const weather_columns = [
-  {name: 'weatherConditions', required: true, label: 'Weather cond', align: 'left', field: row => row.weatherConditions, sortable: true},
+  {
+    name: 'weatherConditions',
+    required: true,
+    label: 'Weather cond',
+    align: 'left',
+    field: row => row.weatherConditions,
+    sortable: true
+  },
   {name: 'tracktemperatur', align: 'left', label: 'Track temp', field: row => row.tracktemperatur, sortable: true},
   {name: 'airtemperatur', align: 'left', label: 'Air Temp', field: row => row.airtemperatur, sortable: true},
   {name: 'time', align: 'left', label: 'Time', field: row => row.time, sortable: true},
@@ -203,6 +237,7 @@ export default {
   },
   data: () => {
     return {
+      cond: ref(null),
       location: '',
       cont: null,
       username: '',
@@ -210,37 +245,65 @@ export default {
       race_rows: [],
       columns,
       race_columns,
-
       loading_used: false,
       tireSetColumns_used,
       tireColumns,
       tireSetRows_used: [],
-
       weather_rows: [],
-      weather_columns: [],
-
+      weather_columns,
       tireIds: [],
       raceIds: [],
-
+      raceNames: [
+        {
+          rId:'',
+          rName:''
+        }
+      ],
       showTire: false,
       showWeather: false,
-
       expanded: [],
+
+      model: ref(null),
+      options: [
+        {
+          label: ' ',
+          value: ' ',
+        }
+      ]
     }
   },
-  watch: {  
+  watch: {
     tireSetRows_used(v) {
-      if(v != null) {
+      console.log(v)
+      if (v != null) {
         setTimeout(() => {
           for (let index = 0; index < v.length; index++) {
             //const element = array[index];
             var x = JSON.parse(JSON.stringify(v[index]))
             this.tireIds.push(x.race.raceID);
             var y = JSON.parse(JSON.stringify(this.race_rows[index]))
-            this.raceIds.push(y.raceID);
+            this.raceIds.push(y.raceID)
+            console.log(this.raceIds)
+            var z = JSON.parse(JSON.stringify(this.race_rows[index]))
+            this.raceNames.push(z.name)
+            this.options.push({label:z.name, value:y.raceID})
           }
         }, 2);
       }
+    },
+    cond(r) {
+      console.log("race: " + r)
+    },
+    model(m) {
+      console.log("model: " + m.value)
+      this.getWeatherData(m.value)
+      this.tireIds.forEach(id => {
+        if (id === m.value) {
+          this.showTire = true
+        } else {
+          this.showTire = false
+        }
+      });
     }
   },
   methods: {
@@ -342,24 +405,6 @@ export default {
               }
           )
     },
-
-    check(val) {
-      this.tireIds.forEach(id => {
-        if (id == this.raceIds[val]) {
-          console.log(id)
-          this.showTire = true
-          this.getWeatherData(id)
-        }
-        else {
-          console.log(id)
-          this.showTire = false
-          this.getWeatherData(this.raceIds[val])
-        }
-      });
-    },
-    toggleExpanded (val) {
-      this.expanded = this.expanded[0] === val ? [] : [val]
-    }
   },
   mounted() {
     this.getRaceData()
