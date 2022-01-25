@@ -7,11 +7,15 @@
           <q-card-section>
             <div class="q-gutter-y-sm">
               <q-select dark filled label-color="accent" outlined dense v-model="art" :options="reifenartOptions"
-                        label="Reifenart auswählen"/>
+                        label="Reifenart auswählen">
+                <template v-slot:error>
+                Please choose one option!
+                </template>
+              </q-select>
               <q-select dark filled label-color="accent" outlined dense v-model="mischung" :options="mischungOptions"
                         label="Mischung auswählen"/>
-              <q-select dark filled label-color="accent" outlined dense v-model="bearbeitungsvariante"
-                        :options="bearbeitungsvarianteOptions" label="Bearbeitungsvariante auswählen"/>
+              <q-select dark filled label-color="accent" outlined dense v-model="modification"
+                        :options="modificationOptions" label="Bearbeitungsvariante auswählen"/>
               <q-btn label-color="accent" class="full-width" :color="orderAddBtnColor" :label="orderAddBtnLabel"
                      @click="setOrderData"/>
             </div>
@@ -23,10 +27,11 @@
           <q-card-section class="text-white text-h5">Timer setzen</q-card-section>
           <q-card-section>
             <div class="q-gutter-y-sm">
-              <q-input v-model="timer" dark filled label-color="accent" outlined dense type="text" disable/>
-              <q-input dark filled label-color="accent" outlined dense type="number" label="Zeit eingeben"/>
+              <!-- <q-select dark filled label-color="accent" outlined dense v-model="bestellAuswahl" :options="bestellAuswahlOptions"
+                        label="Bestellung auswählen"/> -->
+              <q-input v-model="orderTimer" dark filled label-color="accent" outlined dense type="number" label="Zeit eingeben"/>
               <div>
-                <q-btn class="full-width" color="accent" label="Timer setzen"/>
+                <!-- <q-btn class="full-width" color="accent" label="Timer setzen"/> -->
               </div>
             </div>
           </q-card-section>
@@ -45,7 +50,8 @@
               dark
               card-class="bg-primary bordered"
               separator="horizontal"
-              no-data-label="Keine Einträge verfügbar">
+              no-data-label="Keine Einträge verfügbar"
+              :rows-per-page-options="[0]">
 
             <template v-slot:body-cell-aktion="props">
               <q-td :props="props">
@@ -66,15 +72,17 @@ import {ref} from 'vue'
 
 const columns = [
   {name: 'uhrzeit', sortable: true, label: 'Uhrzeit', align: 'center', field: row => row.tires[0].bestelltUm},
+  {name:'tireSetNr', sortable: true, label: 'Reifenset-Nr', align: 'center', field: row => row.tireSetNr},
   {name: 'bezeichnung', sortable: true,label: 'Bezeichnung', align: 'center', field: row => row.tires[0].bezeichnung},
   {name: 'art', sortable: true, label: 'Reifenart', align: 'center', field: row => row.tires[0].art},
   {name: 'mischung', sortable: true, label: 'Mischung', align: 'center', field: row => row.tires[0].mischung},
   {
-    name: 'bearbeitungsvariante',
+    name: 'modification',
     label: 'Bearbeitungsvariante',
     align: 'center',
-    field: row => row.bearbeitungsvariante
+    field: row => row.tires[0].modification
   },
+  {name: 'orderTimer', sortable: true, label: 'Abholbereit in', align: 'center'},
   {name: 'status', label: 'Status', align: 'center', field: row => row.status},
   {name: 'aktion', label: 'Aktion', align: 'center'}
 ]
@@ -92,15 +100,16 @@ export default {
       mischungOptions: [
         'Cold', 'Medium', 'Hot', 'Intermediate', 'Dry_wet', 'Heavy-wet'
       ],
-      bearbeitungsvariante: ref(null),
-      bearbeitungsvarianteOptions: [
+      modification: ref(null),
+      modificationOptions: [
         'Siped', 'Extra Grooved', 'Extra Grooved & Siped'
       ],
+      bestellAuswahl: ref(null),
+      bestellAuswahlOptions: [],
       columns,
       rows: [],
       orderAddBtnColor: 'accent',
       orderAddBtnLabel: 'Bestellen',
-      uhrzeit: ref('17:30')
 
     }
   },
@@ -141,6 +150,7 @@ export default {
       const exempleTire = {
         art: this.art,
         mischung: this.mischung,
+        modification: this.modification
       }
       const data = {
         status: 'bestellt',
@@ -184,10 +194,11 @@ export default {
           })
 
     },
+
     clearOrderFields() {
       this.art = ""
       this.mischung = ""
-      this.bearbeitungsvariante = ""
+      this.modification = ""
     },
     deleteTireSet(tireSet){
       const apiUrl = this.$store.state.host.api_url
@@ -245,6 +256,7 @@ export default {
               }
           )
     }
+
   },
 
   mounted() {
@@ -253,6 +265,26 @@ export default {
 
 
 }
+
+/* ERSTMAL NICHT BEACHTEN, WEIL ES NOCH NICHT FUNKTIONIERT
+
+var count = Number(localStorage.getItem('count')) || 3600;
+
+var counter = setInterval(timer, 1000); //1000 will  run it every 1 second
+function timer() {
+  count = count - 1;
+  localStorage.setItem('count', count)
+  if (count == -1) {
+    clearInterval(counter);
+    return;
+  }
+
+  var seconds = count % 60;
+  var minutes = Math.floor(count / 60);
+  minutes %= 60;
+  */
+
+
 </script>
 
 <style scoped>
