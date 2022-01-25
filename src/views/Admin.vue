@@ -121,7 +121,7 @@
                     <q-badge color="accent" outline text-color="white">
                       {{ col.value }}
                     </q-badge>
-                    <q-popup-edit v-model="props.row.modification" v-slot="scope" color="accent"
+                    <q-popup-edit v-model="newUserRole" v-slot="scope" color="accent"
                                   title="Role" buttons @save="setNewUserRole(props.row)"
                                   persistent dark>
                       <q-select v-model="scope.value" :options="options" emit-value dark>
@@ -209,6 +209,7 @@ export default {
       prefixBtnIcon: 'mdi-check',
       prefixHint: '',
       adminResetPasswordField: '',
+      newUserRole: '',
     }
   },
   methods: {
@@ -497,7 +498,29 @@ export default {
       }
     },
     setNewUserRole(user) {
-      console.log(user)
+      setTimeout(() => {
+        console.log(this.adminResetPasswordField)
+        const apiUrl = this.$store.state.host.api_url
+        let url = new URL(`${apiUrl}/user/update/userrole`)
+        url.searchParams.append('id', user.userid)
+        url.searchParams.append('role', this.newUserRole)
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          }
+        }
+        fetch(url, requestOptions)
+            .then(response => {
+              this.newUserRole = ''
+              if (response.status === 200) {
+                this.getUserData()
+              } else {
+                console.log(response)
+              }
+            })
+      }, 5)
     },
     adminResetPassword(user) {
       setTimeout(() => {
@@ -515,6 +538,7 @@ export default {
         }
         fetch(url, requestOptions)
             .then(response => {
+              this.adminResetPasswordField = ''
               if (response.status !== 200) {
                 console.log(response)
               }
