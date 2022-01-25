@@ -1,29 +1,27 @@
 <template>
   <q-page>
-    <q-tabs
-        v-model="tab"
-        dense
-        active-bg-color="accent"
-        indicator-color="white"
-        align="justify"
-        class="text-white bg-primary"
-    >
+    <q-tabs v-model="tab"
+            dense
+            active-bg-color="accent"
+            indicator-color="white"
+            align="justify"
+            class="text-white bg-primary"
+            no-caps>
       <q-tab name="in_store" label="Auf Lager"/>
       <q-tab name="used" label="Benutzt"/>
     </q-tabs>
     <q-tab-panels v-model="tab" animated class="transparent">
       <q-tab-panel name="in_store" class="row justify-center full-height q-gutter-lg">
         <div class="column">
-          <q-table
-              title="Auf Lager"
-              :rows="tireSetRows_inStock"
-              :columns="tireSetColumns_inStock"
-              row-key="id"
-              class="bg-primary"
-              dark
-              no-data-label="Table is empty"
-              :loading="loading_inStock"
-          >
+          <q-table title="Reifensets"
+                   :rows="tireSetRows_inStock"
+                   :columns="tireSetColumns_inStock"
+                   row-key="id"
+                   class="bg-primary"
+                   dark
+                   no-data-label="Table is empty"
+                   :loading="loading_inStock"
+                   :pagination="{rowsPerPage: 0}">
             <template v-slot:loading>
               <q-inner-loading showing color="primary"/>
             </template>
@@ -45,12 +43,9 @@
                   <q-btn outline rounded size="sm" color="white" @click="props.expand = !props.expand"
                          :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
                 </q-td>
-                <q-td
-                    v-for="col in props.cols"
-                    :key="col.name"
-                    :props="props"
-                >
-
+                <q-td v-for="col in props.cols"
+                      :key="col.name"
+                      :props="props">
                   <div v-if="col.name==='delete'" class="q-gutter-sm">
                     <q-btn icon="mdi-delete" @click="tireSetDelete(props.row)" flat color="white"
                            dense></q-btn>
@@ -58,12 +53,13 @@
                   <div v-else-if="col.name==='heating'">
                     <q-btn icon="mdi-fire" @click="tireSetStartHeatingTimer(props.row)" color="white" flat
                            dense></q-btn>
-                    <q-btn icon="mdi-stop" @click="tireSetEndHeatingTimer(props.row)" color="white" flat
-                           dense></q-btn>
+                    <q-btn icon="mdi-stop" @click="tireSetEndHeatingTimer(props.row)" color="white" flat dense></q-btn>
                   </div>
                   <div v-else-if="col.name==='used'">
-                    <q-btn icon="mdi-swap-horizontal" @click="tireSetStatusUsed(props.row)" color="white" flat
-                           dense></q-btn>
+                    <q-btn icon="mdi-cached" @click="tireSetStatusUsed(props.row)" flat color="white" dense></q-btn>
+                  </div>
+                  <div v-else-if="col.name === 'pressure'">
+                    <q-btn icon="mdi-tune" @click="tireSetCalcPressure(props.row)" color="white" flat dense/>
                   </div>
                   <div v-else>
                     {{ col.value }}
@@ -74,38 +70,105 @@
               </q-tr>
               <q-tr v-show="props.expand" :props="props">
                 <q-td colspan="100%">
-                  <q-table
-                      title="Tires"
-                      :rows="props.row.tires"
-                      :columns="tireColumns"
-                      row-key="tireID"
-                      hide-bottom
-                      dark
-                      class="bg-primary"
-                      bordered
-                  >
+                  <q-table title="Reifen"
+                           :rows="props.row.tires"
+                           :columns="tireColumns"
+                           row-key="tireID"
+                           hide-bottom
+                           dark
+                           class="bg-primary"
+                           bordered
+                           dense>
+                    <template v-slot:body="props">
+                      <q-tr :props="props">
+                        <q-td v-for="col in props.cols"
+                              :key="col.name"
+                              :props="props">
+                          <div v-if="col.name === 'kaltdruck'">
+                            <q-badge color="accent" outline text-color="white">
+                              {{ col.value }}
+                            </q-badge>
+                            <q-popup-edit v-model="props.row.kaltdruck" v-slot="scope" title="Kaltdruck"
+                                          color="accent" buttons
+                                          @save="setColdPressure(props.row)" persistent>
+                              <q-input v-model="scope.value" dense autofocus type="number"
+                                       @keydown.enter="scope.set()"/>
+                            </q-popup-edit>
+                          </div>
+                          <div v-else-if="col.name === 'modification'">
+                            <q-badge v-if="col.value === null || col.value === ''" color="accent" outline
+                                     text-color="white">
+                              {{ "----" }}
+                            </q-badge>
+                            <q-badge v-else color="accent" outline text-color="white">
+                              {{ col.value }}
+                            </q-badge>
+                            <q-popup-edit v-model="props.row.modification" v-slot="scope" color="accent"
+                                          title="Bearbeitungsvariante" buttons @save="setModification(props.row)"
+                                          persistent>
+                              <q-select v-model="scope.value" :options="modificationOptions" emit-value>
+                              </q-select>
+                            </q-popup-edit>
+
+                          </div>
+                          <div v-else>
+                            {{ col.value }}
+                          </div>
+                        </q-td>
+                      </q-tr>
+                    </template>
                   </q-table>
                 </q-td>
               </q-tr>
             </template>
           </q-table>
         </div>
-
+        <div class="column">
+          <q-card class="bg-primary">
+            <q-card-section>
+              <q-input dense dark filled v-model="tireTempCold" type="number"
+                       label="Felgentemperatur" @keyup="setAllPressure"/>
+            </q-card-section>
+            <q-separator dark></q-separator>
+            <q-card-section class="q-gutter-y-sm">
+              <div class="row text-white text-subtitle1 justify-center">Berechneter Reifendruck</div>
+              <div class="row q-gutter-x-sm">
+                <q-input disable dense dark filled v-model="pressureCalcFL" label="Vorne Links"/>
+                <q-input disable dense dark filled v-model="pressureCalcFR" label="Vorne Rechts"/>
+              </div>
+              <div class="row q-gutter-x-sm">
+                <q-input disable dense dark filled v-model="pressureCalcRL" label="Hinten Links"/>
+                <q-input disable dense dark filled v-model="pressureCalcRR" label="Hinten Rechts"/>
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
       </q-tab-panel>
       <q-tab-panel name="used" class="row justify-center full-height q-gutter-lg">
         <div class="column">
-          <q-table
-              title="Benutzt"
-              :rows="tireSetRows_used"
-              :columns="tireSetColumns_used"
-              row-key="id"
-              class="bg-primary"
-              dark
-              no-data-label="Table is empty"
-              :loading="loading_used"
-          >
+          <q-table title="Benutzt"
+                   :rows="tireSetRows_used"
+                   :columns="tireSetColumns_used"
+                   row-key="id"
+                   class="bg-primary"
+                   dark
+                   no-data-label="Table is empty"
+                   :loading="loading_used"
+                   :pagination="{rowsPerPage: 0}">
             <template v-slot:loading>
               <q-inner-loading showing color="primary"/>
+            </template>
+            <template v-slot:header="props">
+              <q-tr :props="props">
+                <q-th auto-width/>
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                >
+                  {{ col.label }}
+                </q-th>
+              </q-tr>
             </template>
             <template v-slot:body="props">
               <q-tr :props="props">
@@ -113,14 +176,11 @@
                   <q-btn outline rounded size="sm" color="white" @click="props.expand = !props.expand"
                          :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
                 </q-td>
-                <q-td
-                    v-for="col in props.cols"
-                    :key="col.name"
-                    :props="props"
-                >
-
+                <q-td v-for="col in props.cols"
+                      :key="col.name"
+                      :props="props">
                   <div v-if="col.name==='delete'" class="q-gutter-sm">
-                    <q-btn icon="mdi-delete" @click="tireSetDeletBtn(props.row)" flat color="white"
+                    <q-btn icon="mdi-delete" @click="tireSetDelete(props.row)" flat color="white"
                            dense></q-btn>
                   </div>
                   <div v-else>
@@ -132,16 +192,14 @@
               </q-tr>
               <q-tr v-show="props.expand" :props="props">
                 <q-td colspan="100%">
-                  <q-table
-                      title="Tires"
-                      :rows="props.row.tires"
-                      :columns="tireColumns"
-                      row-key="tireID"
-                      hide-bottom
-                      dark
-                      class="bg-primary"
-                      bordered
-                  >
+                  <q-table title="Tires"
+                           :rows="props.row.tires"
+                           :columns="tireColumns"
+                           row-key="tireID"
+                           hide-bottom
+                           dark
+                           class="bg-primary"
+                           bordered>
                   </q-table>
                 </q-td>
               </q-tr>
@@ -156,49 +214,37 @@
 <script>
 
 const tireSetColumns_inStock = [
-  {name: 'name', required: true, label: 'ID:', align: 'left', field: row => row.id, sortable: true},
-  {name: 'status', align: 'left', label: 'Status', field: row => row.status, sortable: true},
+  {name: 'tireSetID', required: true, label: 'ID:', align: 'left', field: row => row.id, sortable: true},
   {name: 'nr', align: 'left', label: 'SetNr', field: row => row.tireSetNr, sortable: true},
+  {name: 'type', align: 'left', label: 'Art', field: row => row.tires[0].art},
+  {name: 'mixture', align: 'left', label: 'Mischung', field: row => row.tires[0].mischung},
   {name: 'delete', label: 'Delete', align: 'center'},
   {name: 'heating', label: 'Heizen', align: 'center'},
   {name: 'used', label: 'Benutzt', align: 'center'},
+  {name: 'pressure', label: 'Druck berechnen', align: 'center'},
 ]
 const tireSetColumns_used = [
-  {name: 'name', required: true, label: 'ID:', align: 'left', field: row => row.id, sortable: true},
+  {name: 'tireSetID', required: true, label: 'ID:', align: 'left', field: row => row.id, sortable: true},
   {name: 'status', align: 'left', label: 'Status', field: row => row.status, sortable: true},
   {name: 'nr', align: 'left', label: 'SetNr', field: row => row.tireSetNr, sortable: true},
+  {name: 'type', align: 'left', label: 'Art', field: row => row.tires[0].art},
+  {name: 'mixture', align: 'left', label: 'Mischung', field: row => row.tires[0].mischung},
   {name: 'delete', label: 'Delete', align: 'center'},
-  {name: 'heating', label: 'Heizen', align: 'center'},
-  {name: 'used', label: 'Benutzt', align: 'center'},
 ]
 const tireColumns = [
-  {name: 'name', required: true, label: 'ID', align: 'left', field: row => row.tireID, sortable: true},
+  {name: 'tireID', required: true, label: 'ID', align: 'left', field: row => row.tireID, sortable: true},
+  {name: 'position', required: true, label: 'Position', align: 'left', field: row => row.position, sortable: true},
   {
-    name: 'bezeichnung',
+    name: 'modification',
     required: true,
-    label: 'Bezeichnung',
+    label: 'Bearbeitungsvariante',
     align: 'left',
-    field: row => row.bezeichnung,
-    sortable: true
-  },
-  {
-    name: 'art',
-    required: true,
-    label: 'Art',
-    align: 'left',
-    field: row => row.art,
-    sortable: true
-  },
-  {
-    name: 'mischung',
-    required: true,
-    label: 'Mischung',
-    align: 'left',
-    field: row => row.mischung,
+    field: row => row.modification,
     sortable: true
   },
   {name: 'bestellt', required: true, label: 'Bestellt', align: 'left', field: row => row.bestelltUm, sortable: true},
   {name: 'erhalten', required: true, label: 'Erhalten', align: 'left', field: row => row.erhaltenUm, sortable: true},
+  {name: 'benutzt', required: true, label: 'Benutzt', align: 'left', field: row => row.benutztUm, sortable: true},
   {
     name: 'heizbeginn',
     required: true,
@@ -215,6 +261,13 @@ const tireColumns = [
     align: 'left',
     field: row => row.heatingTemp,
     sortable: true
+  }, {
+    name: 'kaltdruck',
+    required: true,
+    label: 'Kaltdruck',
+    align: 'left',
+    field: row => row.kaltdruck,
+    sortable: true
   },
 ]
 
@@ -229,7 +282,22 @@ export default {
       tireSetColumns_used,
       tireColumns,
       tireSetRows_inStock: [],
-      tireSetRows_used: []
+      tireSetRows_used: [],
+      tireTempCold: null,
+      pressureRL: null,
+      pressureFL: null,
+      pressureRR: null,
+      pressureFR: null,
+      pressureCalcRL: null,
+      pressureCalcFL: null,
+      pressureCalcRR: null,
+      pressureCalcFR: null,
+      pressureVars: [],
+      modificationOptions: [
+        {label: 'Siped', value: 'Siped'},
+        {label: 'Extra Grooved', value: 'Extra Grooved'},
+        {label: 'Extra Grooved & Siped', value: 'Extra Grooved & Siped'},
+        {label: 'none', value: ''}],
     }
   },
   methods: {
@@ -256,14 +324,16 @@ export default {
         },
       }
       let resp1
+      this.tireSetRows_inStock = []
+      this.loading_inStock = true
       fetch(url, requestOptions)
           .then(response => {
+            this.loading_inStock = false
             resp1 = response
             return response.json()
           })
           .then(
               data => {
-                this.loading_inStock = false
                 if (resp1.status === 200) {
                   this.tireSetRows_inStock = data
                 } else if (resp1.status === 500) {
@@ -281,14 +351,15 @@ export default {
         url.searchParams.append(k, data[k]);
       }
       let resp2
+      this.tireSetRows_used = []
+      this.loading_used = true
       fetch(url, requestOptions)
           .then(response => {
+            this.loading_used = false
             resp2 = response
             return response.json()
           })
-          .then(
-              data => {
-                this.loading_used = false
+          .then(data => {
                 if (resp2.status === 200) {
                   this.tireSetRows_used = data
                 } else if (resp2.status === 500) {
@@ -302,27 +373,21 @@ export default {
       const url = `${apiUrl}/tireset/delete/${tireSet.id}`
       const jwt = this.$store.state.user.jwt
       const requestOptions = {
-        method: 'PUT',
+        method: 'DELETE',
         headers: {
           'Authorization': 'Bearer ' + jwt
         },
       }
-      let resp
       fetch(url, requestOptions)
           .then(response => {
-            resp = response
-            return response.json()
+            if (response.status === 200) {
+              this.getAllTireSets()
+            } else if (response.status === 500) {
+              console.log(response.message)
+            }
           })
-          .then(data => {
-                if (resp.ok) {
-                  this.getAllTireSets()
-                } else {
-                  console.log(data)
-                }
-              }
-          )
-    }
-    ,
+
+    },
     tireSetStartHeatingTimer(tireSet) {
       const apiUrl = this.$store.state.host.api_url
       const url = `${apiUrl}/tireset/update/${tireSet.id}/heatingStart`
@@ -347,8 +412,7 @@ export default {
                 }
               }
           )
-    }
-    ,
+    },
     tireSetEndHeatingTimer(tireSet) {
       const apiUrl = this.$store.state.host.api_url
       const url = `${apiUrl}/tireset/update/${tireSet.id}/heatingStop`
@@ -373,8 +437,7 @@ export default {
                 }
               }
           )
-    }
-    ,
+    },
     tireSetStatusUsed(tireSet) {
       const apiUrl = this.$store.state.host.api_url
       const url = new URL(`${apiUrl}/tireset/update/${tireSet.id}/status`)
@@ -406,11 +469,144 @@ export default {
                 }
               }
           )
+    },
+    getPressureVars() {
+      const apiUrl = this.$store.state.host.api_url
+      let url = apiUrl + '/race/pressureVars'
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      let resp1
+      fetch(url, requestOptions)
+          .then(response => {
+            resp1 = response
+            return response.json()
+          })
+          .then(data => {
+            this.pressureVars = data
+          })
+    },
+    setAllPressure() {
+      if (this.pressureFL !== null) {
+        this.pressureCalcFL = (Number(this.pressureFL) * (Number(this.tireTempCold) + this.pressureVars[0]) /
+            this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
+                this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
+      }
+      if (this.pressureFR !== null) {
+        this.pressureCalcFR = (Number(this.pressureFR) * (Number(this.tireTempCold) + this.pressureVars[0]) /
+            this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
+                this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
+      }
+      if (this.pressureRL !== null) {
+        this.pressureCalcRL = (Number(this.pressureRL) * (Number(this.tireTempCold) + this.pressureVars[0]) /
+            this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
+                this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
+      }
+      if (this.pressureRR !== null) {
+        this.pressureCalcRR = (Number(this.pressureRR) * (Number(this.tireTempCold) + this.pressureVars[0]) /
+            this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
+                this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
+      }
+    },
+    setSinglePressure(pressure, tire) {
+      if (this.tireTempCold === null) return
+      const calcValue = (Number(pressure) * (Number(this.tireTempCold) + this.pressureVars[0]) /
+          this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
+              this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
+      switch (tire) {
+        case 'FL': {
+          this.pressureCalcFL = calcValue
+          break
+        }
+        case 'FR': {
+          this.pressureCalcFR = calcValue
+          break
+        }
+        case 'RL': {
+          this.pressureCalcRL = calcValue
+          break
+        }
+        case 'RR': {
+          this.pressureCalcRR = calcValue
+          break
+        }
+      }
+    },
+    tireSetCalcPressure(tireset) {
+      this.pressureFL = tireset.tires[0].kaltdruck
+      this.pressureFR = tireset.tires[1].kaltdruck
+      this.pressureRL = tireset.tires[2].kaltdruck
+      this.pressureRR = tireset.tires[3].kaltdruck
+      this.setAllPressure()
+    },
+    setColdPressure(tire) {
+      setTimeout(() => {
+        const apiUrl = this.$store.state.host.api_url
+        let url = new URL(`${apiUrl}/tire/update/${tire.tireID}`)
+        url.searchParams.append('kaltdruck', tire.kaltdruck)
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        let resp
+        fetch(url, requestOptions)
+            .then(response => {
+              resp = response
+              return response.json()
+            })
+            .then(data => {
+                  if (resp.ok) {
+                    this.setSinglePressure(tire.kaltdruck, tire.position)
+                    console.log(tire.kaltdruck, tire.position)
+                    this.getAllTireSets()
+                  } else {
+                    console.log(data)
+                  }
+                }
+            )
+      }, 1)
+
+    },
+    setModification(tire) {
+      setTimeout(() => {
+        const apiUrl = this.$store.state.host.api_url
+        let url = new URL(`${apiUrl}/tire/update/${tire.tireID}/modification`)
+        url.searchParams.append('mod', tire.modification)
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        let resp
+        fetch(url, requestOptions)
+            .then(response => {
+              resp = response
+              return response.json()
+            })
+            .then(data => {
+                  if (resp.ok) {
+                    this.getAllTireSets()
+                  } else {
+                    console.log(data)
+                  }
+                }
+            )
+      }, 1)
     }
-    ,
-  },
+  }
+  ,
   mounted() {
     this.getAllTireSets()
+    this.getPressureVars()
   }
 }
 </script>
