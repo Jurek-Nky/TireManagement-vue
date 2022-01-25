@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hHh LpR fff">
     <q-header elevated v-if="(usernameComp !== '')">
       <q-toolbar class="bg-primary">
         <q-btn flat @click="toggleLeftDrawer" round dense icon="mdi-menu"/>
@@ -9,7 +9,7 @@
         <q-btn class="text-subtitle1" color="negative" @click="logout" dense icon="mdi-logout">logout</q-btn>
       </q-toolbar>
     </q-header>
-    <q-drawer class="bg-primary" show-if-above v-model="leftDrawerOpen" side="left"
+    <q-drawer class="bg-primary" overlay elevated show-if-above v-model="leftDrawerOpen" side="left"
               v-if="(usernameComp !== '')">
       <!-- admin items-->
       <q-list padding class="rounded-borders" v-if="(this.$store.state.user.userRole === 'Admin')">

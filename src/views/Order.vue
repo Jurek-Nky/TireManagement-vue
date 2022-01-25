@@ -175,7 +175,6 @@ export default {
           .then(response => {
             resp = response
             if (response.status !== 200) {
-              console.log(response)
               return
             }
             return response.json()
@@ -200,7 +199,7 @@ export default {
       this.mischung = ""
       this.modification = ""
     },
-    deleteTireSet(tireSet){
+    deleteTireSet(tireSet) {
       const apiUrl = this.$store.state.host.api_url
       const url = `${apiUrl}/tireset/delete/${tireSet.id}`
       const jwt = this.$store.state.user.jwt
