@@ -6,11 +6,11 @@
           <q-card-section>
             <q-form class="q-gutter-md">
               <q-input color="accent" v-model.number="airtemp" type="number" label="Luftemperatur in °C"
-                       label-color="accent" dark ref="airtemp"/>
+                       label-color="white" dark ref="airtemp"/>
               <q-input color="accent" v-model.number="tracktemp" type="number" label="Streckentemperatur in °C"
-                       label-color="accent" dark ref="tracktemp"/>
+                       label-color="white" dark ref="tracktemp"/>
               <q-select color="accent" filled v-model="cond" :options="optionstrack" label="Streckenverhältnis"
-                        label-color="accent" dark ref="cond"/>
+                        label-color="white" dark ref="cond"/>
             </q-form>
           </q-card-section>
           <q-separator dark/>
@@ -25,7 +25,7 @@
 
         <q-card class="bg-primary text-white q-pa-lg shadow-5" dark>
           <q-card-section>
-            <q-table class="bg-primary text-accent"
+            <q-table class="bg-primary text-white"
                      title="Wetterdaten"
                      :rows="rows"
                      :columns="columns"
@@ -36,7 +36,7 @@
         </q-card>
       </div>
     </div>
-    <div class="my-card2 q-gutter-md">
+    <div class="my-card2 q-gutter-md fixed-bottom" >
       <div class="my-card2 q-pa-md" dark>
         <q-card class="bg-primary text-white q-pa-lg shadow-5" dark>
           <q-card-section>
@@ -45,17 +45,7 @@
         </q-card>
       </div>
     </div>
-    <div class ="my-card2 q-gutter-md">
-      <div class="my-card2 q-pa-md" dark>
 
-        <q-card class="bg-primary text-white q-pa-lg shadow-5" dark>
-          <q-card-section>
-
-          </q-card-section>
-
-        </q-card>
-      </div>
-    </div>
 
   </q-page>
 </template>
@@ -80,7 +70,6 @@ const columns = [
 export default {
   name: "Weather",
   data: () => {
-    let timeAll;
 
     return {
 
@@ -91,7 +80,7 @@ export default {
         'wet', 'dry', 'drying off ', 'drizzle', 'sunny', 'cloudy'
       ],
       rows: [],
-      location: null,
+
       columns,
       chartDataAir:[],
       chartDatatrack:[],
@@ -117,7 +106,7 @@ export default {
 
       chartOptions: {
         chart: {
-          foreColor: '#2a9d8f' ,
+          foreColor: 'white' ,
           height: 350,
           type: 'area'
         },
@@ -253,7 +242,7 @@ export default {
               //this.series.data1(data[i].airtemperatur);
               this.series[0].data.push(data[i].tracktemperatur);
               this.series[1].data.push(data[i].airtemperatur);
-
+              console.log(data[i].time);
 
             }
             return
@@ -263,7 +252,7 @@ export default {
 
     },
 
-    getRaceLoctaion(){
+    /* getRaceLoctaion(){
       const apiUrl = 'https://limla.ml:8443/api/v1/race/all'
       const url = apiUrl
       const jwt = this.$store.state.user.jwt
@@ -291,7 +280,7 @@ export default {
           })
     },
 
-
+*/
 
  /*   getWeatherforecast(){
       const apiUrl = 'https://api.openweathermap.org/data/2.5/weather?q='++'&appid=328d654fb1486a9cf4fd992026fafb41'
@@ -328,8 +317,6 @@ export default {
   },
 
   mounted(){
-    this.getRaceLoctaion()
-
     this.getWeatherData()
     this.getDiagramData()
 
