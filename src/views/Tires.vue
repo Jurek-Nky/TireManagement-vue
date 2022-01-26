@@ -133,12 +133,12 @@
             <q-card-section class="q-gutter-y-sm">
               <div class="row text-white text-subtitle1 justify-center">Berechneter Reifendruck</div>
               <div class="row q-gutter-x-sm">
-                <q-input disable dense dark filled v-model="pressureCalcFL" label="Vorne Links"/>
-                <q-input disable dense dark filled v-model="pressureCalcFR" label="Vorne Rechts"/>
+                <q-input readonly dense dark filled v-model="pressureCalcFL" label="Vorne Links"/>
+                <q-input readonly dense dark filled v-model="pressureCalcFR" label="Vorne Rechts"/>
               </div>
               <div class="row q-gutter-x-sm">
-                <q-input disable dense dark filled v-model="pressureCalcRL" label="Hinten Links"/>
-                <q-input disable dense dark filled v-model="pressureCalcRR" label="Hinten Rechts"/>
+                <q-input readonly dense dark filled v-model="pressureCalcRL" label="Hinten Links"/>
+                <q-input readonly dense dark filled v-model="pressureCalcRR" label="Hinten Rechts"/>
               </div>
             </q-card-section>
           </q-card>
@@ -270,7 +270,6 @@ const tireColumns = [
     sortable: true
   },
 ]
-
 
 export default {
   data: () => {
