@@ -20,7 +20,7 @@ const mutations = {
         clearInterval(state.weatherTimer)
     },
     continueWeatherTimer() {
-        state.weatherTimer = setInterval(() => mutations.weatherCountdown(state), 100)
+        state.weatherTimer = setInterval(() => mutations.weatherCountdown(state), 1000)
     },
     resetWeatherTimer(state) {
         clearInterval(state.weatherTimer)
@@ -58,7 +58,7 @@ const mutations = {
         clearInterval(state.orderTimer)
     },
     continueOrderTimer() {
-        state.orderTimer = setInterval(() => mutations.orderCountdown(state), 100)
+        state.orderTimer = setInterval(() => mutations.orderCountdown(state), 1000)
     },
     resetOrderTimer(state) {
         clearInterval(state.orderTimer)
