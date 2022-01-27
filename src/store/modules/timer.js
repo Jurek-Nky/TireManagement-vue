@@ -18,8 +18,10 @@ const mutations = {
     },
     pauseWeatherTimer(state) {
         clearInterval(state.weatherTimer)
+        console.log(state.weatherTime + " : " + state.weatherInitialTime)
     },
-    continueWeatherTimer() {
+    continueWeatherTimer(state) {
+        console.log(state.weatherTime + " : " + state.weatherInitialTime)
         state.weatherTimer = setInterval(() => mutations.weatherCountdown(state), 1000)
     },
     resetWeatherTimer(state) {
