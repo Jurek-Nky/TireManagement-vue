@@ -5,7 +5,7 @@
             active-bg-color="accent"
             indicator-color="white"
             align="justify"
-            class="text-white bg-primary">
+            class="text-white bg-primary" no-caps>
       <q-tab name="race" label="Rennen"/>
       <q-tab name="user" label="Benutzer"/>
     </q-tabs>
@@ -87,9 +87,9 @@
             <q-card-section>
               <q-form class="q-gutter-sm">
                 <q-input dense label-color="white" dark filled v-model="username" type="text"
-                         label="username" hide-bottom-space :hint="userNameHint" @keydown="clearUserHints"/>
+                         label="Username" hide-bottom-space :hint="userNameHint" @keydown="clearUserHints"/>
                 <q-input dense label-color="white" dark filled v-model="password" type="password"
-                         label="password" ref="password" hide-bottom-space :hint="passwordHint"
+                         label="Password" ref="password" hide-bottom-space :hint="passwordHint"
                          @keydown="clearUserHints"/>
                 <q-select dark outlined filled dense label-color="white" hide-bottom-space transition-show="jump-down"
                           transition-hide="jump-up" v-model="role" :options="options" label="Rolle" :hint="roleHint"
@@ -118,13 +118,13 @@
                       :key="col.name"
                       :props="props">
                   <div v-if="col.name === 'role' && props.row.rolle.roleName !== 'Admin'">
-                    <q-badge color="accent" outline text-color="white">
+                    <q-badge color="accent" class="cursor-pointer">
                       {{ col.value }}
                     </q-badge>
                     <q-popup-edit v-model="newUserRole" v-slot="scope" color="accent"
                                   title="Role" buttons @save="setNewUserRole(props.row)"
-                                  persistent dark>
-                      <q-select v-model="scope.value" :options="options" emit-value dark>
+                                  persistent>
+                      <q-select v-model="scope.value" :options="options" emit-value>
                       </q-select>
                     </q-popup-edit>
 

@@ -1,8 +1,8 @@
 <template>
-  <q-page class="row justify-center items-center">
-    <div class="column">
-      <div class="row">
-        <q-card rounded bordered class="q-pa-lg q-ma-lg shadow-5 bg-primary">
+  <q-page class="q-ma-lg">
+    <div class="row justify-center q-gutter-lg">
+      <div class="column">
+        <q-card rounded bordered class="q-pa-lg shadow-5 bg-primary">
           <q-card-section class="q-gutter-sm">
             <span class="row text-subtitle1 text-white q-my-lg">To-Do-Liste</span>
             <div class="row">
@@ -42,11 +42,64 @@
           </q-card-section>
         </q-card>
       </div>
+      <div class="column">
+        <q-card bordered class="q-pa-lg bg-primary shadow-5">
+          <q-card-section>
+            <span class="text-white text-subtitle1">Wetter timer</span>
+          </q-card-section>
+          <q-separator dark/>
+          <q-card-section>
+            <q-circular-progress
+                show-value
+                class="text-white q-mb-none q-mt-lg"
+                :max="weatherInitialTime"
+                :value="weatherTime"
+                size="230px"
+                :thickness="0.13"
+                color="accent"
+                track-color="dark"
+            >
+              <span class="text-white text-h4">{{ weatherTimeString }}</span>
+            </q-circular-progress>
+          </q-card-section>
+          <q-card-actions align="right">
+
+            <!--Example buttons for better understanding -->
+            <q-btn color="accent" label="new" @click="this.$store.commit('startWeatherTimer', 67)"/> // arg2: time in seconds
+            <q-btn color="accent" icon="mdi-pause" @click="this.$store.commit('pauseWeatherTimer')"/>
+            <q-btn color="accent" icon="mdi-play" @click="this.$store.commit('continueWeatherTimer')"/>
+            <q-btn color="accent" icon="mdi-reload" @click="this.$store.commit('resetWeatherTimer')"/>
+            <!--end-->
+
+          </q-card-actions>
+        </q-card>
+      </div>
+      <div class="column">
+        <q-card bordered class="q-pa-lg bg-primary shadow-5">
+          <q-card-section>
+            <span class="text-white text-subtitle1">Bestell timer</span>
+          </q-card-section>
+          <q-separator dark/>
+          <q-card-section>
+            <q-circular-progress
+                show-value
+                class="text-white q-mb-none q-mt-lg"
+                :max="orderInitialTime"
+                :value="orderTime"
+                size="230px"
+                :thickness="0.13"
+                color="accent"
+                track-color="dark"
+            />
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
   </q-page>
 </template>
 
 <script>
+
 export default {
   name: "Dashboard",
   data: () => {
@@ -56,7 +109,34 @@ export default {
       confirm: false,
       confirmId: '',
       confirmIndex: '',
-
+    }
+  },
+  computed: {
+    weatherTime() {
+      return this.$store.state.timer.weatherTime
+    },
+    weatherInitialTime() {
+      return this.$store.state.timer.weatherInitialTime
+    },
+    weatherTimeString() {
+      const time = this.$store.state.timer.weatherTime
+      const houres = Math.floor(time / 60 / 60)
+      const minutes = Math.floor(time / 60)
+      const seconds = time - (minutes * 60)
+      if (houres === 0) {
+        if (minutes === 0) {
+          return `${seconds}s`
+        }
+        return `${minutes}
+          m:${seconds}s`
+      }
+      return `${houres}h:${minutes}m:${seconds}s`
+    },
+    orderTime() {
+      return this.$store.state.timer.orderTime
+    },
+    orderInitialTime() {
+      return this.$store.state.timer.orderInitialTime
     }
   },
   methods: {
@@ -91,8 +171,7 @@ export default {
               this.noteList = data
             }
           })
-    }
-    ,
+    },
     addItem() {
       if (this.newNote.length > 0) {
         const apiUrl = this.$store.state.host.api_url
@@ -123,11 +202,10 @@ export default {
             })
       }
 
-    }
-    ,
+    },
     noteCheck(id, index) {
       const apiUrl = this.$store.state.host.api_url
-      let url = new URL(`${apiUrl}/note/update/${id}/status`)
+      let url = new URL(`${apiUrl} / note / update /${id}/status`)
       url.searchParams.append('s', true)
       const jwt = this.$store.state.user.jwt
       const requestOptions = {
@@ -147,7 +225,8 @@ export default {
               this.noteList[index] = data
             }
           })
-    },
+    }
+    ,
     noteDelete(id, index) {
       const apiUrl = this.$store.state.host.api_url
       let url = `${apiUrl}/note/delete/${id}`
@@ -165,7 +244,8 @@ export default {
               this.getNotes()
             }
           })
-    },
+    }
+    ,
     update() {
       let diffList = []
       const apiUrl = this.$store.state.host.api_url
@@ -198,12 +278,10 @@ export default {
                 if (this.noteList[i].id !== diffList[i].id) {
                   this.getNotes()
                   return
-                }
-                else if (this.noteList[i].message !== diffList[i].message) {
+                } else if (this.noteList[i].message !== diffList[i].message) {
                   this.getNotes()
                   return
-                }
-                else if (this.noteList[i].done !== diffList[i].done) {
+                } else if (this.noteList[i].done !== diffList[i].done) {
                   this.getNotes()
                   return
                 }
@@ -213,8 +291,10 @@ export default {
       setTimeout(() => {
         this.update()
       }, 10000)
-    },
-  },
+    }
+    ,
+  }
+  ,
   mounted() {
     this.getNotes()
     this.update()
