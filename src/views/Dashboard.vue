@@ -65,7 +65,7 @@
           <q-card-actions align="right">
 
             <!--Example buttons for better understanding -->
-            <q-btn color="accent" label="new" @click="this.$store.commit('startWeatherTimer', 67)"/> // arg2: time in seconds
+            <q-btn color="accent" label="new" @click="this.$store.commit('startWeatherTimer', 67)"/> <!-- arg2: time in seconds -->
             <q-btn color="accent" icon="mdi-pause" @click="this.$store.commit('pauseWeatherTimer')"/>
             <q-btn color="accent" icon="mdi-play" @click="this.$store.commit('continueWeatherTimer')"/>
             <q-btn color="accent" icon="mdi-reload" @click="this.$store.commit('resetWeatherTimer')"/>
