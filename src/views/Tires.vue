@@ -85,7 +85,7 @@
                               :key="col.name"
                               :props="props">
                           <div v-if="col.name === 'kaltdruck'">
-                            <q-badge color="accent" outline text-color="white">
+                            <q-badge color="accent" text-color="white" class="cursor-pointer">
                               {{ col.value }}
                             </q-badge>
                             <q-popup-edit v-model="props.row.kaltdruck" v-slot="scope" title="Kaltdruck"
@@ -96,11 +96,11 @@
                             </q-popup-edit>
                           </div>
                           <div v-else-if="col.name === 'modification'">
-                            <q-badge v-if="col.value === null || col.value === ''" color="accent" outline
-                                     text-color="white">
+                            <q-badge v-if="col.value === null || col.value === ''" color="accent"
+                                     text-color="white" class="cursor-pointer">
                               {{ "----" }}
                             </q-badge>
-                            <q-badge v-else color="accent" outline text-color="white">
+                            <q-badge v-else color="accent"  text-color="white" class="cursor-pointer">
                               {{ col.value }}
                             </q-badge>
                             <q-popup-edit v-model="props.row.modification" v-slot="scope" color="accent"
