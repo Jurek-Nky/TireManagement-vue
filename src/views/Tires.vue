@@ -100,6 +100,20 @@
                             </q-popup-edit>
 
                           </div>
+                          <div v-if="col.name === 'laufleistung'">
+                            <q-badge v-if="col.value === null || col.value === ''" color="accent"
+                                     text-color="white" class="cursor-pointer">
+                              {{ "----" }}
+                            </q-badge>
+                            <q-badge v-else color="accent" text-color="white" class="cursor-pointer">
+                              {{ col.value }}
+                            </q-badge>
+                            <q-popup-edit v-model="props.row.laufleistung" v-slot="scope" color="accent"
+                                          title="Laufleistung" buttons @save="setLaufleistung(props.row)"
+                                          persistent>
+                              <q-input v-model="scope.value" label="laufleistung" stack-label></q-input>
+                            </q-popup-edit>
+                          </div>
                           <div v-else>
                             {{ col.value }}
                           </div>
@@ -224,7 +238,9 @@
             <q-separator dark/>
             <q-card-section class="q-gutter-md">
               <q-input v-model="bleedCalc" stack-label label="berechneter Bleed" dark filled readonly/>
-              <q-input v-model="bleedCalcModified" stack-label :label="`angepasster Bleed @ ${this.pressureCalcTireset.tires[0].heatingTemp}℃`" dark filled readonly/>
+              <q-input v-model="bleedCalcModified" stack-label
+                       :label="`angepasster Bleed @ ${this.pressureCalcTireset.tires[0].heatingTemp}℃`" dark filled
+                       readonly/>
             </q-card-section>
           </q-card>
         </div>
@@ -325,6 +341,13 @@ const tireColumns = [
     label: 'Bearbeitungsvariante',
     align: 'left',
     field: row => row.modification,
+    sortable: true
+  },
+  {
+    name: 'laufleistung',
+    label: 'Laufleistung',
+    align: 'left',
+    field: row => row.laufleistung,
     sortable: true
   },
   {name: 'bestellt', required: true, label: 'Bestellt', align: 'left', field: row => row.bestelltUm, sortable: true},
@@ -660,7 +683,23 @@ export default {
       }
       this.bleedCalc = this.pressureBleed(this.bleedConstant, this.trackTempMeasured, this.trackTemp).toFixed(4)
       this.bleedCalcModified = this.pressureBleedHot(this.bleedConstant, this.trackTempMeasured, this.trackTemp, this.tireTempMeasured, this.pressureCalcTireset.tires[0].heatingTemp).toFixed(4)
-    }
+    },
+    setLaufleistung(tire) {
+      setTimeout(() => {
+        const apiUrl = this.$store.state.host.api_url
+        let url = new URL(`${apiUrl}/tire/update/${tire.tireID}`)
+        url.searchParams.append('ll', tire.laufleistung)
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        let resp
+        fetch(url, requestOptions)
+      }, 1)
+    },
 
   }
   ,
