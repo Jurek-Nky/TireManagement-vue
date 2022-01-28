@@ -62,16 +62,38 @@ export default {
       pwVerifyHint: '',
       changeBtnIcon: 'mdi-autorenew',
       changeBtnColor: 'accent',
-      weatherNotification: true,
-      orderNotification: true,
+      weatherNotification: null,
+      orderNotification: null,
     }
-  }, mounted() {
+  },
+  mounted() {
     this.username = this.$store.state.user.userName
+    this.getUserSettings()
   }
   ,
   methods: {
     updateNotifications() {
-      console.log(this.weatherNotification + " : " + this.orderNotification)
+      this.$store.commit('setWeatherNotifications', this.weatherNotification)
+      this.$store.commit('setOrderNotifications', this.orderNotification)
+      const apiUrl = this.$store.state.host.api_url
+      let url = new URL(`${apiUrl}/user/update/userSettings`)
+      url.searchParams.append('u', this.$store.state.user.userName)
+      const data = {
+        darkMode: true,
+        getOrderNotifications: this.orderNotification,
+        getWeatherNotifications: this.weatherNotification
+      }
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + jwt
+        },
+        body: JSON.stringify(data)
+      }
+      let resp
+      fetch(url, requestOptions)
     },
     changePassword() {
       if (this.passwordOld === '') {
@@ -142,6 +164,26 @@ export default {
         this.changeBtnIcon = "mdi-autorenew"
         this.changeBtnColor = "accent"
       }, 1400)
+    },
+    getUserSettings() {
+      const apiUrl = this.$store.state.host.api_url
+      let url = new URL(`${apiUrl}/user/userSettings`)
+      url.searchParams.append('u', this.$store.state.user.userName)
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
+          .then(response => {
+            return response.json()
+          })
+          .then(data => {
+            this.weatherNotification = data.getWeatherNotifications
+            this.orderNotification = data.getOrderNotifications
+          })
     }
   }
 }

@@ -2,6 +2,8 @@ const state = {
     userName: '',
     userRole: '',
     jwt: '',
+    getWeatherNotifications: '',
+    getOrderNotifications: '',
 }
 
 const mutations = {
@@ -14,7 +16,13 @@ const mutations = {
         state.userName = ''
         state.userRole = ''
         state.jwt = ''
-    }
+    },
+    setWeatherNotifications(state, value) {
+        state.getWeatherNotifications = value
+    },
+    setOrderNotifications(state, value) {
+        state.getOrderNotifications = value
+    },
 }
 
 export default {
