@@ -394,9 +394,9 @@ export default {
           })
     },
 
-    deleteWeather(wetterid) {
+    deleteWeather(weather) {
       const apiUrl = this.$store.state.host.api_url
-      const url = `${apiUrl}/weather/delete/${wetterid}`
+      const url = `${apiUrl}/weather/delete/${weather.wetterid}`
       const jwt = this.$store.state.user.jwt
       const requestOptions = {
         method: 'DELETE',
@@ -406,17 +406,12 @@ export default {
       }
       fetch(url, requestOptions)
           .then(response => {
-            this.getWeatherData()
-            return response.json()
+            if (response.status === 200) {
+              this.getWeatherData()
+            } else if (response.status === 500) {
+              console.log(response.message)
+            }
           })
-          .then(data => {
-                if (response.ok) {
-                  console.log(data)
-                } else {
-                  console.log(data)
-                }
-              }
-          )
     },
 
     getDiagramData() {
@@ -674,14 +669,14 @@ body
 
 .location-box .location
   color: #FFF
-  font-size: 32px
+  font-size: 25px
   font-weight: 500
   text-align: center
   text-shadow: 1px 3px rgba(0, 0, 0, 0.25)
 
 .location-box .date
   color: #FFF
-  font-size: 20px
+  font-size: 15px
   font-weight: 300
   font-style: italic
   text-align: center
@@ -691,7 +686,7 @@ body
 
 .weather-box .temp
   display: inline-block
-  padding: 10px 25px
+  padding: 5px 15px
   color: #FFF
   font-size: 102px
   font-weight: 900
@@ -702,7 +697,7 @@ body
 
 .weather-box .weather
   color: #FFF
-  font-size: 48px
+  font-size: 30px
   font-weight: 700
   font-style: italic
   text-shadow: 3px 6px rgba(0, 0, 0, 0.25)
