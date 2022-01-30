@@ -220,7 +220,7 @@ export default {
     },
     noteCheck(id, index) {
       const apiUrl = this.$store.state.host.api_url
-      let url = new URL(`${apiUrl} / note / update /${id}/status`)
+      let url = new URL(`${apiUrl}/note/update/${id}/status`)
       url.searchParams.append('s', true)
       const jwt = this.$store.state.user.jwt
       const requestOptions = {
