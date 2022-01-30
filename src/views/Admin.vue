@@ -1,13 +1,11 @@
 <template>
   <q-page>
-    <q-tabs
-        v-model="tab"
-        dense
-        active-bg-color="accent"
-        indicator-color="white"
-        align="justify"
-        class="text-white bg-primary"
-    >
+    <q-tabs v-model="tab"
+            dense
+            active-bg-color="accent"
+            indicator-color="white"
+            align="justify"
+            class="text-white bg-primary" no-caps>
       <q-tab name="race" label="Rennen"/>
       <q-tab name="user" label="Benutzer"/>
     </q-tabs>
@@ -31,13 +29,13 @@
                 </template>
               </q-input>
               <q-form class="q-gutter-md">
-                <q-input dense label-color="accent" dark filled v-model="raceName" type="text"
+                <q-input dense label-color="white" dark filled v-model="raceName" type="text"
                          label="Name" ref="raceName"/>
-                <q-input dense label-color="accent" dark filled v-model="location" type="text"
+                <q-input dense label-color="white" dark filled v-model="location" type="text"
                          label="Ort" ref="location"/>
-                <q-input dense label-color="accent" dark filled v-model="cont" type="number"
+                <q-input dense label-color="white" dark filled v-model="cont" type="number"
                          label="Kontingent" ref="cont"/>
-                <q-input dense label-color="accent" dark filled v-model="raceLength" type="number"
+                <q-input dense label-color="white" dark filled v-model="raceLength" type="number"
                          label="Laenge" ref="cont"/>
               </q-form>
             </q-card-section>
@@ -66,16 +64,14 @@
           </q-card>
         </div>
         <div class="column">
-          <q-table
-              title="Rennen"
-              :rows="race_rows"
-              :columns="race_columns"
-              row-key="name"
-              hide-bottom
-              dark
-              card-class="bg-primary bordered"
-              separator="vertical"
-          >
+          <q-table title="Rennen"
+                   :rows="race_rows"
+                   :columns="race_columns"
+                   row-key="name"
+                   hide-bottom
+                   dark
+                   card-class="bg-primary bordered"
+                   :pagination="{rowsPerPage: 0,sortBy: 'id',descending : true}">
             <template v-slot:body-cell-action="props">
               <q-td :props="props">
                 <q-btn icon="mdi-delete" @click="raceDelete(props.row)" color="white" flat dense></q-btn>
@@ -89,15 +85,15 @@
           <q-card rounded bordered class="shadow-5 bg-primary">
             <q-card-section class="text-white text-h5">Benutzer erstellen</q-card-section>
             <q-card-section>
-              <q-form class="q-gutter-md">
-                <q-input dense label-color="accent" dark filled v-model="username" type="text"
-                         label="username" ref="username" :hint="userNameHint" @keydown="clearUserHints"/>
-                <q-input dense label-color="accent" dark filled v-model="password" type="password"
-                         label="password" ref="password" :hint="passwordHint" @keydown="clearUserHints"/>
-                <q-select dark outlined color="accent" label-color="accent" transition-show="jump-down"
-                          transition-hide="jump-up"
-                          v-model="role" :options="options"
-                          label="Rolle"/>
+              <q-form class="q-gutter-sm">
+                <q-input dense label-color="white" dark filled v-model="username" type="text"
+                         label="Username" hide-bottom-space :hint="userNameHint" @keydown="clearUserHints"/>
+                <q-input dense label-color="white" dark filled v-model="password" type="password"
+                         label="Password" ref="password" hide-bottom-space :hint="passwordHint"
+                         @keydown="clearUserHints"/>
+                <q-select dark outlined filled dense label-color="white" hide-bottom-space transition-show="jump-down"
+                          transition-hide="jump-up" v-model="role" :options="options" label="Rolle" :hint="roleHint"
+                          @add="clearUserHints"/>
               </q-form>
             </q-card-section>
             <q-card-section>
@@ -108,21 +104,49 @@
           </q-card>
         </div>
         <div class="column">
-          <q-table
-              title="Benutzer"
-              :rows="rows"
-              :columns="columns"
-              row-key="name"
-              hide-bottom
-              dark
-              card-class="bg-primary bordered"
-              separator="horizontal"
-          >
-            <template v-slot:body-cell-action="props">
-              <q-td :props="props">
-                <q-btn icon="mdi-delete" @click="userDelete(props.row)" color="white" flat dense
-                       v-if="props.row.rolle.roleName !== 'Admin'"></q-btn>
-              </q-td>
+          <q-table title="Benutzer"
+                   :rows="rows"
+                   :columns="columns"
+                   row-key="name"
+                   hide-bottom
+                   dark
+                   card-class="bg-primary bordered"
+                   separator="horizontal">
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td v-for="col in props.cols"
+                      :key="col.name"
+                      :props="props">
+                  <div v-if="col.name === 'role' && props.row.rolle.roleName !== 'Admin'">
+                    <q-badge color="accent" class="cursor-pointer">
+                      {{ col.value }}
+                    </q-badge>
+                    <q-popup-edit v-model="newUserRole" v-slot="scope" color="accent"
+                                  title="Role" buttons @save="setNewUserRole(props.row)"
+                                  persistent>
+                      <q-select v-model="scope.value" :options="options" emit-value>
+                      </q-select>
+                    </q-popup-edit>
+
+                  </div>
+                  <div v-else-if="col.name === 'delete'">
+                    <q-btn v-if="props.row.rolle.roleName !== 'Admin'" icon="mdi-delete" @click="userDelete(props.row)"
+                           color="white" flat dense></q-btn>
+                  </div>
+                  <div v-else-if="col.name === 'password'">
+                    <q-btn v-if="props.row.rolle.roleName !== 'Admin'" icon="mdi-cached" no-caps dark dense flat/>
+                    <q-popup-edit v-model="adminResetPasswordField" buttons dark color="white"
+                                  @save="adminResetPassword(props.row)" v-slot="scope">
+                      <q-input type="password" label="new password" label-color="white" v-model="scope.value" filled
+                               dark></q-input>
+                    </q-popup-edit>
+                  </div>
+                  <div v-else>
+                    {{ col.value }}
+                  </div>
+                </q-td>
+              </q-tr>
+
             </template>
           </q-table>
         </div>
@@ -132,13 +156,12 @@
 </template>
 
 <script>
-import {ref} from 'vue'
-
 const columns = [
   {name: 'name', required: true, label: 'username', align: 'left', field: row => row.username, sortable: true},
   {name: 'role', align: 'left', label: 'role', field: row => row.rolle.roleName, sortable: true},
   {name: 'id', align: 'left', label: 'id', field: row => row.userid, sortable: true},
-  {name: 'action', label: 'actions', align: 'left'},
+  {name: 'delete', label: 'delete', align: 'center'},
+  {name: 'password', label: 'password reset', align: 'center'},
 ]
 const race_columns = [
   {name: 'name', required: true, label: 'Name', align: 'left', field: row => row.name, sortable: true},
@@ -146,7 +169,7 @@ const race_columns = [
   {name: 'location', align: 'left', label: 'Ort', field: row => row.location, sortable: true},
   {name: 'length', align: 'left', label: 'Laenge', field: row => row.length, sortable: true},
   {name: 'contingent', align: 'left', label: 'Kontingent', field: row => row.tireContingent, sortable: true},
-  {name: 'id', align: 'left', label: 'ID', field: row => row.raceID, sortable: true},
+  {name: 'id', required: true, align: 'left', label: 'ID', field: row => row.raceID, sortable: true},
   {name: 'action', label: 'actions', align: 'left'},
 ]
 export default {
@@ -157,6 +180,7 @@ export default {
         'Employee', 'Manager', 'Ingenieur'
       ],
       role: '',
+      roleHint: '',
       date: new Date().toISOString(),
       raceName: '',
       location: '',
@@ -184,6 +208,8 @@ export default {
       prefixBtnColor: 'accent',
       prefixBtnIcon: 'mdi-check',
       prefixHint: '',
+      adminResetPasswordField: '',
+      newUserRole: '',
     }
   },
   methods: {
@@ -234,6 +260,17 @@ export default {
       this.raceLength = ''
     },
     createUser() {
+      this.clearUserHints()
+      if (this.username.length < 4) {
+        this.userNameHint = 'Username must be at least 4 characters'
+        return
+      } else if (this.password.length < 8) {
+        this.passwordHint = 'Password must be at least 8 characters'
+        return
+      } else if (this.role === '') {
+        this.roleHint = 'Select a role'
+        return
+      }
       const apiUrl = this.$store.state.host.api_url
       const url = apiUrl + '/user/register'
       const data = {
@@ -285,6 +322,7 @@ export default {
     clearUserHints() {
       this.userNameHint = ''
       this.passwordHint = ''
+      this.roleHint = ''
     },
     userAddBtnError() {
       this.userAddBtnColor = "negative"
@@ -458,6 +496,54 @@ export default {
 
             })
       }
+    },
+    setNewUserRole(user) {
+      setTimeout(() => {
+        console.log(this.adminResetPasswordField)
+        const apiUrl = this.$store.state.host.api_url
+        let url = new URL(`${apiUrl}/user/update/userrole`)
+        url.searchParams.append('id', user.userid)
+        url.searchParams.append('role', this.newUserRole)
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          }
+        }
+        fetch(url, requestOptions)
+            .then(response => {
+              this.newUserRole = ''
+              if (response.status === 200) {
+                this.getUserData()
+              } else {
+                console.log(response)
+              }
+            })
+      }, 5)
+    },
+    adminResetPassword(user) {
+      setTimeout(() => {
+        console.log(this.adminResetPasswordField)
+        const apiUrl = this.$store.state.host.api_url
+        let url = new URL(`${apiUrl}/user/admin/resetpw`)
+        url.searchParams.append('id', user.userid)
+        url.searchParams.append('pwnew', this.adminResetPasswordField)
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          }
+        }
+        fetch(url, requestOptions)
+            .then(response => {
+              this.adminResetPasswordField = ''
+              if (response.status !== 200) {
+                console.log(response)
+              }
+            })
+      }, 5)
     }
   },
   mounted() {
@@ -467,7 +553,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>
