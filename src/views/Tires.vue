@@ -100,7 +100,7 @@
                             </q-popup-edit>
 
                           </div>
-                          <div v-if="col.name === 'laufleistung'">
+                          <div v-else-if="col.name === 'laufleistung'">
                             <q-badge v-if="col.value === null || col.value === ''" color="accent"
                                      text-color="white" class="cursor-pointer">
                               {{ "----" }}
