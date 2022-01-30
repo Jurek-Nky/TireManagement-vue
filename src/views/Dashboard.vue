@@ -2,13 +2,13 @@
   <q-page class="q-ma-lg">
     <div class="row justify-center q-gutter-lg">
       <div class="column">
-        <q-card rounded bordered class="q-pa-lg shadow-5 bg-primary">
+        <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
           <q-card-section class="q-gutter-sm">
             <span class="row text-subtitle1 text-white q-my-lg">To-Do-Liste</span>
             <div class="row">
-              <q-input v-model="newNote" filled dark label="neuer Eintrag" label-color="white"
+              <q-input v-model="newNote" dark filled label="neuer Eintrag" label-color="white"
                        @keyup.enter="addItem"></q-input>
-              <q-btn @click="addItem" icon="mdi-chevron-down" flat color="white"></q-btn>
+              <q-btn color="white" flat icon="mdi-chevron-down" @click="addItem"></q-btn>
             </div>
           </q-card-section>
           <q-separator dark/>
@@ -20,10 +20,10 @@
                   <span v-else class="text-strike text-white">{{ item.message }}</span>
                 </q-item-section>
                 <q-item-section avatar class="row">
-                  <q-btn v-if="item.done" icon="mdi-delete" @click="confirmDialog(item.id,index)" flat
-                         color="white"></q-btn>
-                  <q-btn v-if="!item.done" icon="mdi-check" @click="noteCheck(item.id,index)" flat
-                         color="white"></q-btn>
+                  <q-btn v-if="item.done" color="white" flat icon="mdi-delete"
+                         @click="confirmDialog(item.id,index)"></q-btn>
+                  <q-btn v-if="!item.done" color="white" flat icon="mdi-check"
+                         @click="noteCheck(item.id,index)"></q-btn>
                 </q-item-section>
                 <q-dialog v-model="confirm">
                   <q-card class="bg-primary">
@@ -31,8 +31,8 @@
                       <span class="q-ml-sm text-white">Do you really want do delete this Note</span>
                     </q-card-section>
                     <q-card-actions align="right">
-                      <q-btn text-color="white" color="grey" label="cancel" v-close-popup></q-btn>
-                      <q-btn label="delete" color="negative"
+                      <q-btn v-close-popup color="grey" label="cancel" text-color="white"></q-btn>
+                      <q-btn color="negative" label="delete"
                              @click="noteDelete(this.confirmId,this.confirmIndex)"></q-btn>
                     </q-card-actions>
                   </q-card>
@@ -50,28 +50,18 @@
           <q-separator dark/>
           <q-card-section>
             <q-circular-progress
-                show-value
-                class="text-white q-mb-none q-mt-lg"
                 :max="weatherInitialTime"
+                :thickness="0.1"
                 :value="weatherTime"
-                size="230px"
-                :thickness="0.13"
+                class="text-white q-mb-none q-mt-lg"
                 color="accent"
+                show-value
+                size="240px"
                 track-color="dark"
             >
-              <span class="text-white text-h4">{{ weatherTimeString }}</span>
+              <span class="text-white text-h4 text-center">{{ weatherTimeString }}</span>
             </q-circular-progress>
           </q-card-section>
-          <q-card-actions align="right">
-
-            <!--Example buttons for better understanding -->
-            <q-btn color="accent" label="new" @click="this.$store.commit('startWeatherTimer', 67)"/> <!-- arg2: time in seconds -->
-            <q-btn color="accent" icon="mdi-pause" @click="this.$store.commit('pauseWeatherTimer')"/>
-            <q-btn color="accent" icon="mdi-play" @click="this.$store.commit('continueWeatherTimer')"/>
-            <q-btn color="accent" icon="mdi-reload" @click="this.$store.commit('resetWeatherTimer')"/>
-            <!--end-->
-
-          </q-card-actions>
         </q-card>
       </div>
       <div class="column">
@@ -82,15 +72,17 @@
           <q-separator dark/>
           <q-card-section>
             <q-circular-progress
-                show-value
-                class="text-white q-mb-none q-mt-lg"
                 :max="orderInitialTime"
+                :thickness="0.1"
                 :value="orderTime"
-                size="230px"
-                :thickness="0.13"
+                class="text-white q-mb-none q-mt-lg"
                 color="accent"
+                show-value
+                size="240px"
                 track-color="dark"
-            />
+            >
+              <span class="text-white text-h4 text-center">{{ orderTimeString }}</span>
+            </q-circular-progress>
           </q-card-section>
         </q-card>
       </div>
@@ -109,6 +101,7 @@ export default {
       confirm: false,
       confirmId: '',
       confirmIndex: '',
+      interval: null,
     }
   },
   computed: {
@@ -120,6 +113,26 @@ export default {
     },
     weatherTimeString() {
       const time = this.$store.state.timer.weatherTime
+      if (time <= 0){
+        return "abgelaufen"
+      }
+      const houres = Math.floor(time / 60 / 60)
+      const minutes = Math.floor(time / 60)
+      const seconds = time - (minutes * 60)
+      if (houres === 0) {
+        if (minutes === 0) {
+          return `${seconds}s`
+        }
+        return `${minutes}
+          m:${seconds}s`
+      }
+      return `${houres}h:${minutes}m:${seconds}s`
+    },
+    orderTimeString() {
+      const time = this.$store.state.timer.orderTime
+      if (time <= 0){
+        return "abgelaufen"
+      }
       const houres = Math.floor(time / 60 / 60)
       const minutes = Math.floor(time / 60)
       const seconds = time - (minutes * 60)
@@ -225,8 +238,7 @@ export default {
               this.noteList[index] = data
             }
           })
-    }
-    ,
+    },
     noteDelete(id, index) {
       const apiUrl = this.$store.state.host.api_url
       let url = `${apiUrl}/note/delete/${id}`
@@ -244,55 +256,55 @@ export default {
               this.getNotes()
             }
           })
-    }
-    ,
+    },
     update() {
-      let diffList = []
-      const apiUrl = this.$store.state.host.api_url
-      let url = apiUrl + '/note/get/all'
-      const jwt = this.$store.state.user.jwt
-      const requestOptions = {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer ' + jwt
-        },
-      }
-      let resp;
-      fetch(url, requestOptions)
-          .then(response => {
-            resp = response
-            if (response.status !== 200) {
-              console.log(response)
-            }
-            resp = response
-            return response.json()
-          })
-          .then(data => {
-            if (resp.status === 200) {
-              diffList = data
-              if (diffList.length !== this.noteList.length) {
-                this.getNotes()
-                return
+      this.interval = setInterval(() => {
+        let diffList = []
+        const apiUrl = this.$store.state.host.api_url
+        let url = apiUrl + '/note/get/all'
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        let resp;
+        fetch(url, requestOptions)
+            .then(response => {
+              resp = response
+              if (response.status !== 200) {
+                console.log(response)
               }
-              for (const i in this.noteList) {
-                if (this.noteList[i].id !== diffList[i].id) {
-                  this.getNotes()
-                  return
-                } else if (this.noteList[i].message !== diffList[i].message) {
-                  this.getNotes()
-                  return
-                } else if (this.noteList[i].done !== diffList[i].done) {
+              resp = response
+              return response.json()
+            })
+            .then(data => {
+              if (resp.status === 200) {
+                diffList = data
+                if (diffList.length !== this.noteList.length) {
                   this.getNotes()
                   return
                 }
+                for (const i in this.noteList) {
+                  if (this.noteList[i].id !== diffList[i].id) {
+                    this.getNotes()
+                    return
+                  } else if (this.noteList[i].message !== diffList[i].message) {
+                    this.getNotes()
+                    return
+                  } else if (this.noteList[i].done !== diffList[i].done) {
+                    this.getNotes()
+                    return
+                  }
+                }
               }
-            }
-          })
-      setTimeout(() => {
-        this.update()
+            })
       }, 10000)
-    }
-    ,
+    },
+  },
+  unmounted() {
+    clearInterval(this.interval)
   }
   ,
   mounted() {
