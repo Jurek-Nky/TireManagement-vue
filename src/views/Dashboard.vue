@@ -113,7 +113,7 @@ export default {
     },
     weatherTimeString() {
       const time = this.$store.state.timer.weatherTime
-      if (time <= 0){
+      if (time <= 0) {
         return "abgelaufen"
       }
       const houres = Math.floor(time / 60 / 60)
@@ -129,13 +129,15 @@ export default {
       return `${houres}h:${minutes}m:${seconds}s`
     },
     orderTimeString() {
-      const time = this.$store.state.timer.orderTime
-      if (time <= 0){
+      let time = this.$store.state.timer.orderTime
+      if (time <= 0) {
         return "abgelaufen"
       }
       const houres = Math.floor(time / 60 / 60)
+      time = time - (houres * 60 * 60)
       const minutes = Math.floor(time / 60)
-      const seconds = time - (minutes * 60)
+      time = time - (minutes * 60)
+      const seconds = time
       if (houres === 0) {
         if (minutes === 0) {
           return `${seconds}s`
