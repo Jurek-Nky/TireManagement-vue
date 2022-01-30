@@ -48,7 +48,7 @@
         <div class="column">
           <q-card bordered class="shadow-5 bg-primary" rounded>
             <q-card-section class="text-h5 text-white">Prefixes</q-card-section>
-            <q-card-section>
+            <q-card-section class="q-gutter-md">
               <q-input v-model="prefix_hot" :dense="dense" dark filled label="Hot"/>
               <q-input v-model="prefix_medium" :dense="dense" dark filled label="Medium"/>
               <q-input v-model="prefix_cold" :dense="dense" dark filled label="Cold"/>
