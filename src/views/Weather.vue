@@ -11,15 +11,13 @@
       <q-tab name="weather_table" label="Tabelle"/>
     </q-tabs>
     <q-tab-panels v-model="tab" animated class="transparent">
-      <q-tab-panel name="input" class="row justify-center full-height q-gutter-lg">
-        <div class="my-card q-gutter-md">
-      <div class="q-pa-md">
+      <q-tab-panel name="input" class="row q-col-gutter-md full-height">
 
-
-        <q-card class="bg-primary text-white q-pa-lg shadow-5 " dark>
+        <div class="col-6">
+        <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
           <q-card-section>
             <q-form class="q-gutter-md">
-              <q-input color="accent" v-model.number="airtemp" type="number" label="Luftemperatur in °C"
+              <q-input color="accent" v-model.number="airtemp" type="number" label="Lufttemperatur in °C"
                        label-color="white" dark ref="airtemp"/>
               <q-input color="accent" v-model.number="tracktemp" type="number" label="Streckentemperatur in °C"
                        label-color="white" dark ref="tracktemp"/>
@@ -28,20 +26,21 @@
             </q-form>
           </q-card-section>
           <q-separator dark/>
+          <q-form class="q-gutter-md">
           <q-card-actions>
             <q-btn class="bg-accent" @click="createWeather" :color="weatherAddBtnColor" :label="weatherAddBtnLabel"/>
           </q-card-actions>
+          </q-form>
         </q-card>
-      </div>
     </div>
 
 
-        <div class="my-card2 q-gutter-md " >
-          <div class="my-card2 q-pa-md" dark>
-            <div class="q-pa-md flex flex-center">
-            <q-card class="bg-primary text-white q-pa-lg shadow-5 " dark>
+
+          <div class="col-2" dark>
+            <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
 
               <q-card-section>
+                <q-form class="q-gutter-md">
                 <div class="base-timer">
                   <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                     <g class="base-timer__circle">
@@ -70,28 +69,25 @@
                 <q-card-actions>
                   <q-btn class="bg-accent" @click="this.startTimer" :color="weatherAddBtnColor" :label="countdownStartBtnLabel"/>
                 </q-card-actions>
+                </q-form>
               </q-card-section>
 
             </q-card>
             </div>
-          </div>
-        </div>
 
-
-        <div class="my-card q-gutter-md">
-          <div class="q-pa-md">
-
-
-            <q-card class="bg-primary text-white q-pa-lg shadow-5 " dark>
+        <div class="col-4">
+            <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
               <q-card-section>
                 <div id="app" :class="typeof weather.main != 'undefined' && weather.main.temp > 16 ? 'warm' : ''">
                   <main>
-                    <div class="search-box text-white">
+                    <div class="search-box text-white" dark>
                     <q-input outlined label="Ort eingeben..." type="text"
                              q-field
+                             color="white"
                              label-color="white"
                              class="search-bar text-white"
                              v-model="query"
+                             dark
                              @keypress="fetchWeather"
                     />
                     </div>
@@ -101,12 +97,9 @@
                         <div class="location">{{ weather.name }}, {{ weather.sys.country }}</div>
                         <div class="date">{{ dateBuilder() }}</div>
                       </div>
-
                       <div class="weather-box">
                         <div class="temp">{{ Math.round(weather.main.temp) }}°c</div>
                         <div class="weather">{{ weather.weather[0].main }}</div>
-
-
                       </div>
 
                     </div>
@@ -116,23 +109,24 @@
               </q-card-section>
             </q-card>
           </div>
-        </div>
 
-    <div class="my-card2 q-gutter-md " >
-      <div class="my-card2 q-pa-md" dark>
 
-        <q-card class="bg-primary text-white q-pa-lg shadow-5 fixed-bottom" dark>
+
+<div class="row fit content-md-center">
+        <div class="col-12">
+        <q-card class="bg-primary text-white q-pa-lg shadow-5 " dark>
           <q-card-section>
-            <apexchart ref="weatherChart" type="area" height="500" weidth="500"  :options="chartOptions" :series="series"></apexchart>
+            <apexchart ref="weatherChart" type="area" height="750px" :options="chartOptions" :series="series"></apexchart>
           </q-card-section>
+
         </q-card>
         </div>
-    </div>
+</div>
       </q-tab-panel>
 
-      <q-tab-panel name="weather_table" class="row justify-center full-height q-gutter-lg">
-    <div class="my-card2 q-gutter-md">
-      <div class="my-card2 q-pa-md" dark>
+      <q-tab-panel name="weather_table" class="fit row justify-center full-height q-gutter-lg">
+    <div class="justify-center q-gutter-md">
+      <div class=" q-pa-md" dark>
 
         <q-card class="bg-primary text-white q-pa-lg shadow-5" dark>
           <q-card-section>
@@ -573,7 +567,8 @@ export default {
 
 
 <style scoped lang="sass" >
-.base-timer
+
+ .base-timer
   position: relative
   width: 150px
   height: 150px
@@ -625,36 +620,23 @@ export default {
 
 
 
-.my-card
-  width: 30%
-  max-width: 200px
-
-  .my-card2
-    width: 100%
-  max-width: 650px
-
-
-  *
-  margin: 0
-  padding: 0
-  box-sizing: border-box
 
 body
   font-family: Arial, Helvetica, sans-serif
 
 
 
-
 .search-box
   width: 100%
   margin-bottom: 30px
+  text-underline-color: white
 
 
 
 .search-box .search-bar
 
   width: 100%
-  padding: 15px
+  padding: 10px
   text-underline-color: white
   color: #264653
   font-size: 20px
@@ -669,7 +651,7 @@ body
 
 .location-box .location
   color: #FFF
-  font-size: 25px
+  font-size: 20px
   font-weight: 500
   text-align: center
   text-shadow: 1px 3px rgba(0, 0, 0, 0.25)
@@ -686,18 +668,18 @@ body
 
 .weather-box .temp
   display: inline-block
-  padding: 5px 15px
+  padding: 10px 15px
   color: #FFF
-  font-size: 102px
+  font-size: 50px
   font-weight: 900
   text-shadow: 3px 6px rgba(0, 0, 0, 0.25)
-  border-radius: 16px
+  border-radius: 10px
   margin: 30px 0px
   box-shadow: 3px 6px rgba(0, 0, 0, 0.25)
 
 .weather-box .weather
   color: #FFF
-  font-size: 30px
+  font-size: 20px
   font-weight: 700
   font-style: italic
   text-shadow: 3px 6px rgba(0, 0, 0, 0.25)
