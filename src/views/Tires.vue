@@ -59,7 +59,7 @@
                     <q-btn icon="mdi-cached" @click="tireSetStatusUsed(props.row)" flat color="white" dense></q-btn>
                   </div>
                   <div v-else-if="col.name === 'pressure'">
-                    <q-btn icon="mdi-tune" @click="tireSetCalcPressure(props.row)" color="white" flat dense/>
+                    <q-btn icon="mdi-tune" @click="tiresetCalcPressure(props.row)" color="white" flat dense/>
                   </div>
                   <div v-else>
                     {{ col.value }}
@@ -84,23 +84,12 @@
                         <q-td v-for="col in props.cols"
                               :key="col.name"
                               :props="props">
-                          <div v-if="col.name === 'kaltdruck'">
-                            <q-badge color="accent" outline text-color="white">
-                              {{ col.value }}
-                            </q-badge>
-                            <q-popup-edit v-model="props.row.kaltdruck" v-slot="scope" title="Kaltdruck"
-                                          color="accent" buttons
-                                          @save="setColdPressure(props.row)" persistent>
-                              <q-input v-model="scope.value" dense autofocus type="number"
-                                       @keydown.enter="scope.set()"/>
-                            </q-popup-edit>
-                          </div>
-                          <div v-else-if="col.name === 'modification'">
-                            <q-badge v-if="col.value === null || col.value === ''" color="accent" outline
-                                     text-color="white">
+                          <div v-if="col.name === 'modification'">
+                            <q-badge v-if="col.value === null || col.value === ''" color="accent"
+                                     text-color="white" class="cursor-pointer">
                               {{ "----" }}
                             </q-badge>
-                            <q-badge v-else color="accent" outline text-color="white">
+                            <q-badge v-else color="accent" text-color="white" class="cursor-pointer">
                               {{ col.value }}
                             </q-badge>
                             <q-popup-edit v-model="props.row.modification" v-slot="scope" color="accent"
@@ -110,6 +99,20 @@
                               </q-select>
                             </q-popup-edit>
 
+                          </div>
+                          <div v-else-if="col.name === 'laufleistung'">
+                            <q-badge v-if="col.value === null || col.value === ''" color="accent"
+                                     text-color="white" class="cursor-pointer">
+                              {{ "----" }}
+                            </q-badge>
+                            <q-badge v-else color="accent" text-color="white" class="cursor-pointer">
+                              {{ col.value }}
+                            </q-badge>
+                            <q-popup-edit v-model="props.row.laufleistung" v-slot="scope" color="accent"
+                                          title="Laufleistung" buttons @save="setLaufleistung(props.row)"
+                                          persistent>
+                              <q-input v-model="scope.value" label="laufleistung" stack-label></q-input>
+                            </q-popup-edit>
                           </div>
                           <div v-else>
                             {{ col.value }}
@@ -124,22 +127,120 @@
           </q-table>
         </div>
         <div class="column">
-          <q-card class="bg-primary">
-            <q-card-section>
-              <q-input dense dark filled v-model="tireTempCold" type="number"
-                       label="Felgentemperatur" @keyup="setAllPressure"/>
+          <q-card class="bg-primary" v-if="pressureCalcTireset !== null">
+            <q-card-section class="text-subtitle1 text-white">
+              Reifendruck anpassen
             </q-card-section>
-            <q-separator dark></q-separator>
-            <q-card-section class="q-gutter-y-sm">
-              <div class="row text-white text-subtitle1 justify-center">Berechneter Reifendruck</div>
-              <div class="row q-gutter-x-sm">
-                <q-input disable dense dark filled v-model="pressureCalcFL" label="Vorne Links"/>
-                <q-input disable dense dark filled v-model="pressureCalcFR" label="Vorne Rechts"/>
+            <q-card-section class="q-gutter-md">
+              <q-input v-model="tireTemp" stack-label
+                       label="Felgentemperatur Richtwert" dark filled/>
+              <q-input v-model="this.tireTempMeasured" stack-label
+                       label="Felgentemperatur gemessen" dark filled/>
+            </q-card-section>
+            <q-card-section class="column q-gutter-y-md">
+              <div class="row q-gutter-x-md">
+                <q-card>
+                  <q-card-section class="column" style="width: 180px">
+                    <span>Position: {{ this.pressureCalcTireset.tires[0].position }}</span>
+                    <q-separator/>
+                    <q-input v-model="this.pressureCalcTireset.tires[0].kaltdruck" stack-label label="Kaltdruck" dense
+                             label-color="black"/>
+                    <q-input v-model="this.pressureCalcTireset.tires[0].kaltdruckModified" stack-label
+                             label="Kaltdruck modifiziert" readonly dense label-color="black"/>
+                    <q-checkbox class="q-mt-md" v-model="this.pressureCalcTireset.tires[0].bleeded" label="bleeded"
+                                dense
+                                color="accent"
+                                @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[0])"/>
+                  </q-card-section>
+                  <q-card-actions align="right">
+                    <q-btn label="berechnen" color="accent" dense
+                           @click="calculateModifiedPressure(this.pressureCalcTireset.tires[0])"/>
+                  </q-card-actions>
+                </q-card>
+                <q-card>
+                  <q-card-section class="column" style="width: 180px">
+                    <span>Position: {{ this.pressureCalcTireset.tires[1].position }}</span>
+                    <q-separator/>
+                    <q-input v-model="this.pressureCalcTireset.tires[1].kaltdruck" stack-label label="Kaltdruck" dense
+                             label-color="black"/>
+                    <q-input v-model="this.pressureCalcTireset.tires[1].kaltdruckModified" stack-label
+                             label="Kaltdruck modifiziert" readonly dense label-color="black"/>
+                    <q-checkbox class="q-mt-md" v-model="this.pressureCalcTireset.tires[1].bleeded" label="bleeded"
+                                dense
+                                color="accent" @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[1])"/>
+                  </q-card-section>
+                  <q-card-actions align="right">
+                    <q-btn label="berechnen" color="accent" dense
+                           @click="calculateModifiedPressure(this.pressureCalcTireset.tires[1])"/>
+                  </q-card-actions>
+                </q-card>
               </div>
-              <div class="row q-gutter-x-sm">
-                <q-input disable dense dark filled v-model="pressureCalcRL" label="Hinten Links"/>
-                <q-input disable dense dark filled v-model="pressureCalcRR" label="Hinten Rechts"/>
+              <div class="row q-gutter-x-md">
+                <q-card>
+                  <q-card-section class="column" style="width: 180px">
+                    <span>Position: {{ this.pressureCalcTireset.tires[2].position }}</span>
+                    <q-separator/>
+                    <q-input v-model="this.pressureCalcTireset.tires[2].kaltdruck" stack-label label="Kaltdruck" dense
+                             label-color="black"/>
+                    <q-input v-model="this.pressureCalcTireset.tires[2].kaltdruckModified" stack-label
+                             label="Kaltdruck modifiziert" readonly dense label-color="black"/>
+                    <q-checkbox class="q-mt-md" v-model="this.pressureCalcTireset.tires[2].bleeded" label="bleeded"
+                                dense
+                                color="accent" @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[2])"/>
+                  </q-card-section>
+                  <q-card-actions align="right">
+                    <q-btn label="berechnen" color="accent" dense
+                           @click="calculateModifiedPressure(this.pressureCalcTireset.tires[2])"/>
+                  </q-card-actions>
+                </q-card>
+                <q-card>
+                  <q-card-section class="column" style="width: 183px">
+                    <span>Position: {{ this.pressureCalcTireset.tires[3].position }}</span>
+                    <q-separator/>
+                    <q-input v-model="this.pressureCalcTireset.tires[3].kaltdruck" stack-label label="Kaltdruck" dense
+                             label-color="black"/>
+                    <q-input v-model="this.pressureCalcTireset.tires[3].kaltdruckModified" stack-label
+                             label="Kaltdruck modifiziert" readonly dense label-color="black"/>
+                    <q-checkbox class="q-mt-md" v-model="this.pressureCalcTireset.tires[3].bleeded" label="bleeded"
+                                dense
+                                color="accent" @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[3])"/>
+                  </q-card-section>
+                  <q-card-actions align="right">
+                    <q-btn label="berechnen" color="accent" dense
+                           @click="calculateModifiedPressure(this.pressureCalcTireset.tires[3])"/>
+                  </q-card-actions>
+                </q-card>
               </div>
+
+            </q-card-section>
+          </q-card>
+        </div>
+        <div class="column">
+          <q-card class="bg-primary" v-if="pressureCalcTireset !== null">
+            <q-card-section class="text-subtitle1 text-white">
+              Bleed berechnen
+            </q-card-section>
+            <q-card-section class="q-gutter-md">
+              <q-input v-model="bleedConstant" stack-label label="Anpasskonstante" dark filled/>
+              <q-input v-model="trackTemp" stack-label label="Streckentemperatur Richtwert" dark filled/>
+              <q-input v-model="trackTempMeasured" stack-label label="Streckentemperatur gemessen" dark filled/>
+            </q-card-section>
+            <q-card-actions align="center">
+              <q-btn class="q-mb-sm" label="berechnen" color="accent" @click="calculateBleed"/>
+              <q-dialog v-model="alert">
+                <q-card class="bg-accent">
+                  <q-card-section>
+                    <div class="text-center">{{ alertText }}</div>
+                  </q-card-section>
+                </q-card>
+              </q-dialog>
+            </q-card-actions>
+            <q-separator dark/>
+            <q-card-section class="q-gutter-md">
+              <q-input v-model="bleedCalc" stack-label label="berechneter Bleed" dark filled readonly/>
+              <q-input v-model="bleedCalcModified" stack-label
+                       :label="`angepasster Bleed @ ${this.pressureCalcTireset.tires[0].heatingTemp}℃`" dark filled
+                       readonly/>
             </q-card-section>
           </q-card>
         </div>
@@ -242,6 +343,13 @@ const tireColumns = [
     field: row => row.modification,
     sortable: true
   },
+  {
+    name: 'laufleistung',
+    label: 'Laufleistung',
+    align: 'left',
+    field: row => row.laufleistung,
+    sortable: true
+  },
   {name: 'bestellt', required: true, label: 'Bestellt', align: 'left', field: row => row.bestelltUm, sortable: true},
   {name: 'erhalten', required: true, label: 'Erhalten', align: 'left', field: row => row.erhaltenUm, sortable: true},
   {name: 'benutzt', required: true, label: 'Benutzt', align: 'left', field: row => row.benutztUm, sortable: true},
@@ -257,20 +365,12 @@ const tireColumns = [
   {
     name: 'temperatur',
     required: true,
-    label: 'Temperatur',
-    align: 'left',
+    label: 'Heiztemperatur',
+    align: 'center',
     field: row => row.heatingTemp,
-    sortable: true
-  }, {
-    name: 'kaltdruck',
-    required: true,
-    label: 'Kaltdruck',
-    align: 'left',
-    field: row => row.kaltdruck,
     sortable: true
   },
 ]
-
 
 export default {
   data: () => {
@@ -284,20 +384,21 @@ export default {
       tireSetRows_inStock: [],
       tireSetRows_used: [],
       tireTempCold: null,
-      pressureRL: null,
-      pressureFL: null,
-      pressureRR: null,
-      pressureFR: null,
-      pressureCalcRL: null,
-      pressureCalcFL: null,
-      pressureCalcRR: null,
-      pressureCalcFR: null,
-      pressureVars: [],
       modificationOptions: [
         {label: 'Siped', value: 'Siped'},
         {label: 'Extra Grooved', value: 'Extra Grooved'},
         {label: 'Extra Grooved & Siped', value: 'Extra Grooved & Siped'},
         {label: 'none', value: ''}],
+      pressureCalcTireset: null,
+      tireTemp: 30,
+      tireTempMeasured: null,
+      bleedConstant: 0.005,
+      trackTemp: 10,
+      trackTempMeasured: null,
+      bleedCalc: 0,
+      bleedCalcModified: 0,
+      alert: false,
+      alertText: '',
     }
   },
   methods: {
@@ -470,109 +571,29 @@ export default {
               }
           )
     },
-    getPressureVars() {
-      const apiUrl = this.$store.state.host.api_url
-      let url = apiUrl + '/race/pressureVars'
-      const jwt = this.$store.state.user.jwt
-      const requestOptions = {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer ' + jwt
-        },
-      }
-      let resp1
-      fetch(url, requestOptions)
-          .then(response => {
-            resp1 = response
-            return response.json()
-          })
-          .then(data => {
-            this.pressureVars = data
-          })
+    pressureModified(pressureGiven, temperatureTireGiven, temperatureTireMeasured) {
+      const pg = Number(pressureGiven)
+      const ttg = Number(temperatureTireGiven)
+      const ttm = Number(temperatureTireMeasured)
+      // pressureGiven * (temperatureTireMeasured + 273.15)               temperatureTireMeasured - temperatureTireGiven
+      // --------------------------------------------------   + 1.013 *   ----------------------------------------------
+      //        temperatureTireGiven + 273.15                                     temperatureTireGiven + 293.15
+      return ((pg * (ttm + 273.15) / (ttg + 273.15)) + 1.013 * ((ttm - ttg) / (ttg + 293.15)))
     },
-    setAllPressure() {
-      if (this.pressureFL !== null) {
-        this.pressureCalcFL = (Number(this.pressureFL) * (Number(this.tireTempCold) + this.pressureVars[0]) /
-            this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
-                this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
-      }
-      if (this.pressureFR !== null) {
-        this.pressureCalcFR = (Number(this.pressureFR) * (Number(this.tireTempCold) + this.pressureVars[0]) /
-            this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
-                this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
-      }
-      if (this.pressureRL !== null) {
-        this.pressureCalcRL = (Number(this.pressureRL) * (Number(this.tireTempCold) + this.pressureVars[0]) /
-            this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
-                this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
-      }
-      if (this.pressureRR !== null) {
-        this.pressureCalcRR = (Number(this.pressureRR) * (Number(this.tireTempCold) + this.pressureVars[0]) /
-            this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
-                this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
-      }
+    pressureBleed(modificationConstant, temperatureTrackMeasured, temperatureTrackGiven) {
+      const mc = Number(modificationConstant)
+      const ttm = Number(temperatureTrackMeasured)
+      const ttg = Number(temperatureTrackGiven)
+      return (mc * (ttm - ttg))
     },
-    setSinglePressure(pressure, tire) {
-      if (this.tireTempCold === null) return
-      const calcValue = (Number(pressure) * (Number(this.tireTempCold) + this.pressureVars[0]) /
-          this.pressureVars[1] + this.pressureVars[2] * (Number(this.tireTempCold) -
-              this.pressureVars[3]) / this.pressureVars[1]).toFixed(3)
-      switch (tire) {
-        case 'FL': {
-          this.pressureCalcFL = calcValue
-          break
-        }
-        case 'FR': {
-          this.pressureCalcFR = calcValue
-          break
-        }
-        case 'RL': {
-          this.pressureCalcRL = calcValue
-          break
-        }
-        case 'RR': {
-          this.pressureCalcRR = calcValue
-          break
-        }
-      }
-    },
-    tireSetCalcPressure(tireset) {
-      this.pressureFL = tireset.tires[0].kaltdruck
-      this.pressureFR = tireset.tires[1].kaltdruck
-      this.pressureRL = tireset.tires[2].kaltdruck
-      this.pressureRR = tireset.tires[3].kaltdruck
-      this.setAllPressure()
-    },
-    setColdPressure(tire) {
-      setTimeout(() => {
-        const apiUrl = this.$store.state.host.api_url
-        let url = new URL(`${apiUrl}/tire/update/${tire.tireID}`)
-        url.searchParams.append('kaltdruck', tire.kaltdruck)
-        const jwt = this.$store.state.user.jwt
-        const requestOptions = {
-          method: 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + jwt
-          },
-        }
-        let resp
-        fetch(url, requestOptions)
-            .then(response => {
-              resp = response
-              return response.json()
-            })
-            .then(data => {
-                  if (resp.ok) {
-                    this.setSinglePressure(tire.kaltdruck, tire.position)
-                    console.log(tire.kaltdruck, tire.position)
-                    this.getAllTireSets()
-                  } else {
-                    console.log(data)
-                  }
-                }
-            )
-      }, 1)
-
+    pressureBleedHot(modificationConstant, temperatureTrackMeasured, temperatureTrackGiven, temperatureTireMeasured, temperatureTireHot) {
+      const bleed = this.pressureBleed(modificationConstant, temperatureTrackMeasured, temperatureTrackGiven)
+      const ttm = Number(temperatureTireMeasured)
+      const tth = Number(temperatureTireHot)
+      // bleed * (temperatureTireHot + 273.15)              temperatureTireHot - temperatureTireMeasured
+      // -------------------------------------  + 1.013 *   --------------------------------------------
+      //    temperatureTireMeasured + 273.15                      temperatureTireMeasured + 293.15
+      return ((bleed * (tth + 273.15) / (ttm + 273.15)) + 1.013 * ((tth - ttm) / (ttm + 273.15)))
     },
     setModification(tire) {
       setTimeout(() => {
@@ -601,12 +622,89 @@ export default {
                 }
             )
       }, 1)
-    }
+    },
+    setTireBleeded(tire) {
+      setTimeout(() => {
+        const apiUrl = this.$store.state.host.api_url
+        let url = new URL(`${apiUrl}/tire/update/${tire.tireID}`)
+        url.searchParams.append('bleed', tire.bleeded)
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        let resp
+        fetch(url, requestOptions)
+      }, 1)
+    },
+    tiresetCalcPressure(tireset) {
+      this.pressureCalcTireset = tireset
+      this.tireTempMeasured = tireset.tires[0].kaltdruckTempMeasured
+    },
+    calculateModifiedPressure(tire) {
+      if (this.tireTempMeasured === 0 || tire.kaltdruck === 0 || this.tireTemp === 0) {
+        return
+      }
+      tire.kaltdruckTemp = this.tireTemp
+      tire.kaltdruckTempMeasured = this.tireTempMeasured
+      const pm = this.pressureModified(tire.kaltdruck, tire.kaltdruckTemp, tire.kaltdruckTempMeasured)
+      tire.kaltdruckModified = pm.toFixed(4)
+
+      setTimeout(() => {
+        const apiUrl = this.$store.state.host.api_url
+        let url = new URL(`${apiUrl}/tire/update/${tire.tireID}`)
+        url.searchParams.append('kaltdruck', tire.kaltdruck)
+        url.searchParams.append('ktm', tire.kaltdruckTempMeasured)
+        url.searchParams.append('kt', tire.kaltdruckTemp)
+        url.searchParams.append('km', tire.kaltdruckModified)
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        let resp
+        fetch(url, requestOptions)
+      }, 1)
+    },
+    calculateBleed() {
+      if (this.tireTempMeasured === null) {
+        this.alert = true
+        this.alertText = 'Fuer diese Berechnung muss eine gemessene Felgentemperatur eingegeben werden.'
+        return
+      }
+      if (this.trackTempMeasured === null) {
+        this.alert = true
+        this.alertText = 'Fuer diese Berechnung muss eine gemessene Streckentemperatur eingegeben werden'
+        return
+      }
+      this.bleedCalc = this.pressureBleed(this.bleedConstant, this.trackTempMeasured, this.trackTemp).toFixed(4)
+      this.bleedCalcModified = this.pressureBleedHot(this.bleedConstant, this.trackTempMeasured, this.trackTemp, this.tireTempMeasured, this.pressureCalcTireset.tires[0].heatingTemp).toFixed(4)
+    },
+    setLaufleistung(tire) {
+      setTimeout(() => {
+        const apiUrl = this.$store.state.host.api_url
+        let url = new URL(`${apiUrl}/tire/update/${tire.tireID}`)
+        url.searchParams.append('ll', tire.laufleistung)
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        let resp
+        fetch(url, requestOptions)
+      }, 1)
+    },
+
   }
   ,
   mounted() {
     this.getAllTireSets()
-    this.getPressureVars()
   }
 }
 </script>

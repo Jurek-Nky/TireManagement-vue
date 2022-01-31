@@ -1,7 +1,7 @@
 <template>
-  <q-page class="row justify-center items-center">
-    <div class="column">
-      <div class="row">
+  <q-page class="q-ma-lg">
+    <div class="row justify-center q-gutter-lg">
+      <div class="column">
         <q-card rounded bordered class="q-pa-lg shadow-5 bg-primary">
           <q-card-section class="text-white text-h5">Passwort aendern</q-card-section>
           <q-card-section>
@@ -27,6 +27,23 @@
           </q-card-actions>
         </q-card>
       </div>
+      <div class="column">
+        <q-card rounded bordered class="q-pa-lg shadow-5 bg-primary">
+          <q-card-section>
+            <span class="text-subtitle1 text-white">Settings</span>
+          </q-card-section>
+          <q-separator dark/>
+          <q-card-section class="column q-gutter-sm">
+            <q-toggle label="I want to get Notification for Weather Timer" v-model="weatherNotification" dark
+                      color="accent" class="text-white"/>
+            <q-toggle label="I want to get Notification for Order Timer" v-model="orderNotification" dark
+                      color="accent" class="text-white"/>
+          </q-card-section>
+          <q-card-actions align="right">
+            <q-btn label="save" color="accent" @click="updateNotifications"></q-btn>
+          </q-card-actions>
+        </q-card>
+      </div>
     </div>
   </q-page>
 </template>
@@ -44,13 +61,40 @@ export default {
       pwNewHint: '',
       pwVerifyHint: '',
       changeBtnIcon: 'mdi-autorenew',
-      changeBtnColor: 'accent'
+      changeBtnColor: 'accent',
+      weatherNotification: null,
+      orderNotification: null,
     }
-  }, mounted() {
+  },
+  mounted() {
     this.username = this.$store.state.user.userName
+    this.getUserSettings()
   }
   ,
   methods: {
+    updateNotifications() {
+      this.$store.commit('setWeatherNotifications', this.weatherNotification)
+      this.$store.commit('setOrderNotifications', this.orderNotification)
+      const apiUrl = this.$store.state.host.api_url
+      let url = new URL(`${apiUrl}/user/update/userSettings`)
+      url.searchParams.append('u', this.$store.state.user.userName)
+      const data = {
+        darkMode: true,
+        getOrderNotifications: this.orderNotification,
+        getWeatherNotifications: this.weatherNotification
+      }
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + jwt
+        },
+        body: JSON.stringify(data)
+      }
+      let resp
+      fetch(url, requestOptions)
+    },
     changePassword() {
       if (this.passwordOld === '') {
         this.pwOldHint = "enter your old password"
@@ -120,6 +164,26 @@ export default {
         this.changeBtnIcon = "mdi-autorenew"
         this.changeBtnColor = "accent"
       }, 1400)
+    },
+    getUserSettings() {
+      const apiUrl = this.$store.state.host.api_url
+      let url = new URL(`${apiUrl}/user/userSettings`)
+      url.searchParams.append('u', this.$store.state.user.userName)
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
+          .then(response => {
+            return response.json()
+          })
+          .then(data => {
+            this.weatherNotification = data.getWeatherNotifications
+            this.orderNotification = data.getOrderNotifications
+          })
     }
   }
 }

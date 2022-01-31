@@ -618,9 +618,6 @@ export default {
     justify-content: center
     font-size: 48px
 
-
-
-
 body
   font-family: Arial, Helvetica, sans-serif
 

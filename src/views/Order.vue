@@ -3,20 +3,30 @@
     <div class="row">
       <div class="col-md-6">
         <q-card rounded bordered class="q-pa-md q-ma-lg shadow-5 bg-primary">
-          <q-card-section class="text-white text-h5">Bestellformular</q-card-section>
+          <q-card-section>
+            <div class="row">
+              <div class="col-sm-10 text-white text-h5">
+                Bestellformular
+              </div>
+              <div class="col-sm-2 text-white" style="align-content: end">
+                Kontingent:
+                <q-input v-model="contingent" dark filled label-color="white" outlined dense type= "text" disable :model-value = "contingent"/>
+              </div>
+            </div>
+          </q-card-section>
           <q-card-section>
             <div class="q-gutter-y-sm">
-              <q-select dark filled label-color="accent" outlined dense v-model="art" :options="reifenartOptions"
+              <q-select dark filled label-color="white" outlined dense v-model="art" :options="reifenartOptions"
                         label="Reifenart auswählen">
                 <template v-slot:error>
                 Please choose one option!
                 </template>
               </q-select>
-              <q-select dark filled label-color="accent" outlined dense v-model="mischung" :options="mischungOptions"
+              <q-select dark filled label-color="white" outlined dense v-model="mischung" :options="mischungOptions"
                         label="Mischung auswählen"/>
-              <q-select dark filled label-color="accent" outlined dense v-model="modification"
+              <q-select dark filled label-color="white" outlined dense v-model="modification"
                         :options="modificationOptions" label="Bearbeitungsvariante auswählen"/>
-              <q-btn label-color="accent" class="full-width" :color="orderAddBtnColor" :label="orderAddBtnLabel"
+              <q-btn label-color="white" class="full-width" :color="orderAddBtnColor" :label="orderAddBtnLabel"
                      @click="setOrderData"/>
             </div>
           </q-card-section>
@@ -29,7 +39,7 @@
             <div class="q-gutter-y-sm">
               <!-- <q-select dark filled label-color="accent" outlined dense v-model="bestellAuswahl" :options="bestellAuswahlOptions"
                         label="Bestellung auswählen"/> -->
-              <q-input v-model="orderTimer" dark filled label-color="accent" outlined dense type="number" label="Zeit eingeben"/>
+              <q-input v-model="timerValue" dark filled label-color="white" outlined dense type="number" label="Zeit eingeben"/>
               <div>
                 <!-- <q-btn class="full-width" color="accent" label="Timer setzen"/> -->
               </div>
@@ -92,6 +102,7 @@ export default {
 
   data: () => {
     return {
+      timerValue: ref(null),
       art: ref(null),
       reifenartOptions: [
         'Slicks', 'Inters', 'Rains'
@@ -108,12 +119,69 @@ export default {
       bestellAuswahlOptions: [],
       columns,
       rows: [],
+      contingent : 0,
       orderAddBtnColor: 'accent',
       orderAddBtnLabel: 'Bestellen',
 
     }
   },
+
+  computed:{
+
+    orderTimeString() {
+      const time = this.$store.state.timer.orderTime
+      const hours = Math.floor(time / 60 / 60)
+      const minutes = Math.floor(time / 60)
+      const seconds = time - (minutes * 60)
+      if (hours === 0) {
+        if (minutes === 0) {
+          return `${seconds}s`
+        }
+        return `${minutes}
+          m:${seconds}s`
+      }
+      return `${hours}h:${minutes}m:${seconds}s`
+    },
+
+    orderTime() {
+      return this.$store.state.timer.orderTime
+    },
+    orderInitialTime() {
+      return this.$store.state.timer.orderInitialTime
+    },
+  },
   methods: {
+    updateOrderTimer(tireSet){
+        const apiUrl = this.$store.state.host.api_url
+        const url = `${apiUrl}/tireset/update/${tireSet.id}/orderTimer`
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        let resp
+        fetch(url, requestOptions)
+            .then(response => {
+              resp = response
+              return response.json()
+            })
+            .then(data => {
+                  if (resp.ok) {
+                    this.getOrderData()
+                  } else {
+                    console.log(data)
+                  }
+                }
+            )
+      },
+
+    getTimerValue(){
+      const x = document.getElementById("orderValue").value
+      print(parseInt(x))
+      return parseInt(x)
+    },
 
     getOrderData() {
       this.rows = []
@@ -150,7 +218,7 @@ export default {
       const exempleTire = {
         art: this.art,
         mischung: this.mischung,
-        modification: this.modification
+        modification: this.modification,
       }
       const data = {
         status: 'bestellt',
@@ -182,6 +250,7 @@ export default {
           .then(() => {
             if (resp.status === 200) {
               this.getOrderData()
+              this.getContingent()
               this.clearOrderFields()
               this.orderAddBtnLabel = 'Erfolgreich bestellt'
               this.orderAddBtnColor = 'positive'
@@ -198,6 +267,7 @@ export default {
       this.art = ""
       this.mischung = ""
       this.modification = ""
+      this.timerValue = ""
     },
     deleteTireSet(tireSet) {
       const apiUrl = this.$store.state.host.api_url
@@ -223,6 +293,7 @@ export default {
               }
           )
     },
+
     tireSetStatusInStorage(tireSet) {
       const apiUrl = this.$store.state.host.api_url
       const url = new URL(`${apiUrl}/tireset/update/${tireSet.id}/status`)
@@ -254,35 +325,39 @@ export default {
                 }
               }
           )
-    }
-
+    },
+    getContingent() {
+      this.contingent = []
+      const apiUrl = this.$store.state.host.api_url
+      const url = apiUrl + '/race/contingent'
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
+          .then(response => {
+            if (response.status !== 200) {
+              return
+            }
+            return response.json()
+          })
+          .then(data => {
+            this.contingent = data
+          })
+    },
   },
 
   mounted() {
     this.getOrderData()
+    this.getContingent()
   }
 
 
 }
-
-/* ERSTMAL NICHT BEACHTEN, WEIL ES NOCH NICHT FUNKTIONIERT
-
-var count = Number(localStorage.getItem('count')) || 3600;
-
-var counter = setInterval(timer, 1000); //1000 will  run it every 1 second
-function timer() {
-  count = count - 1;
-  localStorage.setItem('count', count)
-  if (count == -1) {
-    clearInterval(counter);
-    return;
-  }
-
-  var seconds = count % 60;
-  var minutes = Math.floor(count / 60);
-  minutes %= 60;
-  */
-
 
 </script>
 

@@ -1,27 +1,27 @@
 <template>
   <q-page>
     <q-tabs v-model="tab"
-            dense
             active-bg-color="accent"
-            indicator-color="white"
             align="justify"
-            class="text-white bg-primary">
-      <q-tab name="race" label="Rennen"/>
-      <q-tab name="user" label="Benutzer"/>
+            class="text-white bg-primary"
+            dense
+            indicator-color="white" no-caps>
+      <q-tab label="Rennen" name="race"/>
+      <q-tab label="Benutzer" name="user"/>
     </q-tabs>
     <q-tab-panels v-model="tab" animated class="transparent">
-      <q-tab-panel name="race" class="row justify-center full-height q-gutter-lg">
+      <q-tab-panel class="row justify-center full-height q-gutter-lg" name="race">
         <div class="column">
-          <q-card rounded bordered class="shadow-5 bg-primary">
+          <q-card bordered class="shadow-5 bg-primary" rounded>
             <q-card-section class="text-white text-h5">Rennen erstellen</q-card-section>
             <q-card-section>
-              <q-input filled v-model="date" dark mask="date" :rules="['date']">
+              <q-input v-model="date" :rules="['date']" dark filled mask="date">
                 <template v-slot:append>
-                  <q-icon name="mdi-calendar" class="cursor-pointer">
-                    <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                  <q-icon class="cursor-pointer" name="mdi-calendar">
+                    <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
                       <q-date v-model="date">
                         <div class="row items-center justify-end">
-                          <q-btn v-close-popup label="Close" color="primary" flat/>
+                          <q-btn v-close-popup color="primary" flat label="Close"/>
                         </div>
                       </q-date>
                     </q-popup-proxy>
@@ -29,94 +29,124 @@
                 </template>
               </q-input>
               <q-form class="q-gutter-md">
-                <q-input dense label-color="accent" dark filled v-model="raceName" type="text"
-                         label="Name" ref="raceName"/>
-                <q-input dense label-color="accent" dark filled v-model="location" type="text"
-                         label="Ort" ref="location"/>
-                <q-input dense label-color="accent" dark filled v-model="cont" type="number"
-                         label="Kontingent" ref="cont"/>
-                <q-input dense label-color="accent" dark filled v-model="raceLength" type="number"
-                         label="Laenge" ref="cont"/>
+                <q-input ref="raceName" v-model="raceName" dark dense filled label="Name"
+                         label-color="white" type="text"/>
+                <q-input ref="location" v-model="location" dark dense filled label="Ort"
+                         label-color="white" type="text"/>
+                <q-input ref="cont" v-model="cont" dark dense filled label="Kontingent"
+                         label-color="white" type="number"/>
+                <q-input ref="cont" v-model="raceLength" dark dense filled label="Laenge"
+                         label-color="white" type="number"/>
               </q-form>
             </q-card-section>
             <q-card-section>
-              <q-btn :color="raceAddBtnColor" size="md" class="full-width" :icon="raceAddBtnIcon"
+              <q-btn :color="raceAddBtnColor" :icon="raceAddBtnIcon" class="full-width" size="md"
                      @click="createRace"></q-btn>
             </q-card-section>
           </q-card>
         </div>
         <div class="column">
-          <q-card rounded bordered class="shadow-5 bg-primary">
+          <q-card bordered class="shadow-5 bg-primary" rounded>
             <q-card-section class="text-h5 text-white">Prefixes</q-card-section>
-            <q-card-section>
-              <q-input v-model="prefix_hot" label="Hot" :dense="dense" dark type="number"/>
-              <q-input v-model="prefix_medium" label="Medium" :dense="dense" dark type="number"/>
-              <q-input v-model="prefix_cold" label="Cold" :dense="dense" dark type="number"/>
-              <q-input v-model="prefix_intermediate" label="Inters" :dense="dense" dark type="number"/>
-              <q-input v-model="prefix_dry_wet" label="Dry Wet" :dense="dense" dark type="number"/>
-              <q-input v-model="prefix_heavy_wet" label="Heavy Wet" :dense="dense" dark type="number"/>
+            <q-card-section class="q-gutter-md">
+              <q-input v-model="prefix_hot" :dense="dense" dark filled label="Hot"/>
+              <q-input v-model="prefix_medium" :dense="dense" dark filled label="Medium"/>
+              <q-input v-model="prefix_cold" :dense="dense" dark filled label="Cold"/>
+              <q-input v-model="prefix_intermediate" :dense="dense" dark filled label="Inters"/>
+              <q-input v-model="prefix_dry_wet" :dense="dense" dark filled label="Dry Wet"/>
+              <q-input v-model="prefix_heavy_wet" :dense="dense" dark filled label="Heavy Wet"/>
             </q-card-section>
             <q-card-section>
-              <q-item-label class="text-negative" align="center">{{ prefixHint }}</q-item-label>
-              <q-btn :color="prefixBtnColor" size="md" class="full-width" :icon="prefixBtnIcon"
+              <q-item-label align="center" class="text-negative">{{ prefixHint }}</q-item-label>
+              <q-btn :color="prefixBtnColor" :icon="prefixBtnIcon" class="full-width" size="md"
                      @click="changePrefixes"></q-btn>
             </q-card-section>
           </q-card>
         </div>
         <div class="column">
-          <q-table title="Rennen"
+          <q-table :columns="race_columns"
+                   :pagination="{rowsPerPage: 0,sortBy: 'id',descending : true}"
                    :rows="race_rows"
-                   :columns="race_columns"
-                   row-key="name"
-                   hide-bottom
-                   dark
                    card-class="bg-primary bordered"
-                   separator="vertical">
+                   dark
+                   hide-bottom
+                   row-key="name"
+                   title="Rennen">
             <template v-slot:body-cell-action="props">
               <q-td :props="props">
-                <q-btn icon="mdi-delete" @click="raceDelete(props.row)" color="white" flat dense></q-btn>
+                <q-btn color="white" dense flat icon="mdi-delete" @click="raceDelete(props.row)"></q-btn>
               </q-td>
             </template>
           </q-table>
         </div>
       </q-tab-panel>
-      <q-tab-panel name="user" class="row justify-center full-height q-gutter-lg">
+      <q-tab-panel class="row justify-center full-height q-gutter-lg" name="user">
         <div class="column">
-          <q-card rounded bordered class="shadow-5 bg-primary">
+          <q-card bordered class="shadow-5 bg-primary" rounded>
             <q-card-section class="text-white text-h5">Benutzer erstellen</q-card-section>
             <q-card-section>
-              <q-form class="q-gutter-md">
-                <q-input dense label-color="accent" dark filled v-model="username" type="text"
-                         label="username" ref="username" :hint="userNameHint" @keydown="clearUserHints"/>
-                <q-input dense label-color="accent" dark filled v-model="password" type="password"
-                         label="password" ref="password" :hint="passwordHint" @keydown="clearUserHints"/>
-                <q-select dark outlined color="accent" label-color="accent" transition-show="jump-down"
-                          transition-hide="jump-up"
-                          v-model="role" :options="options"
-                          label="Rolle"/>
+              <q-form class="q-gutter-sm">
+                <q-input v-model="username" :hint="userNameHint" dark dense filled hide-bottom-space
+                         label="Username" label-color="white" type="text" @keydown="clearUserHints"/>
+                <q-input ref="password" v-model="password" :hint="passwordHint" dark dense filled
+                         hide-bottom-space label="Password" label-color="white" type="password"
+                         @keydown="clearUserHints"/>
+                <q-select v-model="role" :hint="roleHint" :options="options" dark dense filled hide-bottom-space
+                          label="Rolle" label-color="white" outlined transition-hide="jump-up" transition-show="jump-down"
+                          @add="clearUserHints"/>
               </q-form>
             </q-card-section>
             <q-card-section>
-              <q-btn :color="userAddBtnColor" size="md" class="full-width" :icon="userAddBtnIcon" @click="
+              <q-btn :color="userAddBtnColor" :icon="userAddBtnIcon" class="full-width" size="md" @click="
                  createUser
           "></q-btn>
             </q-card-section>
           </q-card>
         </div>
         <div class="column">
-          <q-table title="Benutzer"
+          <q-table :columns="columns"
                    :rows="rows"
-                   :columns="columns"
-                   row-key="name"
-                   hide-bottom
-                   dark
                    card-class="bg-primary bordered"
-                   separator="horizontal">
-            <template v-slot:body-cell-action="props">
-              <q-td :props="props">
-                <q-btn icon="mdi-delete" @click="userDelete(props.row)" color="white" flat dense
-                       v-if="props.row.rolle.roleName !== 'Admin'"></q-btn>
-              </q-td>
+                   dark
+                   hide-bottom
+                   row-key="name"
+                   separator="horizontal"
+                   title="Benutzer">
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td v-for="col in props.cols"
+                      :key="col.name"
+                      :props="props">
+                  <div v-if="col.name === 'role' && props.row.rolle.roleName !== 'Admin'">
+                    <q-badge class="cursor-pointer" color="accent">
+                      {{ col.value }}
+                    </q-badge>
+                    <q-popup-edit v-slot="scope" v-model="newUserRole" buttons
+                                  color="accent" persistent title="Role"
+                                  @save="setNewUserRole(props.row)">
+                      <q-select v-model="scope.value" :options="options" emit-value>
+                      </q-select>
+                    </q-popup-edit>
+
+                  </div>
+                  <div v-else-if="col.name === 'delete'">
+                    <q-btn v-if="props.row.rolle.roleName !== 'Admin'" color="white" dense
+                           flat icon="mdi-delete" @click="userDelete(props.row)"></q-btn>
+                  </div>
+                  <div v-else-if="col.name === 'password'">
+                    <q-btn v-if="props.row.rolle.roleName !== 'Admin'" dark dense flat icon="mdi-cached" no-caps/>
+                    <q-popup-edit v-slot="scope" v-model="adminResetPasswordField" buttons color="white"
+                                  dark @save="adminResetPassword(props.row)">
+                      <q-input v-model="scope.value" dark filled label="new password" label-color="white"
+                               type="password"></q-input>
+                    </q-popup-edit>
+                  </div>
+                  <div v-else>
+                    {{ col.value }}
+                  </div>
+                </q-td>
+              </q-tr>
+
             </template>
           </q-table>
         </div>
@@ -130,7 +160,8 @@ const columns = [
   {name: 'name', required: true, label: 'username', align: 'left', field: row => row.username, sortable: true},
   {name: 'role', align: 'left', label: 'role', field: row => row.rolle.roleName, sortable: true},
   {name: 'id', align: 'left', label: 'id', field: row => row.userid, sortable: true},
-  {name: 'action', label: 'actions', align: 'left'},
+  {name: 'delete', label: 'delete', align: 'center'},
+  {name: 'password', label: 'password reset', align: 'center'},
 ]
 const race_columns = [
   {name: 'name', required: true, label: 'Name', align: 'left', field: row => row.name, sortable: true},
@@ -138,7 +169,7 @@ const race_columns = [
   {name: 'location', align: 'left', label: 'Ort', field: row => row.location, sortable: true},
   {name: 'length', align: 'left', label: 'Laenge', field: row => row.length, sortable: true},
   {name: 'contingent', align: 'left', label: 'Kontingent', field: row => row.tireContingent, sortable: true},
-  {name: 'id', align: 'left', label: 'ID', field: row => row.raceID, sortable: true},
+  {name: 'id', required: true, align: 'left', label: 'ID', field: row => row.raceID, sortable: true},
   {name: 'action', label: 'actions', align: 'left'},
 ]
 export default {
@@ -149,6 +180,7 @@ export default {
         'Employee', 'Manager', 'Ingenieur'
       ],
       role: '',
+      roleHint: '',
       date: new Date().toISOString(),
       raceName: '',
       location: '',
@@ -176,6 +208,8 @@ export default {
       prefixBtnColor: 'accent',
       prefixBtnIcon: 'mdi-check',
       prefixHint: '',
+      adminResetPasswordField: '',
+      newUserRole: '',
     }
   },
   methods: {
@@ -226,6 +260,17 @@ export default {
       this.raceLength = ''
     },
     createUser() {
+      this.clearUserHints()
+      if (this.username.length < 4) {
+        this.userNameHint = 'Username must be at least 4 characters'
+        return
+      } else if (this.password.length < 8) {
+        this.passwordHint = 'Password must be at least 8 characters'
+        return
+      } else if (this.role === '') {
+        this.roleHint = 'Select a role'
+        return
+      }
       const apiUrl = this.$store.state.host.api_url
       const url = apiUrl + '/user/register'
       const data = {
@@ -277,6 +322,7 @@ export default {
     clearUserHints() {
       this.userNameHint = ''
       this.passwordHint = ''
+      this.roleHint = ''
     },
     userAddBtnError() {
       this.userAddBtnColor = "negative"
@@ -450,6 +496,54 @@ export default {
 
             })
       }
+    },
+    setNewUserRole(user) {
+      setTimeout(() => {
+        console.log(this.adminResetPasswordField)
+        const apiUrl = this.$store.state.host.api_url
+        let url = new URL(`${apiUrl}/user/update/userrole`)
+        url.searchParams.append('id', user.userid)
+        url.searchParams.append('role', this.newUserRole)
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          }
+        }
+        fetch(url, requestOptions)
+            .then(response => {
+              this.newUserRole = ''
+              if (response.status === 200) {
+                this.getUserData()
+              } else {
+                console.log(response)
+              }
+            })
+      }, 5)
+    },
+    adminResetPassword(user) {
+      setTimeout(() => {
+        console.log(this.adminResetPasswordField)
+        const apiUrl = this.$store.state.host.api_url
+        let url = new URL(`${apiUrl}/user/admin/resetpw`)
+        url.searchParams.append('id', user.userid)
+        url.searchParams.append('pwnew', this.adminResetPasswordField)
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          }
+        }
+        fetch(url, requestOptions)
+            .then(response => {
+              this.adminResetPasswordField = ''
+              if (response.status !== 200) {
+                console.log(response)
+              }
+            })
+      }, 5)
     }
   },
   mounted() {
