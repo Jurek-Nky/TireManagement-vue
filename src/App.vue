@@ -4,9 +4,12 @@
       <q-toolbar class="bg-primary">
         <q-btn dense flat icon="mdi-menu" round @click="toggleLeftDrawer"/>
         <q-img src="./assets/lms_logo_midsize.png" width="120px" class="q-ml-md"/>
-        <q-toolbar-title>Reifenverwaltung</q-toolbar-title>
+        <q-toolbar-title shrink>Reifenverwaltung</q-toolbar-title>
+        <q-space/>
+        <q-toolbar-title shrink>{{ $route.name }}</q-toolbar-title>
+        <q-space/>
         <q-btn v-if="(usernameComp !== '')" :label="username" class="q-mr-lg text-subtitle1" color="accent"
-               @click="this.$router.push('/profile')"/>
+               @click="this.$router.push('/profil')"/>
         <q-btn class="text-subtitle1" color="negative" dense icon="mdi-logout" @click="logout">logout</q-btn>
       </q-toolbar>
     </q-header>
@@ -87,67 +90,58 @@ export default {
       this.$router.push('/login')
     },
     startTimers() {
-      if (this.$store.state.user.getWeatherNotifications) {
-        const apiUrl = this.$store.state.host.api_url
-        const url = apiUrl + '/weather/timer'
-        const jwt = this.$store.state.user.jwt
-        const requestOptions = {
-          method: 'GET',
-          headers: {
-            'Authorization': 'Bearer ' + jwt
-          },
-        }
-        fetch(url, requestOptions)
-            .then(response => {
-              if (response.status !== 200) {
-                throw new Error("no timer available")
-              }
-              return response.json()
-            })
-            .then(data => {
-              const dataSplit = data.split(":")
-              let lastEntry = new Date()
-              lastEntry.setHours(dataSplit[0])
-              lastEntry.setMinutes(dataSplit[1])
-              lastEntry.setSeconds(dataSplit[2])
-              const timerInSec = 900 + ((lastEntry.getTime() - new Date().getTime()) / 1000) // 15 minutes - lastEntry + localtime
-              this.$store.commit("startWeatherTimer", timerInSec)
-            })
+      this.$store.state.timer.weatherRunning = false
+      this.$store.state.timer.orderRunning = false
+      const apiUrl = this.$store.state.host.api_url
+      const url_weather = apiUrl + '/weather/timer'
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
       }
-      if (this.$store.state.user.getOrderNotifications) {
-        const apiUrl = this.$store.state.host.api_url
-        const url = apiUrl + '/tire/ordertimer'
-        const jwt = this.$store.state.user.jwt
-        const requestOptions = {
-          method: 'GET',
-          headers: {
-            'Authorization': 'Bearer ' + jwt
-          },
-        }
-        fetch(url, requestOptions)
-            .then(response => {
-              if (response.status !== 200) {
-                throw new Error("no timer available")
-              }
-              return response.json()
-            })
-            .then(data => {
-              const dataSplit = data.split(":")
-              let lastEntry = new Date()
-              lastEntry.setHours(dataSplit[0])
-              lastEntry.setMinutes(dataSplit[1])
-              lastEntry.setSeconds(dataSplit[2])
-              const timerInSec = ((lastEntry.getTime() - new Date().getTime()) / 1000) // 15 minutes - lastEntry + localtime
-              this.$store.commit("startOrderTimer", timerInSec)
-            })
-      }
+      fetch(url_weather, requestOptions)
+          .then(response => {
+            if (response.status !== 200) {
+              throw new Error("no timer available")
+            }
+            return response.json()
+          })
+          .then(data => {
+            const dataSplit = data.split(":")
+            let lastEntry = new Date()
+            lastEntry.setHours(dataSplit[0])
+            lastEntry.setMinutes(dataSplit[1])
+            lastEntry.setSeconds(dataSplit[2])
+            const timerInSec = 1800 + ((lastEntry.getTime() - new Date().getTime()) / 1000) // 30 minutes - lastEntry + localtime
+            this.$store.commit("startWeatherTimer", timerInSec)
+          })
+      const url_order = apiUrl + '/tire/ordertimer'
+      fetch(url_order, requestOptions)
+          .then(response => {
+            if (response.status !== 200) {
+              throw new Error("no timer available")
+            }
+            return response.json()
+          })
+          .then(data => {
+            const dataSplit = data.split(":")
+            let lastEntry = new Date()
+            lastEntry.setHours(dataSplit[0])
+            lastEntry.setMinutes(dataSplit[1])
+            lastEntry.setSeconds(dataSplit[2])
+            const timerInSec = ((lastEntry.getTime() - new Date().getTime()) / 1000)  // timer - localtime
+            this.$store.commit("startOrderTimer", timerInSec)
+          })
+
       setTimeout(() => {
         this.update()
       }, 2000)
     },
     update() {
       const interval = setInterval(() => {
-        if (!this.$store.state.timer.weatherRunning && this.$store.state.user.getWeatherNotifications) {
+        if (!this.$store.state.timer.weatherRunning) {
           const apiUrl = this.$store.state.host.api_url
           const url = apiUrl + '/weather/timer'
           const jwt = this.$store.state.user.jwt
@@ -170,13 +164,13 @@ export default {
                 lastEntry.setHours(dataSplit[0])
                 lastEntry.setMinutes(dataSplit[1])
                 lastEntry.setSeconds(dataSplit[2])
-                const timerInSec = 900 + ((lastEntry.getTime() - new Date().getTime()) / 1000) // 15 minutes - lastEntry + localtime
+                const timerInSec = 1800 + ((lastEntry.getTime() - new Date().getTime()) / 1000) // 30 minutes - lastEntry + localtime
                 if (timerInSec >= 0) {
                   this.$store.commit("startWeatherTimer", timerInSec)
                 }
               })
         }
-        if (!this.$store.state.timer.orderRunning && this.$store.state.user.getOrderNotifications) {
+        if (!this.$store.state.timer.orderRunning) {
           const apiUrl = this.$store.state.host.api_url
           const url = apiUrl + '/tire/ordertimer'
           const jwt = this.$store.state.user.jwt
@@ -225,21 +219,21 @@ export default {
       {title: 'Bestellungen', icon: 'mdi-timer', to: '/bestellungen'},
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
-      {title: 'Statistic', icon: 'mdi-information-outline', to: '/statistic'},
+      {title: 'Statistik', icon: 'mdi-information-outline', to: '/statistik'},
       {title: 'Admin', icon: 'mdi-account-lock', to: '/admin'},
     ],
     ingItems: [
       {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
-      {title: 'Statistic', icon: 'mdi-history', to: '/statistic'},
+      {title: 'Statistik', icon: 'mdi-history', to: '/statistik'},
     ],
     manItems: [
       {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},
       {title: 'Bestellungen', icon: 'mdi-timer', to: '/bestellungen'},
       {title: 'Bestand', icon: 'mdi-database', to: '/bestand'},
       {title: 'Wetter', icon: 'mdi-weather-cloudy', to: '/wetter'},
-      {title: 'Statistic', icon: 'mdi-history', to: '/statistic'},
+      {title: 'Statistik', icon: 'mdi-history', to: '/statistik'},
     ],
     empItems: [
       {title: 'Dashboard', icon: 'mdi-view-dashboard', to: '/dashboard'},

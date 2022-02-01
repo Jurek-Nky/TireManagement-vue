@@ -11,27 +11,28 @@ const state = {
 }
 import {Notify} from 'quasar'
 import Router from "@/router";
+import store from "../index";
 
 const mutations = {
     startWeatherTimer(state, timeInSec) {
-        state.orderRunning = true
-        state.weatherInitialTime = 900
+        state.weatherRunning = true
+        state.weatherInitialTime = 1800
         state.weatherTime = timeInSec
         state.weatherTimer = setInterval(() => mutations.weatherCountdown(state), 1000)
 
     },
     pauseWeatherTimer(state) {
         clearInterval(state.weatherTimer)
-        state.orderRunning = false
+        state.weatherRunning = false
     },
     continueWeatherTimer(state) {
         state.weatherTimer = setInterval(() => mutations.weatherCountdown(state), 1000)
-        state.orderRunning = true
+        state.weatherRunning = true
     },
     resetWeatherTimer(state) {
         clearInterval(state.weatherTimer)
         state.weatherTime = state.weatherInitialTime
-        state.orderRunning = false
+        state.weatherRunning = false
     },
     weatherCountdown(state) {
         if (state.weatherTime >= 1) {
@@ -39,21 +40,23 @@ const mutations = {
         } else {
             state.weatherTime = 0
             clearInterval(state.weatherTimer)
-            state.orderRunning = false
-            Notify.create({
-                message: 'Eine neue Temperaturmessung muss vorgenommen werden',
-                closeBtn: 'Done',
-                color: 'warning',
-                timeout: 0,
-                actions: [
-                    {
-                        label: 'Wetter', color: 'white', handler: () => {
-                            Router.push('/wetter')
+            state.weatherRunning = false
+            if (store.state.user.getWeatherNotifications) {
+                Notify.create({
+                    message: 'Eine neue Temperaturmessung muss vorgenommen werden',
+                    closeBtn: 'Done',
+                    color: 'warning',
+                    timeout: 0,
+                    actions: [
+                        {
+                            label: 'Wetter', color: 'white', handler: () => {
+                                Router.push('/wetter')
+                            }
                         }
-                    }
-                ],
-                position: 'top-left'
-            })
+                    ],
+                    position: 'top-left'
+                })
+            }
         }
     },
 
@@ -88,20 +91,22 @@ const mutations = {
             state.orderTime = 0
             clearInterval(state.orderTimer)
             state.orderRunning = false
-            Notify.create({
-                message: 'Bestelltimer ist abgelaufen',
-                closeBtn: 'Done',
-                color: 'warning',
-                timeout: 0,
-                actions: [
-                    {
-                        label: 'Bestellungen', color: 'white', handler: () => {
-                            Router.push('/bestellungen')
+            if (store.state.user.getOrderNotifications) {
+                Notify.create({
+                    message: 'Bestelltimer ist abgelaufen',
+                    closeBtn: 'Done',
+                    color: 'warning',
+                    timeout: 0,
+                    actions: [
+                        {
+                            label: 'Bestellungen', color: 'white', handler: () => {
+                                Router.push('/bestellungen')
+                            }
                         }
-                    }
-                ],
-                position: 'top-left'
-            })
+                    ],
+                    position: 'top-left'
+                })
+            }
         }
     },
 }
