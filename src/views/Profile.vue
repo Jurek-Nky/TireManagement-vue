@@ -2,45 +2,45 @@
   <q-page class="q-ma-lg">
     <div class="row justify-center q-gutter-lg">
       <div class="column">
-        <q-card rounded bordered class="q-pa-lg shadow-5 bg-primary">
+        <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
           <q-card-section class="text-white text-h5">Passwort aendern</q-card-section>
           <q-card-section>
             <q-form class="q-gutter-md">
-              <q-input label-color="white" dark disable filled v-model="username" type="text"
-                       label="username"/>
-              <q-input label-color="white" dark filled v-model="passwordOld" type="password"
+              <q-input v-model="username" dark disable filled label="username" label-color="white"
+                       type="text"/>
+              <q-input ref="passwordOld" v-model="passwordOld" :hint="pwOldHint" dark filled
                        label="Altes Passwort"
-                       :hint="pwOldHint"
-                       ref="passwordOld" @keydown="resetHints"/>
-              <q-input label-color="white" dark filled v-model="passwordNew" type="password"
+                       label-color="white"
+                       type="password" @keydown="resetHints"/>
+              <q-input ref="passwordNew" v-model="passwordNew" :hint="pwNewHint" dark filled
                        label="Neues Password"
-                       :hint="pwNewHint"
-                       ref="passwordNew" @keydown="resetHints"/>
-              <q-input label-color="white" dark filled v-model="passwordVerify" type="password"
-                       label="Password wiederholen" :hint="pwVerifyHint"
-                       ref="passwordVerify" @keydown="resetHints"/>
+                       label-color="white"
+                       type="password" @keydown="resetHints"/>
+              <q-input ref="passwordVerify" v-model="passwordVerify" :hint="pwVerifyHint" dark filled
+                       label="Password wiederholen" label-color="white"
+                       type="password" @keydown="resetHints"/>
             </q-form>
           </q-card-section>
           <q-card-actions class="q-px-md">
-            <q-btn :color="changeBtnColor" size="md" class="full-width" :icon="changeBtnIcon"
+            <q-btn :color="changeBtnColor" :icon="changeBtnIcon" class="full-width" size="md"
                    @click="changePassword"></q-btn>
           </q-card-actions>
         </q-card>
       </div>
       <div class="column">
-        <q-card rounded bordered class="q-pa-lg shadow-5 bg-primary">
+        <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
           <q-card-section>
             <span class="text-subtitle1 text-white">Settings</span>
           </q-card-section>
           <q-separator dark/>
           <q-card-section class="column q-gutter-sm">
-            <q-toggle label="I want to get Notification for Weather Timer" v-model="weatherNotification" dark
-                      color="secondary" class="text-white"/>
-            <q-toggle label="I want to get Notification for Order Timer" v-model="orderNotification" dark
-                      color="secondary" class="text-white"/>
+            <q-toggle v-model="weatherNotification" class="text-white" color="secondary"
+                      dark label="I want to get Notification for Weather Timer"/>
+            <q-toggle v-model="orderNotification" class="text-white" color="secondary"
+                      dark label="I want to get Notification for Order Timer"/>
           </q-card-section>
           <q-card-actions align="right">
-            <q-btn label="save" color="accent" @click="updateNotifications"></q-btn>
+            <q-btn color="accent" label="save" @click="updateNotifications"></q-btn>
           </q-card-actions>
         </q-card>
       </div>
