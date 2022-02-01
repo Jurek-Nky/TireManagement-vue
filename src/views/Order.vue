@@ -48,32 +48,29 @@
         </q-card>
       </div>
     </div>
-    <q-card rounded bordered class="q-pa-md q-ma-lg shadow-5 bg-primary">
-      <div class="column">
-        <q-card-section>
-          <q-table
-              title="Bestellübersicht"
-              :rows="rows"
-              :columns="columns"
-              row-key="bezeichnung"
-              hide-bottom
-              dark
-              card-class="bg-primary bordered"
-              separator="horizontal"
-              no-data-label="Keine Einträge verfügbar"
-              :rows-per-page-options="[0]">
+    <div class="row q-ma-md">
+      <q-table
+          v-if="rows.length >= 1"
+          :columns="columns"
+          :rows="rows"
+          :rows-per-page-options="[0]"
+          card-class="bg-primary bordered full-width"
+          dark
+          hide-bottom
+          no-data-label="Keine Einträge verfügbar"
+          row-key="bezeichnung"
+          separator="horizontal"
+          title="Bestellübersicht">
 
-            <template v-slot:body-cell-aktion="props">
-              <q-td :props="props">
-                <q-btn icon="mdi-delete" @click="deleteTireSet(props.row)" color="negative" dense flat></q-btn>
-                <q-btn icon="mdi-truck-check" @click="tireSetStatusInStorage(props.row)" color="accent"
-                       dense flat></q-btn>
-              </q-td>
-            </template>
-          </q-table>
-        </q-card-section>
-      </div>
-    </q-card>
+        <template v-slot:body-cell-aktion="props">
+          <q-td :props="props">
+            <q-btn color="negative" dense flat icon="mdi-delete" @click="deleteTireSet(props.row)"></q-btn>
+            <q-btn color="accent" dense flat
+                   icon="mdi-truck-check" @click="tireSetStatusInStorage(props.row)"></q-btn>
+          </q-td>
+        </template>
+      </q-table>
+    </div>
   </q-page>
 </template>
 
@@ -208,8 +205,9 @@ export default {
             return response.json()
           })
           .then(data => {
-            console.log(data)
-            this.rows = data
+            if (resp.status === 200) {
+              this.rows = data;
+            }
           })
     },
     setOrderData() {
