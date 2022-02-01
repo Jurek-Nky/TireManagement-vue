@@ -11,7 +11,7 @@
       <q-tab label="Benutzt" name="used"/>
     </q-tabs>
     <q-tab-panels v-model="tab" animated class="transparent">
-      <q-tab-panel class="row full-height" name="in_store">
+      <q-tab-panel class="row full-height q-py-lg q-gutter-x-lg justify-center" name="in_store">
         <div class="col-grow q-mb-lg">
           <q-table :columns="tireSetColumns_inStock"
                    :loading="loading_inStock"
@@ -138,7 +138,7 @@
             </template>
           </q-table>
         </div>
-        <div v-if="pressureCalcTireset !== null" class="col-auto q-ml-lg">
+        <div v-if="pressureCalcTireset !== null" class="col-auto q-mb-lg">
           <q-card class="bg-primary">
             <q-card-section class="text-subtitle1 text-white">
               Reifendruck anpassen
@@ -238,7 +238,7 @@
             </q-card-section>
           </q-card>
         </div>
-        <div v-if="pressureCalcTireset !== null" class="col-auto q-ml-lg">
+        <div v-if="pressureCalcTireset !== null" class="col-auto">
           <q-card class="bg-primary">
             <q-card-section class="text-subtitle1 text-white">
               Bleed berechnen
