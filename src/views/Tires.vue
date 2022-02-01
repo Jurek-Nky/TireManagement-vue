@@ -11,13 +11,13 @@
       <q-tab label="Benutzt" name="used"/>
     </q-tabs>
     <q-tab-panels v-model="tab" animated class="transparent">
-      <q-tab-panel class="row justify-center full-height q-gutter-lg" name="in_store">
-        <div class="column">
+      <q-tab-panel class="row full-height" name="in_store">
+        <div class="col-grow q-mb-lg">
           <q-table :columns="tireSetColumns_inStock"
                    :loading="loading_inStock"
                    :pagination="{rowsPerPage: 0}"
                    :rows="tireSetRows_inStock"
-                   class="bg-primary"
+                   card-class="bg-primary"
                    dark
                    no-data-label="Table is empty"
                    row-key="id"
@@ -46,7 +46,7 @@
                 <q-td v-for="col in props.cols"
                       :key="col.name"
                       :props="props">
-                  <div v-if="col.name==='delete'" class="q-gutter-sm">
+                  <div v-if="col.name==='delete'">
                     <q-btn color="white" dense flat icon="mdi-delete"
                            @click="confirmDeleteDialog(props.row)"></q-btn>
                     <q-dialog v-model="confirm">
@@ -138,8 +138,8 @@
             </template>
           </q-table>
         </div>
-        <div class="column">
-          <q-card v-if="pressureCalcTireset !== null" class="bg-primary">
+        <div v-if="pressureCalcTireset !== null" class="col-auto q-ml-lg">
+          <q-card class="bg-primary">
             <q-card-section class="text-subtitle1 text-white">
               Reifendruck anpassen
             </q-card-section>
@@ -238,8 +238,8 @@
             </q-card-section>
           </q-card>
         </div>
-        <div class="column">
-          <q-card v-if="pressureCalcTireset !== null" class="bg-primary">
+        <div v-if="pressureCalcTireset !== null" class="col-auto q-ml-lg">
+          <q-card class="bg-primary">
             <q-card-section class="text-subtitle1 text-white">
               Bleed berechnen
             </q-card-section>
@@ -269,8 +269,8 @@
           </q-card>
         </div>
       </q-tab-panel>
-      <q-tab-panel class="row justify-center full-height q-gutter-lg" name="used">
-        <div class="column">
+      <q-tab-panel class="rowfull-height" name="used">
+        <div class="col-grow">
           <q-table :columns="tireSetColumns_used"
                    :loading="loading_used"
                    :pagination="{rowsPerPage: 0}"
