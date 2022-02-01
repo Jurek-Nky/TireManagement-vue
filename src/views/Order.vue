@@ -35,7 +35,7 @@
           </q-card-section>
         </q-card>
       </div>
-      <div class="col-grow col-md-4">
+      <div class="col-grow col-md-3">
         <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
           <q-card-section class="text-white text-h5">Timer setzen</q-card-section>
           <q-card-section>
