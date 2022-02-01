@@ -1,29 +1,29 @@
 <template>
   <q-page>
     <q-tabs v-model="tab"
-            dense
             active-bg-color="accent"
-            indicator-color="white"
             align="justify"
             class="text-white bg-primary"
+            dense
+            indicator-color="white"
             no-caps>
-      <q-tab name="in_store" label="Auf Lager"/>
-      <q-tab name="used" label="Benutzt"/>
+      <q-tab label="Auf Lager" name="in_store"/>
+      <q-tab label="Benutzt" name="used"/>
     </q-tabs>
     <q-tab-panels v-model="tab" animated class="transparent">
-      <q-tab-panel name="in_store" class="row justify-center full-height q-gutter-lg">
+      <q-tab-panel class="row justify-center full-height q-gutter-lg" name="in_store">
         <div class="column">
-          <q-table title="Reifensets"
+          <q-table :columns="tireSetColumns_inStock"
+                   :loading="loading_inStock"
+                   :pagination="{rowsPerPage: 0}"
                    :rows="tireSetRows_inStock"
-                   :columns="tireSetColumns_inStock"
-                   row-key="id"
                    class="bg-primary"
                    dark
                    no-data-label="Table is empty"
-                   :loading="loading_inStock"
-                   :pagination="{rowsPerPage: 0}">
+                   row-key="id"
+                   title="Reifensets">
             <template v-slot:loading>
-              <q-inner-loading showing color="primary"/>
+              <q-inner-loading color="primary" showing/>
             </template>
             <template v-slot:header="props">
               <q-tr :props="props">
@@ -40,26 +40,38 @@
             <template v-slot:body="props">
               <q-tr :props="props">
                 <q-td auto-width>
-                  <q-btn outline rounded size="sm" color="white" @click="props.expand = !props.expand"
-                         :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
+                  <q-btn :icon="props.expand ? 'mdi-minus' : 'mdi-plus'" color="white" outline rounded size="sm"
+                         @click="props.expand = !props.expand"/>
                 </q-td>
                 <q-td v-for="col in props.cols"
                       :key="col.name"
                       :props="props">
                   <div v-if="col.name==='delete'" class="q-gutter-sm">
-                    <q-btn icon="mdi-delete" @click="tireSetDelete(props.row)" flat color="white"
-                           dense></q-btn>
+                    <q-btn color="white" dense flat icon="mdi-delete"
+                           @click="confirmDeleteDialog(props.row)"></q-btn>
+                    <q-dialog v-model="confirm">
+                      <q-card class="bg-primary">
+                        <q-card-section class="row items-center">
+                          <span class="q-ml-sm text-white">Do you really want do delete this Tireset</span>
+                        </q-card-section>
+                        <q-card-actions align="right">
+                          <q-btn v-close-popup color="grey" label="cancel" text-color="white"></q-btn>
+                          <q-btn color="negative" label="delete"
+                                 @click="tireSetDelete"></q-btn>
+                        </q-card-actions>
+                      </q-card>
+                    </q-dialog>
                   </div>
                   <div v-else-if="col.name==='heating'">
-                    <q-btn icon="mdi-fire" @click="tireSetStartHeatingTimer(props.row)" color="white" flat
-                           dense></q-btn>
-                    <q-btn icon="mdi-stop" @click="tireSetEndHeatingTimer(props.row)" color="white" flat dense></q-btn>
+                    <q-btn color="white" dense flat icon="mdi-fire"
+                           @click="tireSetStartHeatingTimer(props.row)"></q-btn>
+                    <q-btn color="white" dense flat icon="mdi-stop" @click="tireSetEndHeatingTimer(props.row)"></q-btn>
                   </div>
                   <div v-else-if="col.name==='used'">
-                    <q-btn icon="mdi-cached" @click="tireSetStatusUsed(props.row)" flat color="white" dense></q-btn>
+                    <q-btn color="white" dense flat icon="mdi-cached" @click="tireSetStatusUsed(props.row)"></q-btn>
                   </div>
                   <div v-else-if="col.name === 'pressure'">
-                    <q-btn icon="mdi-tune" @click="tiresetCalcPressure(props.row)" color="white" flat dense/>
+                    <q-btn color="white" dense flat icon="mdi-tune" @click="tiresetCalcPressure(props.row)"/>
                   </div>
                   <div v-else>
                     {{ col.value }}
@@ -70,47 +82,47 @@
               </q-tr>
               <q-tr v-show="props.expand" :props="props">
                 <q-td colspan="100%">
-                  <q-table title="Reifen"
+                  <q-table :columns="tireColumns"
                            :rows="props.row.tires"
-                           :columns="tireColumns"
-                           row-key="tireID"
-                           hide-bottom
-                           dark
-                           class="bg-primary"
                            bordered
-                           dense>
+                           class="bg-primary"
+                           dark
+                           dense
+                           hide-bottom
+                           row-key="tireID"
+                           title="Reifen">
                     <template v-slot:body="props">
                       <q-tr :props="props">
                         <q-td v-for="col in props.cols"
                               :key="col.name"
                               :props="props">
                           <div v-if="col.name === 'modification'">
-                            <q-badge v-if="col.value === null || col.value === ''" color="accent"
-                                     text-color="white" class="cursor-pointer">
+                            <q-badge v-if="col.value === null || col.value === ''" class="cursor-pointer"
+                                     color="accent" text-color="white">
                               {{ "----" }}
                             </q-badge>
-                            <q-badge v-else color="accent" text-color="white" class="cursor-pointer">
+                            <q-badge v-else class="cursor-pointer" color="accent" text-color="white">
                               {{ col.value }}
                             </q-badge>
-                            <q-popup-edit v-model="props.row.modification" v-slot="scope" color="accent"
-                                          title="Bearbeitungsvariante" buttons @save="setModification(props.row)"
-                                          persistent>
+                            <q-popup-edit v-slot="scope" v-model="props.row.modification" buttons
+                                          color="accent" persistent title="Bearbeitungsvariante"
+                                          @save="setModification(props.row)">
                               <q-select v-model="scope.value" :options="modificationOptions" emit-value>
                               </q-select>
                             </q-popup-edit>
 
                           </div>
                           <div v-else-if="col.name === 'laufleistung'">
-                            <q-badge v-if="col.value === null || col.value === ''" color="accent"
-                                     text-color="white" class="cursor-pointer">
+                            <q-badge v-if="col.value === null || col.value === ''" class="cursor-pointer"
+                                     color="accent" text-color="white">
                               {{ "----" }}
                             </q-badge>
-                            <q-badge v-else color="accent" text-color="white" class="cursor-pointer">
+                            <q-badge v-else class="cursor-pointer" color="accent" text-color="white">
                               {{ col.value }}
                             </q-badge>
-                            <q-popup-edit v-model="props.row.laufleistung" v-slot="scope" color="accent"
-                                          title="Laufleistung" buttons @save="setLaufleistung(props.row)"
-                                          persistent>
+                            <q-popup-edit v-slot="scope" v-model="props.row.laufleistung" buttons
+                                          color="accent" persistent title="Laufleistung"
+                                          @save="setLaufleistung(props.row)">
                               <q-input v-model="scope.value" label="laufleistung" stack-label></q-input>
                             </q-popup-edit>
                           </div>
@@ -127,15 +139,15 @@
           </q-table>
         </div>
         <div class="column">
-          <q-card class="bg-primary" v-if="pressureCalcTireset !== null">
+          <q-card v-if="pressureCalcTireset !== null" class="bg-primary">
             <q-card-section class="text-subtitle1 text-white">
               Reifendruck anpassen
             </q-card-section>
             <q-card-section class="q-gutter-md">
-              <q-input v-model="tireTemp" stack-label
-                       label="Felgentemperatur Richtwert" dark filled/>
-              <q-input v-model="this.tireTempMeasured" stack-label
-                       label="Felgentemperatur gemessen" dark filled/>
+              <q-input v-model="tireTemp" dark
+                       filled label="Felgentemperatur Richtwert" stack-label/>
+              <q-input v-model="this.tireTempMeasured" dark
+                       filled label="Felgentemperatur gemessen" stack-label/>
             </q-card-section>
             <q-card-section class="column q-gutter-y-md">
               <div class="row q-gutter-x-md">
@@ -143,17 +155,18 @@
                   <q-card-section class="column" style="width: 180px">
                     <span>Position: {{ this.pressureCalcTireset.tires[0].position }}</span>
                     <q-separator/>
-                    <q-input v-model="this.pressureCalcTireset.tires[0].kaltdruck" stack-label label="Kaltdruck" dense
-                             label-color="black"/>
-                    <q-input v-model="this.pressureCalcTireset.tires[0].kaltdruckModified" stack-label
-                             label="Kaltdruck modifiziert" readonly dense label-color="black"/>
-                    <q-checkbox class="q-mt-md" v-model="this.pressureCalcTireset.tires[0].bleeded" label="bleeded"
+                    <q-input v-model="this.pressureCalcTireset.tires[0].kaltdruck" dense label="Kaltdruck"
+                             label-color="black"
+                             stack-label/>
+                    <q-input v-model="this.pressureCalcTireset.tires[0].kaltdruckModified" dense
+                             label="Kaltdruck modifiziert" label-color="black" readonly stack-label/>
+                    <q-checkbox v-model="this.pressureCalcTireset.tires[0].bleeded" class="q-mt-md" color="accent"
                                 dense
-                                color="accent"
+                                label="bleeded"
                                 @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[0])"/>
                   </q-card-section>
                   <q-card-actions align="right">
-                    <q-btn label="berechnen" color="accent" dense
+                    <q-btn color="accent" dense label="berechnen"
                            @click="calculateModifiedPressure(this.pressureCalcTireset.tires[0])"/>
                   </q-card-actions>
                 </q-card>
@@ -161,16 +174,18 @@
                   <q-card-section class="column" style="width: 180px">
                     <span>Position: {{ this.pressureCalcTireset.tires[1].position }}</span>
                     <q-separator/>
-                    <q-input v-model="this.pressureCalcTireset.tires[1].kaltdruck" stack-label label="Kaltdruck" dense
-                             label-color="black"/>
-                    <q-input v-model="this.pressureCalcTireset.tires[1].kaltdruckModified" stack-label
-                             label="Kaltdruck modifiziert" readonly dense label-color="black"/>
-                    <q-checkbox class="q-mt-md" v-model="this.pressureCalcTireset.tires[1].bleeded" label="bleeded"
+                    <q-input v-model="this.pressureCalcTireset.tires[1].kaltdruck" dense label="Kaltdruck"
+                             label-color="black"
+                             stack-label/>
+                    <q-input v-model="this.pressureCalcTireset.tires[1].kaltdruckModified" dense
+                             label="Kaltdruck modifiziert" label-color="black" readonly stack-label/>
+                    <q-checkbox v-model="this.pressureCalcTireset.tires[1].bleeded" class="q-mt-md" color="accent"
                                 dense
-                                color="accent" @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[1])"/>
+                                label="bleeded"
+                                @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[1])"/>
                   </q-card-section>
                   <q-card-actions align="right">
-                    <q-btn label="berechnen" color="accent" dense
+                    <q-btn color="accent" dense label="berechnen"
                            @click="calculateModifiedPressure(this.pressureCalcTireset.tires[1])"/>
                   </q-card-actions>
                 </q-card>
@@ -180,16 +195,18 @@
                   <q-card-section class="column" style="width: 180px">
                     <span>Position: {{ this.pressureCalcTireset.tires[2].position }}</span>
                     <q-separator/>
-                    <q-input v-model="this.pressureCalcTireset.tires[2].kaltdruck" stack-label label="Kaltdruck" dense
-                             label-color="black"/>
-                    <q-input v-model="this.pressureCalcTireset.tires[2].kaltdruckModified" stack-label
-                             label="Kaltdruck modifiziert" readonly dense label-color="black"/>
-                    <q-checkbox class="q-mt-md" v-model="this.pressureCalcTireset.tires[2].bleeded" label="bleeded"
+                    <q-input v-model="this.pressureCalcTireset.tires[2].kaltdruck" dense label="Kaltdruck"
+                             label-color="black"
+                             stack-label/>
+                    <q-input v-model="this.pressureCalcTireset.tires[2].kaltdruckModified" dense
+                             label="Kaltdruck modifiziert" label-color="black" readonly stack-label/>
+                    <q-checkbox v-model="this.pressureCalcTireset.tires[2].bleeded" class="q-mt-md" color="accent"
                                 dense
-                                color="accent" @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[2])"/>
+                                label="bleeded"
+                                @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[2])"/>
                   </q-card-section>
                   <q-card-actions align="right">
-                    <q-btn label="berechnen" color="accent" dense
+                    <q-btn color="accent" dense label="berechnen"
                            @click="calculateModifiedPressure(this.pressureCalcTireset.tires[2])"/>
                   </q-card-actions>
                 </q-card>
@@ -197,16 +214,18 @@
                   <q-card-section class="column" style="width: 183px">
                     <span>Position: {{ this.pressureCalcTireset.tires[3].position }}</span>
                     <q-separator/>
-                    <q-input v-model="this.pressureCalcTireset.tires[3].kaltdruck" stack-label label="Kaltdruck" dense
-                             label-color="black"/>
-                    <q-input v-model="this.pressureCalcTireset.tires[3].kaltdruckModified" stack-label
-                             label="Kaltdruck modifiziert" readonly dense label-color="black"/>
-                    <q-checkbox class="q-mt-md" v-model="this.pressureCalcTireset.tires[3].bleeded" label="bleeded"
+                    <q-input v-model="this.pressureCalcTireset.tires[3].kaltdruck" dense label="Kaltdruck"
+                             label-color="black"
+                             stack-label/>
+                    <q-input v-model="this.pressureCalcTireset.tires[3].kaltdruckModified" dense
+                             label="Kaltdruck modifiziert" label-color="black" readonly stack-label/>
+                    <q-checkbox v-model="this.pressureCalcTireset.tires[3].bleeded" class="q-mt-md" color="accent"
                                 dense
-                                color="accent" @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[3])"/>
+                                label="bleeded"
+                                @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[3])"/>
                   </q-card-section>
                   <q-card-actions align="right">
-                    <q-btn label="berechnen" color="accent" dense
+                    <q-btn color="accent" dense label="berechnen"
                            @click="calculateModifiedPressure(this.pressureCalcTireset.tires[3])"/>
                   </q-card-actions>
                 </q-card>
@@ -216,17 +235,17 @@
           </q-card>
         </div>
         <div class="column">
-          <q-card class="bg-primary" v-if="pressureCalcTireset !== null">
+          <q-card v-if="pressureCalcTireset !== null" class="bg-primary">
             <q-card-section class="text-subtitle1 text-white">
               Bleed berechnen
             </q-card-section>
             <q-card-section class="q-gutter-md">
-              <q-input v-model="bleedConstant" stack-label label="Anpasskonstante" dark filled/>
-              <q-input v-model="trackTemp" stack-label label="Streckentemperatur Richtwert" dark filled/>
-              <q-input v-model="trackTempMeasured" stack-label label="Streckentemperatur gemessen" dark filled/>
+              <q-input v-model="bleedConstant" dark filled label="Anpasskonstante" stack-label/>
+              <q-input v-model="trackTemp" dark filled label="Streckentemperatur Richtwert" stack-label/>
+              <q-input v-model="trackTempMeasured" dark filled label="Streckentemperatur gemessen" stack-label/>
             </q-card-section>
             <q-card-actions align="center">
-              <q-btn class="q-mb-sm" label="berechnen" color="accent" @click="calculateBleed"/>
+              <q-btn class="q-mb-sm" color="accent" label="berechnen" @click="calculateBleed"/>
               <q-dialog v-model="alert">
                 <q-card class="bg-accent">
                   <q-card-section>
@@ -237,27 +256,28 @@
             </q-card-actions>
             <q-separator dark/>
             <q-card-section class="q-gutter-md">
-              <q-input v-model="bleedCalc" stack-label label="berechneter Bleed" dark filled readonly/>
-              <q-input v-model="bleedCalcModified" stack-label
-                       :label="`angepasster Bleed @ ${this.pressureCalcTireset.tires[0].heatingTemp}℃`" dark filled
-                       readonly/>
+              <q-input v-model="bleedCalc" dark filled label="berechneter Bleed" readonly stack-label/>
+              <q-input v-model="bleedCalcModified"
+                       :label="`angepasster Bleed @ ${this.pressureCalcTireset.tires[0].heatingTemp}℃`"
+                       dark filled readonly
+                       stack-label/>
             </q-card-section>
           </q-card>
         </div>
       </q-tab-panel>
-      <q-tab-panel name="used" class="row justify-center full-height q-gutter-lg">
+      <q-tab-panel class="row justify-center full-height q-gutter-lg" name="used">
         <div class="column">
-          <q-table title="Benutzt"
+          <q-table :columns="tireSetColumns_used"
+                   :loading="loading_used"
+                   :pagination="{rowsPerPage: 0}"
                    :rows="tireSetRows_used"
-                   :columns="tireSetColumns_used"
-                   row-key="id"
                    class="bg-primary"
                    dark
                    no-data-label="Table is empty"
-                   :loading="loading_used"
-                   :pagination="{rowsPerPage: 0}">
+                   row-key="id"
+                   title="Benutzt">
             <template v-slot:loading>
-              <q-inner-loading showing color="primary"/>
+              <q-inner-loading color="primary" showing/>
             </template>
             <template v-slot:header="props">
               <q-tr :props="props">
@@ -274,15 +294,27 @@
             <template v-slot:body="props">
               <q-tr :props="props">
                 <q-td auto-width>
-                  <q-btn outline rounded size="sm" color="white" @click="props.expand = !props.expand"
-                         :icon="props.expand ? 'mdi-minus' : 'mdi-plus'"/>
+                  <q-btn :icon="props.expand ? 'mdi-minus' : 'mdi-plus'" color="white" outline rounded size="sm"
+                         @click="props.expand = !props.expand"/>
                 </q-td>
                 <q-td v-for="col in props.cols"
                       :key="col.name"
                       :props="props">
                   <div v-if="col.name==='delete'" class="q-gutter-sm">
-                    <q-btn icon="mdi-delete" @click="tireSetDelete(props.row)" flat color="white"
-                           dense></q-btn>
+                    <q-btn color="white" dense flat icon="mdi-delete"
+                           @click="confirmDeleteDialog(props.row)"></q-btn>
+                    <q-dialog v-model="confirm">
+                      <q-card class="bg-primary">
+                        <q-card-section class="row items-center">
+                          <span class="q-ml-sm text-white">Do you really want do delete this Tireset</span>
+                        </q-card-section>
+                        <q-card-actions align="right">
+                          <q-btn v-close-popup color="grey" label="cancel" text-color="white"></q-btn>
+                          <q-btn color="negative" label="delete"
+                                 @click="tireSetDelete"></q-btn>
+                        </q-card-actions>
+                      </q-card>
+                    </q-dialog>
                   </div>
                   <div v-else>
                     {{ col.value }}
@@ -293,14 +325,14 @@
               </q-tr>
               <q-tr v-show="props.expand" :props="props">
                 <q-td colspan="100%">
-                  <q-table title="Tires"
+                  <q-table :columns="tireColumns"
                            :rows="props.row.tires"
-                           :columns="tireColumns"
-                           row-key="tireID"
-                           hide-bottom
-                           dark
+                           bordered
                            class="bg-primary"
-                           bordered>
+                           dark
+                           hide-bottom
+                           row-key="tireID"
+                           title="Tires">
                   </q-table>
                 </q-td>
               </q-tr>
@@ -399,6 +431,9 @@ export default {
       bleedCalcModified: 0,
       alert: false,
       alertText: '',
+      confirm: false,
+      confirmDeleteTireId: null,
+
     }
   },
   methods: {
@@ -469,9 +504,9 @@ export default {
               }
           )
     },
-    tireSetDelete(tireSet) {
+    tireSetDelete() {
       const apiUrl = this.$store.state.host.api_url
-      const url = `${apiUrl}/tireset/delete/${tireSet.id}`
+      const url = `${apiUrl}/tireset/delete/${this.confirmDeleteTireId}`
       const jwt = this.$store.state.user.jwt
       const requestOptions = {
         method: 'DELETE',
@@ -483,6 +518,7 @@ export default {
           .then(response => {
             if (response.status === 200) {
               this.getAllTireSets()
+              this.confirm = false
             } else if (response.status === 500) {
               console.log(response.message)
             }
@@ -700,6 +736,10 @@ export default {
         fetch(url, requestOptions)
       }, 1)
     },
+    confirmDeleteDialog(tireset) {
+      this.confirm = true
+      this.confirmDeleteTireId = tireset.id
+    }
 
   }
   ,
