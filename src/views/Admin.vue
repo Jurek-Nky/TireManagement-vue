@@ -10,8 +10,8 @@
       <q-tab label="Benutzer" name="user"/>
     </q-tabs>
     <q-tab-panels v-model="tab" animated class="transparent">
-      <q-tab-panel class="row justify-center full-height q-gutter-lg" name="race">
-        <div class="column">
+      <q-tab-panel class="row full-height justify-center" name="race">
+        <div class="col-grow q-mb-lg q-mx-md">
           <q-card bordered class="shadow-5 bg-primary" rounded>
             <q-card-section class="text-white text-h5">Rennen erstellen</q-card-section>
             <q-card-section>
@@ -45,7 +45,7 @@
             </q-card-section>
           </q-card>
         </div>
-        <div class="column">
+        <div class="col-grow q-mx-md q-mb-lg">
           <q-card bordered class="shadow-5 bg-primary" rounded>
             <q-card-section class="text-h5 text-white">Prefixes</q-card-section>
             <q-card-section class="q-gutter-md">
@@ -63,7 +63,7 @@
             </q-card-section>
           </q-card>
         </div>
-        <div class="column">
+        <div class="col-grow q-mx-md">
           <q-table :columns="race_columns"
                    :pagination="{rowsPerPage: 0,sortBy: 'id',descending : true}"
                    :rows="race_rows"
@@ -97,8 +97,8 @@
           </q-table>
         </div>
       </q-tab-panel>
-      <q-tab-panel class="row justify-center full-height q-gutter-lg" name="user">
-        <div class="column">
+      <q-tab-panel class="row justify-center full-height q-gutter-y-lg" name="user">
+        <div class="col-grow q-mx-md">
           <q-card bordered class="shadow-5 bg-primary" rounded>
             <q-card-section class="text-white text-h5">Benutzer erstellen</q-card-section>
             <q-card-section>
@@ -121,7 +121,7 @@
             </q-card-section>
           </q-card>
         </div>
-        <div class="column">
+        <div class="col-grow col-7 q-mx-md">
           <q-table :columns="columns"
                    :rows="rows"
                    card-class="bg-primary bordered"
