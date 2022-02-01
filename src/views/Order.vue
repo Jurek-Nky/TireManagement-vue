@@ -109,7 +109,7 @@ export default {
       ],
       mischung: ref(null),
       mischungOptions: [
-        'Cold', 'Medium', 'Hot', 'Intermediate', 'Dry_wet', 'Heavy-wet'
+        'Cold', 'Medium', 'Hot', 'Intermediate', 'Dry_wet', 'Heavy_wet'
       ],
       modification: ref(null),
       modificationOptions: [
