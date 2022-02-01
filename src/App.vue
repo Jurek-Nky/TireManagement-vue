@@ -3,14 +3,14 @@
     <q-header v-if="(usernameComp !== '')" elevated>
       <q-toolbar class="bg-primary">
         <q-btn dense flat icon="mdi-menu" round @click="toggleLeftDrawer"/>
-        <q-img src="./assets/lms_logo_midsize.png" width="120px" class="q-ml-md"/>
-        <q-toolbar-title shrink>Reifenverwaltung</q-toolbar-title>
+        <q-img class="q-ml-md gt-xs" src="./assets/lms_logo_midsize.png" width="120px"/>
+        <q-toolbar-title class="gt-sm" shrink>Reifenverwaltung</q-toolbar-title>
         <q-space/>
-        <q-toolbar-title shrink>{{ $route.name }}</q-toolbar-title>
+        <q-toolbar-title class="gt-xs" shrink>{{ $route.name }}</q-toolbar-title>
         <q-space/>
-        <q-btn v-if="(usernameComp !== '')" :label="username" class="q-mr-lg text-subtitle1" color="accent"
-               @click="this.$router.push('/profil')"/>
-        <q-btn class="text-subtitle1" color="negative" dense icon="mdi-logout" @click="logout">logout</q-btn>
+        <q-btn v-if="(usernameComp !== '')" :label="username" class="q-mr-md" color="accent"
+               dense size="md" @click="this.$router.push('/profil')"/>
+        <q-btn class="q-mr-sm" color="negative" dense icon="mdi-logout" label="logout" size="md" @click="logout"/>
       </q-toolbar>
     </q-header>
     <q-drawer v-if="(usernameComp !== '')" v-model="leftDrawerOpen" class="bg-primary" elevated overlay show-if-above
