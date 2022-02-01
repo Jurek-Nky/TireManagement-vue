@@ -74,7 +74,24 @@
                    title="Rennen">
             <template v-slot:body-cell-action="props">
               <q-td :props="props">
-                <q-btn color="white" dense flat icon="mdi-delete" @click="raceDelete(props.row)"></q-btn>
+                <q-btn color="white" dense flat icon="mdi-delete" @click="confirmDeleteRace(props.row)"></q-btn>
+                <q-dialog v-model="confirmRD">
+                  <q-card class="bg-primary" style="max-width: 400px">
+                    <q-card-section>
+                      <span class="text-h6 text-white">
+                        Confirm to delete this Race</span>
+                    </q-card-section>
+                    <q-card-section>
+                      <span class="text-white">Be Careful: All Tires and Weatherdata,
+                        that belong to this race will also be deleted.</span>
+                    </q-card-section>
+                    <q-card-actions align="right">
+                      <q-btn v-close-popup color="accent" label="cancel" text-color="white"></q-btn>
+                      <q-btn color="negative" label="delete"
+                             @click="raceDelete"></q-btn>
+                    </q-card-actions>
+                  </q-card>
+                </q-dialog>
               </q-td>
             </template>
           </q-table>
@@ -92,7 +109,8 @@
                          hide-bottom-space label="Password" label-color="white" type="password"
                          @keydown="clearUserHints"/>
                 <q-select v-model="role" :hint="roleHint" :options="options" dark dense filled hide-bottom-space
-                          label="Rolle" label-color="white" outlined transition-hide="jump-up" transition-show="jump-down"
+                          label="Rolle" label-color="white" outlined transition-hide="jump-up"
+                          transition-show="jump-down"
                           @add="clearUserHints"/>
               </q-form>
             </q-card-section>
@@ -210,6 +228,9 @@ export default {
       prefixHint: '',
       adminResetPasswordField: '',
       newUserRole: '',
+      confirmRD: false,
+      confirmRaceID: null,
+
     }
   },
   methods: {
@@ -395,10 +416,14 @@ export default {
             this.race_rows = data
           })
     },
-    raceDelete(race) {
+    confirmDeleteRace(race) {
+      this.confirmRaceID = race.raceID
+      this.confirmRD = true
+    },
+    raceDelete() {
       const jwt = this.$store.state.user.jwt
       const apiUrl = this.$store.state.host.api_url
-      const url = `${apiUrl}/race/delete/${race.raceID}`
+      const url = `${apiUrl}/race/delete/${this.confirmRaceID}`
       const requestOptions = {
         method: 'Delete',
         headers: {
