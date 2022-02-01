@@ -6,17 +6,17 @@
           <q-card-section class="text-white text-h5">Passwort aendern</q-card-section>
           <q-card-section>
             <q-form class="q-gutter-md">
-              <q-input label-color="accent" dark disable filled v-model="username" type="text"
+              <q-input label-color="white" dark disable filled v-model="username" type="text"
                        label="username"/>
-              <q-input label-color="accent" dark filled v-model="passwordOld" type="password"
+              <q-input label-color="white" dark filled v-model="passwordOld" type="password"
                        label="Altes Passwort"
                        :hint="pwOldHint"
                        ref="passwordOld" @keydown="resetHints"/>
-              <q-input label-color="accent" dark filled v-model="passwordNew" type="password"
+              <q-input label-color="white" dark filled v-model="passwordNew" type="password"
                        label="Neues Password"
                        :hint="pwNewHint"
                        ref="passwordNew" @keydown="resetHints"/>
-              <q-input label-color="accent" dark filled v-model="passwordVerify" type="password"
+              <q-input label-color="white" dark filled v-model="passwordVerify" type="password"
                        label="Password wiederholen" :hint="pwVerifyHint"
                        ref="passwordVerify" @keydown="resetHints"/>
             </q-form>
@@ -35,9 +35,9 @@
           <q-separator dark/>
           <q-card-section class="column q-gutter-sm">
             <q-toggle label="I want to get Notification for Weather Timer" v-model="weatherNotification" dark
-                      color="accent" class="text-white"/>
+                      color="secondary" class="text-white"/>
             <q-toggle label="I want to get Notification for Order Timer" v-model="orderNotification" dark
-                      color="accent" class="text-white"/>
+                      color="secondary" class="text-white"/>
           </q-card-section>
           <q-card-actions align="right">
             <q-btn label="save" color="accent" @click="updateNotifications"></q-btn>
