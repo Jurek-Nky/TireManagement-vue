@@ -117,14 +117,13 @@ export default {
         return "abgelaufen"
       }
       const houres = Math.floor(time / 60 / 60)
-      const minutes = Math.floor(time / 60)
-      const seconds = time - (minutes * 60)
+      const minutes = Math.floor((time - houres * 3600) / 60)
+      const seconds = Math.floor(time - (minutes * 60))
       if (houres === 0) {
         if (minutes === 0) {
           return `${seconds}s`
         }
-        return `${minutes}
-          m:${seconds}s`
+        return `${minutes}m:${seconds}s`
       }
       return `${houres}h:${minutes}m:${seconds}s`
     },
@@ -134,16 +133,13 @@ export default {
         return "abgelaufen"
       }
       const houres = Math.floor(time / 60 / 60)
-      time = time - (houres * 60 * 60)
-      const minutes = Math.floor(time / 60)
-      time = time - (minutes * 60)
-      const seconds = time
+      const minutes = Math.floor((time - houres * 3600) / 60)
+      const seconds = Math.floor(time - (minutes * 60))
       if (houres === 0) {
         if (minutes === 0) {
           return `${seconds}s`
         }
-        return `${minutes}
-          m:${seconds}s`
+        return `${minutes}m:${seconds}s`
       }
       return `${houres}h:${minutes}m:${seconds}s`
     },
