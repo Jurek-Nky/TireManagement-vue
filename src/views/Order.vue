@@ -1,90 +1,80 @@
 <template>
-  <q-page>
-    <div class="row">
-      <div class="col-md-6">
-        <q-card rounded bordered class="q-pa-md q-ma-lg shadow-5 bg-primary">
-          <q-card-section>
+  <q-page class="q-pa-lg">
+    <div class="row q-gutter-lg">
+      <div class="col-grow">
+        <q-card bordered class="q-pa-md shadow-5 bg-primary" rounded>
+          <q-card-section class="q-gutter-md">
             <div class="row">
-              <div class="col-sm-10 text-white text-h5">
-                Bestellformular
+              <div class="col-grow">
+                <span class="text-white text-h5">Bestellformular</span>
               </div>
-              <div class="col-sm-2 text-white" style="align-content: end">
-                Kontingent:
-                <q-input v-model="contingent" dark filled label-color="white" outlined dense type= "text" readonly :model-value = "contingent"/>
+              <div class="col-3 text-white">
+                <q-input v-model="contingent" :model-value="contingent" dark dense disable filled label="Kontingent"
+                         label-color="white" outlined stack-label style="max-width: 100px" type="text"/>
               </div>
             </div>
           </q-card-section>
-          <q-card-section>
-            <div class="q-gutter-y-sm">
-              <q-select dark filled label-color="white" outlined dense v-model="art" :options="reifenartOptions"
-                        label="Reifenart auswählen">
-                <template v-slot:error>
+          <q-card-section class="q-gutter-md">
+            <q-select v-model="art" :options="reifenartOptions" dark dense filled label="Reifenart auswählen"
+                      label-color="white"
+                      outlined>
+              <template v-slot:error>
                 Please choose one option!
-                </template>
-              </q-select>
-              <q-select dark filled label-color="white" outlined dense v-model="mischung" :options="mischungOptions"
-                        label="Mischung auswählen"/>
-              <q-select dark filled label-color="white" outlined dense v-model="modification"
-                        :options="modificationOptions" label="Bearbeitungsvariante auswählen"/>
-              <q-btn label-color="white" class="full-width" :color="orderAddBtnColor" :label="orderAddBtnLabel"
-                     @click="setOrderData"/>
-            </div>
+              </template>
+            </q-select>
+            <q-select v-model="mischung" :options="mischungOptions" dark dense filled label="Mischung auswählen"
+                      label-color="white"
+                      outlined/>
+            <q-select v-model="modification" :options="modificationOptions" dark dense filled
+                      label="Bearbeitungsvariante auswählen"
+                      label-color="white" outlined/>
+          </q-card-section>
+          <q-card-section>
+            <q-btn :color="orderAddBtnColor" :label="orderAddBtnLabel" class="full-width" label-color="white"
+                   @click="setOrderData"/>
           </q-card-section>
         </q-card>
       </div>
-      <div class="col-sm-3">
-        <q-card rounded bordered class="q-pa-sm q-ma-lg shadow-5 bg-primary">
-          <q-card-section class="text-white text-h5" style="text-align: center">Bestelltimer</q-card-section>
+      <div class="col-grow col-md-4">
+        <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
+          <q-card-section class="text-white text-h5">Timer setzen</q-card-section>
           <q-card-section>
-            <q-separator dark/>
-            <div class="q-gutter-y-sm" style="text-align: center">
-              <q-circular-progress
-                  :max="orderInitialTime"
-                  :thickness="0.1"
-                  :value="orderTime"
-                  class="text-white q-mb-none q-mt-lg"
-                  color="accent"
-                  show-value
-                  size="170px"
-                  track-color="dark"
-              >
-                <span class="text-white text-h4 text-center">{{ orderTimeString }}</span>
-              </q-circular-progress>
-              <q-input v-model="initialTime" dark filled label-color="white" outlined dense type="number" label="Zeit eingeben"/>
-              <q-btn label-color="white" class="full-width" color="accent" label="Timer setzen" @click="setOrderTimer"/>
+            <div class="q-gutter-y-sm">
+              <!-- <q-select dark filled label-color="accent" outlined dense v-model="bestellAuswahl" :options="bestellAuswahlOptions"
+                        label="Bestellung auswählen"/> -->
+              <q-input v-model="timerValue" dark dense filled label="Zeit eingeben" label-color="white" outlined
+                       type="number"/>
               <div>
+                <!-- <q-btn class="full-width" color="accent" label="Timer setzen"/> -->
               </div>
             </div>
           </q-card-section>
         </q-card>
       </div>
     </div>
-    <q-card rounded bordered class="q-pa-md q-ma-lg shadow-5 bg-primary">
-      <div class="column">
-        <q-card-section>
-          <q-table
-              title="Bestellübersicht"
-              :rows="rows"
-              :columns="columns"
-              row-key="bezeichnung"
-              hide-bottom
-              dark
-              card-class="bg-primary bordered"
-              separator="horizontal"
-              no-data-label="Keine Einträge verfügbar"
-              :rows-per-page-options="[0]">
+    <div class="row q-mt-lg">
+      <q-table
+          v-if="rows.length >= 1"
+          :columns="columns"
+          :rows="rows"
+          :rows-per-page-options="[0]"
+          card-class="bg-primary bordered col-grow"
+          dark
+          hide-bottom
+          no-data-label="Keine Einträge verfügbar"
+          row-key="bezeichnung"
+          separator="horizontal"
+          title="Bestellübersicht">
 
-            <template v-slot:body-cell-aktion="props">
-              <q-td :props="props">
-                <q-btn icon="mdi-delete" @click="deleteTireSet(props.row)" color="negative" dense flat></q-btn>
-                <q-btn icon="mdi-truck-check" @click="tireSetStatusInStorage(props.row)" color="accent"
-                       dense flat></q-btn>
-              </q-td>
-            </template>
-          </q-table>
-        </q-card-section>
-      </div>
-    </q-card>
+        <template v-slot:body-cell-aktion="props">
+          <q-td :props="props">
+            <q-btn color="negative" dense flat icon="mdi-delete" @click="deleteTireSet(props.row)"></q-btn>
+            <q-btn color="accent" dense flat
+                   icon="mdi-truck-check" @click="tireSetStatusInStorage(props.row)"></q-btn>
+          </q-td>
+        </template>
+      </q-table>
+    </div>
   </q-page>
 </template>
 
@@ -120,7 +110,7 @@ export default {
       ],
       mischung: ref(null),
       mischungOptions: [
-        'Cold', 'Medium', 'Hot', 'Intermediate', 'Dry_wet', 'Heavy_wet'
+        'Cold', 'Medium', 'Hot', 'Intermediate', 'Dry_wet', 'Heavy-wet'
       ],
       modification: ref(null),
       modificationOptions: [
@@ -133,31 +123,27 @@ export default {
       contingent : 0,
       orderAddBtnColor: 'accent',
       orderAddBtnLabel: 'Bestellen',
-      initialTime: ref(null)
+
     }
   },
 
   computed:{
 
     orderTimeString() {
-      let time = this.$store.state.timer.orderTime
-      if (time <= 0) {
-        return "abgelaufen"
-      }
-      const houres = Math.floor(time / 60 / 60)
-      time = time - (houres * 60 * 60)
+      const time = this.$store.state.timer.orderTime
+      const hours = Math.floor(time / 60 / 60)
       const minutes = Math.floor(time / 60)
-      time = time - (minutes * 60)
-      const seconds = time
-      if (houres === 0) {
+      const seconds = time - (minutes * 60)
+      if (hours === 0) {
         if (minutes === 0) {
           return `${seconds}s`
         }
         return `${minutes}
           m:${seconds}s`
       }
-      return `${houres}h:${minutes}m:${seconds}s`
+      return `${hours}h:${minutes}m:${seconds}s`
     },
+
     orderTime() {
       return this.$store.state.timer.orderTime
     },
@@ -166,9 +152,6 @@ export default {
     },
   },
   methods: {
-    setOrderTimer() {
-
-    },
     updateOrderTimer(tireSet){
         const apiUrl = this.$store.state.host.api_url
         const url = `${apiUrl}/tireset/update/${tireSet.id}/orderTimer`
@@ -226,8 +209,9 @@ export default {
             return response.json()
           })
           .then(data => {
-            console.log(data)
-            this.rows = data
+            if (resp.status === 200) {
+              this.rows = data;
+            }
           })
     },
     setOrderData() {
