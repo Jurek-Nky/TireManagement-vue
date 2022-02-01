@@ -1,8 +1,8 @@
 <template>
-  <q-page class="q-ma-lg">
-    <div class="row justify-center q-gutter-lg">
-      <div class="column">
-        <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
+  <q-page padding>
+    <div class="row q-gutter-lg">
+      <div class="col-grow">
+        <q-card bordered class="q-pa-lg bg-primary" rounded>
           <q-card-section class="text-white text-h5">Passwort aendern</q-card-section>
           <q-card-section>
             <q-form class="q-gutter-md">
@@ -27,7 +27,7 @@
           </q-card-actions>
         </q-card>
       </div>
-      <div class="column">
+      <div class="col-grow">
         <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
           <q-card-section>
             <span class="text-subtitle1 text-white">Settings</span>

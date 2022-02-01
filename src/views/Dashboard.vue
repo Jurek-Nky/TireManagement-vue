@@ -1,7 +1,7 @@
 <template>
-  <q-page class="q-ma-lg">
+  <q-page class="q-mt-lg q-mx-lg">
     <div class="row justify-center q-gutter-lg">
-      <div class="column">
+      <div class="col-grow">
         <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
           <q-card-section class="q-gutter-sm">
             <span class="row text-subtitle1 text-white q-my-lg">To-Do-Liste</span>
@@ -42,7 +42,7 @@
           </q-card-section>
         </q-card>
       </div>
-      <div class="column">
+      <div class="col-auto">
         <q-card bordered class="q-pa-lg bg-primary shadow-5">
           <q-card-section>
             <span class="text-white text-subtitle1">Wetter timer</span>
@@ -64,7 +64,7 @@
           </q-card-section>
         </q-card>
       </div>
-      <div class="column">
+      <div class="col-auto">
         <q-card bordered class="q-pa-lg bg-primary shadow-5">
           <q-card-section>
             <span class="text-white text-subtitle1">Bestell timer</span>
@@ -117,14 +117,13 @@ export default {
         return "abgelaufen"
       }
       const houres = Math.floor(time / 60 / 60)
-      const minutes = Math.floor(time / 60)
-      const seconds = time - (minutes * 60)
+      const minutes = Math.floor((time - houres * 3600) / 60)
+      const seconds = Math.floor(time - (minutes * 60))
       if (houres === 0) {
         if (minutes === 0) {
           return `${seconds}s`
         }
-        return `${minutes}
-          m:${seconds}s`
+        return `${minutes}m:${seconds}s`
       }
       return `${houres}h:${minutes}m:${seconds}s`
     },
@@ -134,16 +133,13 @@ export default {
         return "abgelaufen"
       }
       const houres = Math.floor(time / 60 / 60)
-      time = time - (houres * 60 * 60)
-      const minutes = Math.floor(time / 60)
-      time = time - (minutes * 60)
-      const seconds = time
+      const minutes = Math.floor((time - houres * 3600) / 60)
+      const seconds = Math.floor(time - (minutes * 60))
       if (houres === 0) {
         if (minutes === 0) {
           return `${seconds}s`
         }
-        return `${minutes}
-          m:${seconds}s`
+        return `${minutes}m:${seconds}s`
       }
       return `${houres}h:${minutes}m:${seconds}s`
     },
