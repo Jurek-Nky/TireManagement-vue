@@ -3,8 +3,9 @@
     <div class="row justify-center q-gutter-lg">
       <div class="column">
         <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
-          <q-card-section class="q-gutter-sm">
-            <span class="row text-subtitle1 text-white q-my-lg">To-Do-Liste</span>
+          <q-card-section class="q-gutter-sm text-white text-h5" style="text-align: center">
+            <span>To-Do-Liste</span>
+            <q-separator dark/>
             <div class="row">
               <q-input v-model="newNote" dark filled label="neuer Eintrag" label-color="white"
                        @keyup.enter="addItem"></q-input>
@@ -44,8 +45,8 @@
       </div>
       <div class="column">
         <q-card bordered class="q-pa-lg bg-primary shadow-5">
-          <q-card-section>
-            <span class="text-white text-subtitle1">Wetter timer</span>
+          <q-card-section class="text-white text-h5" style="text-align: center">
+            <span>Wetter Timer</span>
           </q-card-section>
           <q-separator dark/>
           <q-card-section>
@@ -66,8 +67,8 @@
       </div>
       <div class="column">
         <q-card bordered class="q-pa-lg bg-primary shadow-5">
-          <q-card-section>
-            <span class="text-white text-subtitle1">Bestell timer</span>
+          <q-card-section class="text-white text-h5" style="text-align: center">
+            <span>Bestell timer</span>
           </q-card-section>
           <q-separator dark/>
           <q-card-section>
