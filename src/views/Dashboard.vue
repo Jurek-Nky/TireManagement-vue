@@ -1,7 +1,7 @@
 <template>
-  <q-page class="q-ma-lg">
+  <q-page class="q-mt-lg q-mx-lg">
     <div class="row justify-center q-gutter-lg">
-      <div class="column">
+      <div class="col-grow">
         <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
           <q-card-section class="q-gutter-sm">
             <span class="row text-subtitle1 text-white q-my-lg">To-Do-Liste</span>
@@ -42,7 +42,7 @@
           </q-card-section>
         </q-card>
       </div>
-      <div class="column">
+      <div class="col-auto">
         <q-card bordered class="q-pa-lg bg-primary shadow-5">
           <q-card-section>
             <span class="text-white text-subtitle1">Wetter timer</span>
@@ -64,7 +64,7 @@
           </q-card-section>
         </q-card>
       </div>
-      <div class="column">
+      <div class="col-auto">
         <q-card bordered class="q-pa-lg bg-primary shadow-5">
           <q-card-section>
             <span class="text-white text-subtitle1">Bestell timer</span>
