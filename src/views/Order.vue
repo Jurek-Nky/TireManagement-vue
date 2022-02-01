@@ -1,45 +1,49 @@
 <template>
-  <q-page>
-    <div class="row">
-      <div class="col-md-6">
-        <q-card rounded bordered class="q-pa-md q-ma-lg shadow-5 bg-primary">
-          <q-card-section>
+  <q-page class="q-pa-lg">
+    <div class="row q-gutter-lg">
+      <div class="col-grow">
+        <q-card bordered class="q-pa-md shadow-5 bg-primary" rounded>
+          <q-card-section class="q-gutter-md">
             <div class="row">
-              <div class="col-sm-10 text-white text-h5">
-                Bestellformular
+              <div class="col-grow">
+                <span class="text-white text-h5">Bestellformular</span>
               </div>
-              <div class="col-sm-2 text-white" style="align-content: end">
-                Kontingent:
-                <q-input v-model="contingent" dark filled label-color="white" outlined dense type= "text" disable :model-value = "contingent"/>
+              <div class="col-3 text-white">
+                <q-input v-model="contingent" :model-value="contingent" dark dense disable filled label="Kontingent"
+                         label-color="white" outlined stack-label style="max-width: 100px" type="text"/>
               </div>
             </div>
           </q-card-section>
-          <q-card-section>
-            <div class="q-gutter-y-sm">
-              <q-select dark filled label-color="white" outlined dense v-model="art" :options="reifenartOptions"
-                        label="Reifenart auswählen">
-                <template v-slot:error>
+          <q-card-section class="q-gutter-md">
+            <q-select v-model="art" :options="reifenartOptions" dark dense filled label="Reifenart auswählen"
+                      label-color="white"
+                      outlined>
+              <template v-slot:error>
                 Please choose one option!
-                </template>
-              </q-select>
-              <q-select dark filled label-color="white" outlined dense v-model="mischung" :options="mischungOptions"
-                        label="Mischung auswählen"/>
-              <q-select dark filled label-color="white" outlined dense v-model="modification"
-                        :options="modificationOptions" label="Bearbeitungsvariante auswählen"/>
-              <q-btn label-color="white" class="full-width" :color="orderAddBtnColor" :label="orderAddBtnLabel"
-                     @click="setOrderData"/>
-            </div>
+              </template>
+            </q-select>
+            <q-select v-model="mischung" :options="mischungOptions" dark dense filled label="Mischung auswählen"
+                      label-color="white"
+                      outlined/>
+            <q-select v-model="modification" :options="modificationOptions" dark dense filled
+                      label="Bearbeitungsvariante auswählen"
+                      label-color="white" outlined/>
+          </q-card-section>
+          <q-card-section>
+            <q-btn :color="orderAddBtnColor" :label="orderAddBtnLabel" class="full-width" label-color="white"
+                   @click="setOrderData"/>
           </q-card-section>
         </q-card>
       </div>
-      <div class="col-md-6">
-        <q-card rounded bordered class="q-pa-lg q-ma-lg shadow-5 bg-primary">
+      <div class="col-grow col-md-4">
+        <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
           <q-card-section class="text-white text-h5">Timer setzen</q-card-section>
           <q-card-section>
             <div class="q-gutter-y-sm">
               <!-- <q-select dark filled label-color="accent" outlined dense v-model="bestellAuswahl" :options="bestellAuswahlOptions"
                         label="Bestellung auswählen"/> -->
-              <q-input v-model="timerValue" dark filled label-color="white" outlined dense type="number" label="Zeit eingeben"/>
+              <q-input v-model="timerValue" dark dense filled label="Zeit eingeben" label-color="white" outlined
+                       type="number"/>
               <div>
                 <!-- <q-btn class="full-width" color="accent" label="Timer setzen"/> -->
               </div>
@@ -48,13 +52,13 @@
         </q-card>
       </div>
     </div>
-    <div class="row q-ma-md">
+    <div class="row q-mt-lg">
       <q-table
           v-if="rows.length >= 1"
           :columns="columns"
           :rows="rows"
           :rows-per-page-options="[0]"
-          card-class="bg-primary bordered full-width"
+          card-class="bg-primary bordered col-grow"
           dark
           hide-bottom
           no-data-label="Keine Einträge verfügbar"
