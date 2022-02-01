@@ -175,11 +175,11 @@
 
 <script>
 const columns = [
-  {name: 'name', required: true, label: 'username', align: 'left', field: row => row.username, sortable: true},
-  {name: 'role', align: 'left', label: 'role', field: row => row.rolle.roleName, sortable: true},
-  {name: 'id', align: 'left', label: 'id', field: row => row.userid, sortable: true},
-  {name: 'delete', label: 'delete', align: 'center'},
-  {name: 'password', label: 'password reset', align: 'center'},
+  {name: 'name', required: true, label: 'Username', align: 'left', field: row => row.username, sortable: true},
+  {name: 'role', align: 'left', label: 'Role', field: row => row.rolle.roleName, sortable: true},
+  {name: 'id', align: 'left', label: 'ID', field: row => row.userid, sortable: true},
+  {name: 'delete', label: 'Delete', align: 'center'},
+  {name: 'password', label: 'Passwort reset', align: 'center'},
 ]
 const race_columns = [
   {name: 'name', required: true, label: 'Name', align: 'left', field: row => row.name, sortable: true},
@@ -188,7 +188,7 @@ const race_columns = [
   {name: 'length', align: 'left', label: 'Laenge', field: row => row.length, sortable: true},
   {name: 'contingent', align: 'left', label: 'Kontingent', field: row => row.tireContingent, sortable: true},
   {name: 'id', required: true, align: 'left', label: 'ID', field: row => row.raceID, sortable: true},
-  {name: 'action', label: 'actions', align: 'left'},
+  {name: 'action', label: 'Delete', align: 'left'},
 ]
 export default {
   name: "Admin",
