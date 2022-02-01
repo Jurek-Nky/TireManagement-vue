@@ -3,6 +3,7 @@
     <q-header v-if="(usernameComp !== '')" elevated>
       <q-toolbar class="bg-primary">
         <q-btn dense flat icon="mdi-menu" round @click="toggleLeftDrawer"/>
+        <q-img src="./assets/lms_logo_midsize.png" width="120px" class="q-ml-md"/>
         <q-toolbar-title>Reifenverwaltung</q-toolbar-title>
         <q-btn v-if="(usernameComp !== '')" :label="username" class="q-mr-lg text-subtitle1" color="accent"
                @click="this.$router.push('/profile')"/>
