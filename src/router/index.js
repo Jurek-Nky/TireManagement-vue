@@ -86,7 +86,7 @@ const routes = [
         }
     }, {
         path: '/admin',
-        name: 'admin',
+        name: 'Admin',
         component: () => import('../views/Admin'),
         beforeEnter: (to, from, next) => {
             const role = store.state.user.userRole
