@@ -140,7 +140,7 @@
             >
             <template v-slot:body-cell-aktion="props">
               <q-td :props="props">
-                <q-btn icon="mdi-delete" @click="deleteWeather(props.row)" color="white" dense flat></q-btn>
+                <q-btn icon="mdi-delete" @click="confirm(id)" color="white" dense flat></q-btn>
               </q-td>
             </template>
             </q-table>
@@ -155,7 +155,7 @@
 
 <script>
 import {ref} from 'vue'
-
+import { useQuasar } from 'quasar'
 
 const columns = [
   {name: 'time', label: 'Uhrzeit', align: 'left', field: row => row.time, sortable: true},
@@ -175,6 +175,7 @@ const FULL_DASH_ARRAY = 283;
 const WARNING_THRESHOLD = 300;
 const ALERT_THRESHOLD = 60;
 
+
 const COLOR_CODES = {
   info: {
     color: "green"
@@ -192,15 +193,49 @@ const COLOR_CODES = {
 let TIME_LIMIT = 0;
 
 export default {
+
+
   name: "Weather",
+  setup (){
+    const $q = useQuasar()
+
+    function confirm(id) {
+      this.cId = id
+      $q.dialog({
+        dark: true,
+        message: 'Do you really want to DELETE this input ?',
+        color: 'primary',
+        cancel:{
+          push: true,
+        },
+        persistent: true,
+        ok:{
+          label :'DELETE',
+          color: 'negative'
+        }
+
+      }).onOk(() => {
+        this.deleteWeather(props.row)
+      }).onOk(() => {
+        this.deleteWeather(props.row)
+      }).onCancel(() => {
+
+      }).onDismiss(() => {
+        // console.log('I am triggered on both OK and Cancel')
+      })
+      }
+        return{confirm}
+  },
   data: () => {
 
+
+
     return {
+
       api_key: '328d654fb1486a9cf4fd992026fafb41',
       url_base: 'https://api.openweathermap.org/data/2.5/',
       query: '',
       weather: {},
-
       tab: 'input',
       airtemp: ref(null),
       tracktemp: ref(null),
@@ -214,6 +249,7 @@ export default {
       rows: [],
       value: 81,
       columns,
+      cId: '',
       weatherAddBtnColor: 'accent',
       weatherAddBtnLabel: 'Eintragen',
       countdownStartBtnLabel: 'Starten',
@@ -317,8 +353,8 @@ export default {
   },
 
 
-  methods: {
 
+  methods: {
 
     createWeather() {
       const apiUrl = this.$store.state.host.api_url
@@ -409,7 +445,6 @@ export default {
     },
 
     getDiagramData() {
-      this.chartDataAir = []
       const apiUrl = 'https://limla.ml:8443/api/v1/weather/all'
       const url = apiUrl
       const jwt = this.$store.state.user.jwt
@@ -433,7 +468,6 @@ export default {
           })
           .then(data => {
             for (let i = 0; i < data.length; i++) {
-              //this.series.data1(data[i].airtemperatur);
               this.series[0].data.push(data[i].tracktemperatur);
               this.series[1].data.push(data[i].airtemperatur);
 
@@ -483,71 +517,6 @@ export default {
       let year = d.getFullYear();
       return `${day} ${date} ${month} ${year}`;
     }
-
-
-
-
-
-
-
-
-
-    /* getRaceLoctaion(){
-      const apiUrl = 'https://limla.ml:8443/api/v1/race/all'
-      const url = apiUrl
-      const jwt = this.$store.state.user.jwt
-
-      const requestOptions = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + jwt
-        },
-      }
-      fetch(url, requestOptions)
-          .then(response => {
-            if (response.status !== 200) {
-              console.log(response)
-              return
-
-            }
-
-            return response.json()
-          })
-          .then(data => {
-          (this.location.data[0].location);
-
-          })
-    },
-
-*/
-
- /*   getWeatherforecast(){
-      const apiUrl = 'https://api.openweathermap.org/data/2.5/weather?q='++'&appid=328d654fb1486a9cf4fd992026fafb41'
-      const url = apiUrl
-
-      const requestOptions = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-
-        },
-      }
-      fetch(url, requestOptions)
-          .then(response => {
-            if (response.status !== 200) {
-              console.log(response)
-              return
-
-            }
-            328d654fb1486a9cf4fd992026fafb41
-            return response.json()
-          })
-
-
-    },
-    */
-
 
 
   },
