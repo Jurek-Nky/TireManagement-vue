@@ -3,8 +3,9 @@
     <div class="column">
       <div class="row">
         <q-card rounded bordered class="q-pa-lg shadow-5 bg-primary">
-          <q-card-section>
-            <div class="text-white text-h5">Login</div>
+          <q-card-section class="row justify-center">
+<!--            <div class="text-white text-h5">Login</div>-->
+              <q-img src="../assets/lms_logo_midsize.png" width="200px"/>
           </q-card-section>
           <q-card-section>
             <q-form class="q-gutter-md">
