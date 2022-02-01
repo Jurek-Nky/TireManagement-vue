@@ -151,17 +151,18 @@
             </q-card-section>
             <q-card-section class="column q-gutter-y-md">
               <div class="row q-gutter-x-md">
-                <q-card>
+                <q-card class="bg-primary">
                   <q-card-section class="column" style="width: 180px">
-                    <span>Position: {{ this.pressureCalcTireset.tires[0].position }}</span>
-                    <q-separator/>
-                    <q-input v-model="this.pressureCalcTireset.tires[0].kaltdruck" dense label="Kaltdruck"
-                             label-color="black"
-                             stack-label/>
-                    <q-input v-model="this.pressureCalcTireset.tires[0].kaltdruckModified" dense
-                             label="Kaltdruck modifiziert" label-color="black" readonly stack-label/>
-                    <q-checkbox v-model="this.pressureCalcTireset.tires[0].bleeded" class="q-mt-md" color="accent"
-                                dense
+                    <span class="text-white">Position: {{ this.pressureCalcTireset.tires[0].position }}</span>
+                    <q-separator dark/>
+                    <q-input v-model="this.pressureCalcTireset.tires[0].kaltdruck" dark dense
+                             label="Kaltdruck"
+                             label-color="white" stack-label/>
+                    <q-input v-model="this.pressureCalcTireset.tires[0].kaltdruckModified" dark
+                             dense label="Kaltdruck modifiziert" label-color="white" readonly stack-label/>
+                    <q-checkbox v-model="this.pressureCalcTireset.tires[0].bleeded" class="q-mt-md text-white"
+                                color="secondary"
+                                dark dense
                                 label="bleeded"
                                 @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[0])"/>
                   </q-card-section>
@@ -170,18 +171,19 @@
                            @click="calculateModifiedPressure(this.pressureCalcTireset.tires[0])"/>
                   </q-card-actions>
                 </q-card>
-                <q-card>
+                <q-card class="bg-primary">
                   <q-card-section class="column" style="width: 180px">
-                    <span>Position: {{ this.pressureCalcTireset.tires[1].position }}</span>
-                    <q-separator/>
-                    <q-input v-model="this.pressureCalcTireset.tires[1].kaltdruck" dense label="Kaltdruck"
-                             label-color="black"
-                             stack-label/>
-                    <q-input v-model="this.pressureCalcTireset.tires[1].kaltdruckModified" dense
-                             label="Kaltdruck modifiziert" label-color="black" readonly stack-label/>
-                    <q-checkbox v-model="this.pressureCalcTireset.tires[1].bleeded" class="q-mt-md" color="accent"
-                                dense
-                                label="bleeded"
+                    <span class="text-white">Position: {{ this.pressureCalcTireset.tires[1].position }}</span>
+                    <q-separator dark/>
+                    <q-input v-model="this.pressureCalcTireset.tires[1].kaltdruck" dark dense
+                             label="Kaltdruck"
+                             label-color="white" stack-label/>
+                    <q-input v-model="this.pressureCalcTireset.tires[1].kaltdruckModified" dark
+                             dense label="Kaltdruck modifiziert" label-color="white" readonly stack-label/>
+                    <q-checkbox v-model="this.pressureCalcTireset.tires[1].bleeded" class="q-mt-md text-white"
+                                color="secondary"
+                                dark
+                                dense label="bleeded"
                                 @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[1])"/>
                   </q-card-section>
                   <q-card-actions align="right">
@@ -191,17 +193,18 @@
                 </q-card>
               </div>
               <div class="row q-gutter-x-md">
-                <q-card>
+                <q-card class="bg-primary">
                   <q-card-section class="column" style="width: 180px">
-                    <span>Position: {{ this.pressureCalcTireset.tires[2].position }}</span>
-                    <q-separator/>
-                    <q-input v-model="this.pressureCalcTireset.tires[2].kaltdruck" dense label="Kaltdruck"
-                             label-color="black"
-                             stack-label/>
-                    <q-input v-model="this.pressureCalcTireset.tires[2].kaltdruckModified" dense
-                             label="Kaltdruck modifiziert" label-color="black" readonly stack-label/>
-                    <q-checkbox v-model="this.pressureCalcTireset.tires[2].bleeded" class="q-mt-md" color="accent"
-                                dense
+                    <span class="text-white">Position: {{ this.pressureCalcTireset.tires[2].position }}</span>
+                    <q-separator dark/>
+                    <q-input v-model="this.pressureCalcTireset.tires[2].kaltdruck" dark dense
+                             label="Kaltdruck"
+                             label-color="white" stack-label/>
+                    <q-input v-model="this.pressureCalcTireset.tires[2].kaltdruckModified" dark
+                             dense label="Kaltdruck modifiziert" label-color="white" readonly stack-label/>
+                    <q-checkbox v-model="this.pressureCalcTireset.tires[2].bleeded" class="q-mt-md text-white"
+                                color="secondary"
+                                dark dense
                                 label="bleeded"
                                 @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[2])"/>
                   </q-card-section>
@@ -210,17 +213,18 @@
                            @click="calculateModifiedPressure(this.pressureCalcTireset.tires[2])"/>
                   </q-card-actions>
                 </q-card>
-                <q-card>
+                <q-card class="bg-primary">
                   <q-card-section class="column" style="width: 183px">
-                    <span>Position: {{ this.pressureCalcTireset.tires[3].position }}</span>
-                    <q-separator/>
-                    <q-input v-model="this.pressureCalcTireset.tires[3].kaltdruck" dense label="Kaltdruck"
-                             label-color="black"
-                             stack-label/>
-                    <q-input v-model="this.pressureCalcTireset.tires[3].kaltdruckModified" dense
-                             label="Kaltdruck modifiziert" label-color="black" readonly stack-label/>
-                    <q-checkbox v-model="this.pressureCalcTireset.tires[3].bleeded" class="q-mt-md" color="accent"
-                                dense
+                    <span class="text-white">Position: {{ this.pressureCalcTireset.tires[3].position }}</span>
+                    <q-separator dark/>
+                    <q-input v-model="this.pressureCalcTireset.tires[3].kaltdruck" dark dense
+                             label="Kaltdruck"
+                             label-color="white" stack-label/>
+                    <q-input v-model="this.pressureCalcTireset.tires[3].kaltdruckModified" dark
+                             dense label="Kaltdruck modifiziert" label-color="white" readonly stack-label/>
+                    <q-checkbox v-model="this.pressureCalcTireset.tires[3].bleeded" class="q-mt-md text-white"
+                                color="secondary"
+                                dark dense
                                 label="bleeded"
                                 @update:model-value="setTireBleeded(this.pressureCalcTireset.tires[3])"/>
                   </q-card-section>
