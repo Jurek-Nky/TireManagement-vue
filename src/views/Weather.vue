@@ -1,55 +1,55 @@
 <template>
   <q-page>
     <q-tabs v-model="tab"
-            dense
             active-bg-color="accent"
-            indicator-color="white"
             align="justify"
             class="text-white bg-primary"
+            dense
+            indicator-color="white"
             no-caps>
-      <q-tab name="input" label="Eintragen"/>
-      <q-tab name="weather_table" label="Tabelle"/>
+      <q-tab label="Eintragen" name="input"/>
+      <q-tab label="Tabelle" name="weather_table"/>
     </q-tabs>
     <q-tab-panels v-model="tab" animated class="transparent">
-      <q-tab-panel name="input" class="row q-col-gutter-md full-height">
+      <q-tab-panel class="row q-col-gutter-md full-height" name="input">
 
         <div class="col-6">
-        <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
-          <q-card-section>
+          <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
+            <q-card-section>
+              <q-form class="q-gutter-md">
+                <q-input ref="airtemp" v-model.number="airtemp" color="accent" dark
+                         label="Lufttemperatur in °C" label-color="white" type="number"/>
+                <q-input ref="tracktemp" v-model.number="tracktemp" color="accent" dark
+                         label="Streckentemperatur in °C" label-color="white" type="number"/>
+                <q-select ref="cond" v-model="cond" :options="optionstrack" color="accent" dark
+                          filled label="Streckenverhältnis" label-color="white"/>
+              </q-form>
+            </q-card-section>
+            <q-separator dark/>
             <q-form class="q-gutter-md">
-              <q-input color="accent" v-model.number="airtemp" type="number" label="Lufttemperatur in °C"
-                       label-color="white" dark ref="airtemp"/>
-              <q-input color="accent" v-model.number="tracktemp" type="number" label="Streckentemperatur in °C"
-                       label-color="white" dark ref="tracktemp"/>
-              <q-select color="accent" filled v-model="cond" :options="optionstrack" label="Streckenverhältnis"
-                        label-color="white" dark ref="cond"/>
+              <q-card-actions>
+                <q-btn :color="weatherAddBtnColor" :label="weatherAddBtnLabel" class="bg-accent"
+                       @click="createWeather"/>
+              </q-card-actions>
             </q-form>
-          </q-card-section>
-          <q-separator dark/>
-          <q-form class="q-gutter-md">
-          <q-card-actions>
-            <q-btn class="bg-accent" @click="createWeather" :color="weatherAddBtnColor" :label="weatherAddBtnLabel"/>
-          </q-card-actions>
-          </q-form>
-        </q-card>
-    </div>
+          </q-card>
+        </div>
 
 
+        <div class="col-2" dark>
+          <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
 
-          <div class="col-2" dark>
-            <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
-
-              <q-card-section>
-                <q-form class="q-gutter-md">
+            <q-card-section>
+              <q-form class="q-gutter-md">
                 <div class="base-timer">
                   <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                     <g class="base-timer__circle">
                       <circle class="base-timer__path-elapsed text-white" cx="50" cy="50" r="45"></circle>
                       <path
 
+                          :class="remainingPathColor"
                           :stroke-dasharray="circleDasharray"
                           class="base-timer__path-remaining"
-                          :class="remainingPathColor"
                           d="
                             M 50, 50
                             m -45, 0
@@ -63,91 +63,92 @@
 
                 </div>
                 <q-form class="q-gutter-md">
-                  <q-input color="accent" v-model.number="countdown" type="number" label="Minuten"
-                           label-color="white" dark ref="countdown"/>
+                  <q-input ref="countdown" v-model.number="countdown" color="accent" dark
+                           label="Minuten" label-color="white" type="number"/>
                 </q-form>
                 <q-card-actions>
-                  <q-btn class="bg-accent" @click="this.startTimer" :color="weatherAddBtnColor" :label="countdownStartBtnLabel"/>
+                  <q-btn :color="weatherAddBtnColor" :label="countdownStartBtnLabel" class="bg-accent"
+                         @click="this.startTimer"/>
                 </q-card-actions>
-                </q-form>
+              </q-form>
+            </q-card-section>
+
+          </q-card>
+        </div>
+
+        <div class="col-4">
+          <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
+            <q-card-section>
+              <div id="app" :class="typeof weather.main != 'undefined' && weather.main.temp > 16 ? 'warm' : ''">
+                <main>
+                  <div class="search-box text-white" dark>
+                    <q-input v-model="query" class="search-bar text-white" color="white"
+                             dark
+                             label="Ort eingeben..."
+                             label-color="white"
+                             outlined
+                             q-field
+                             type="text"
+                             @keypress="fetchWeather"
+                    />
+                  </div>
+
+                  <div v-if="typeof weather.main != 'undefined'" class="weather-wrap">
+                    <div class="location-box">
+                      <div class="location">{{ weather.name }}, {{ weather.sys.country }}</div>
+                      <div class="date">{{ dateBuilder() }}</div>
+                    </div>
+                    <div class="weather-box">
+                      <div class="temp">{{ Math.round(weather.main.temp) }}°c</div>
+                      <div class="weather">{{ weather.weather[0].main }}</div>
+                    </div>
+
+                  </div>
+
+                </main>
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+
+
+        <div class="row fit content-md-center">
+          <div class="col-12">
+            <q-card class="bg-primary text-white q-pa-lg shadow-5 " dark>
+              <q-card-section>
+                <apexchart ref="weatherChart" :options="chartOptions" :series="series" height="450px"
+                           type="area"></apexchart>
               </q-card-section>
 
             </q-card>
-            </div>
+          </div>
+        </div>
+      </q-tab-panel>
 
-        <div class="col-4">
-            <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
+      <q-tab-panel class="fit row justify-center full-height q-gutter-lg" name="weather_table">
+        <div class="justify-center q-gutter-md">
+          <div class=" q-pa-md" dark>
+
+            <q-card class="bg-primary text-white q-pa-lg shadow-5" dark>
               <q-card-section>
-                <div id="app" :class="typeof weather.main != 'undefined' && weather.main.temp > 16 ? 'warm' : ''">
-                  <main>
-                    <div class="search-box text-white" dark>
-                    <q-input outlined label="Ort eingeben..." type="text"
-                             q-field
-                             color="white"
-                             label-color="white"
-                             class="search-bar text-white"
-                             v-model="query"
-                             dark
-                             @keypress="fetchWeather"
-                    />
-                    </div>
-
-                    <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
-                      <div class="location-box">
-                        <div class="location">{{ weather.name }}, {{ weather.sys.country }}</div>
-                        <div class="date">{{ dateBuilder() }}</div>
-                      </div>
-                      <div class="weather-box">
-                        <div class="temp">{{ Math.round(weather.main.temp) }}°c</div>
-                        <div class="weather">{{ weather.weather[0].main }}</div>
-                      </div>
-
-                    </div>
-
-                  </main>
-                </div>
+                <q-table :columns="columns"
+                         :rows="rows"
+                         :rows-per-page-options="[0]"
+                         binary-state-sort
+                         class="bg-primary text-white"
+                         row-key="name"
+                         title="Wetterdaten"
+                >
+                  <template v-slot:body-cell-aktion="props">
+                    <q-td :props="props">
+                      <q-btn color="white" dense flat icon="mdi-delete" @click="confirm(id)"></q-btn>
+                    </q-td>
+                  </template>
+                </q-table>
               </q-card-section>
             </q-card>
           </div>
-
-
-
-<div class="row fit content-md-center">
-        <div class="col-12">
-        <q-card class="bg-primary text-white q-pa-lg shadow-5 " dark>
-          <q-card-section>
-            <apexchart ref="weatherChart" type="area" height="750px" :options="chartOptions" :series="series"></apexchart>
-          </q-card-section>
-
-        </q-card>
         </div>
-</div>
-      </q-tab-panel>
-
-      <q-tab-panel name="weather_table" class="fit row justify-center full-height q-gutter-lg">
-    <div class="justify-center q-gutter-md">
-      <div class=" q-pa-md" dark>
-
-        <q-card class="bg-primary text-white q-pa-lg shadow-5" dark>
-          <q-card-section>
-            <q-table class="bg-primary text-white"
-                     title="Wetterdaten"
-                     :rows="rows"
-                     :columns="columns"
-                     :rows-per-page-options="[0]"
-                     row-key="name"
-                     binary-state-sort
-            >
-            <template v-slot:body-cell-aktion="props">
-              <q-td :props="props">
-                <q-btn icon="mdi-delete" @click="deleteWeather(props.row)" color="white" dense flat></q-btn>
-              </q-td>
-            </template>
-            </q-table>
-          </q-card-section>
-        </q-card>
-      </div>
-    </div>
       </q-tab-panel>
     </q-tab-panels>
   </q-page>
@@ -155,7 +156,7 @@
 
 <script>
 import {ref} from 'vue'
-
+import {useQuasar} from 'quasar'
 
 const columns = [
   {name: 'time', label: 'Uhrzeit', align: 'left', field: row => row.time, sortable: true},
@@ -175,6 +176,7 @@ const FULL_DASH_ARRAY = 283;
 const WARNING_THRESHOLD = 300;
 const ALERT_THRESHOLD = 60;
 
+
 const COLOR_CODES = {
   info: {
     color: "green"
@@ -192,15 +194,49 @@ const COLOR_CODES = {
 let TIME_LIMIT = 0;
 
 export default {
+
+
   name: "Weather",
+  setup() {
+    const $q = useQuasar()
+
+    function confirm(id) {
+      this.cId = id
+      $q.dialog({
+        dark: true,
+        message: 'Do you really want to DELETE this input ?',
+        color: 'primary',
+        cancel: {
+          push: true,
+        },
+        persistent: true,
+        ok: {
+          label: 'DELETE',
+          color: 'negative'
+        }
+
+      }).onOk(() => {
+        this.deleteWeather(props.row)
+      }).onOk(() => {
+        this.deleteWeather(props.row)
+      }).onCancel(() => {
+
+      }).onDismiss(() => {
+        // console.log('I am triggered on both OK and Cancel')
+      })
+    }
+
+    return {confirm}
+  },
   data: () => {
 
+
     return {
+
       api_key: '328d654fb1486a9cf4fd992026fafb41',
       url_base: 'https://api.openweathermap.org/data/2.5/',
       query: '',
       weather: {},
-
       tab: 'input',
       airtemp: ref(null),
       tracktemp: ref(null),
@@ -214,6 +250,7 @@ export default {
       rows: [],
       value: 81,
       columns,
+      cId: '',
       weatherAddBtnColor: 'accent',
       weatherAddBtnLabel: 'Eintragen',
       countdownStartBtnLabel: 'Starten',
@@ -222,22 +259,16 @@ export default {
           id: 'chart'
         },
       },
-
-
-
-      series:
-          [{
-            name: 'Streckentemperatur in °C',
-            data: [null],
-          },
-            {
-              name: 'Lufttemperatur in °C',
-              data: [null],
-            },],
-
+      series: [{
+        name: 'Streckentemperatur in °C',
+        data: [],
+      }, {
+        name: 'Lufttemperatur in °C',
+        data: [],
+      }],
       chartOptions: {
         chart: {
-          foreColor: 'white' ,
+          foreColor: 'white',
           height: 350,
           type: 'area'
         },
@@ -247,26 +278,16 @@ export default {
         dataLabels: {
           style: {
             colors: ['#F44336', '#E91E63', '#9C27B0']
-
           },
-
           enabled: false
         },
-
         stroke: {
           curve: 'smooth'
         },
-        xaxis: {
-        },
-
         tooltip: {
-
-    //  x: { format: "HH:mm:ss" },
-
           theme: "dark",
         },
       },
-
     }
   },
   computed: {
@@ -296,7 +317,7 @@ export default {
     },
 
     remainingPathColor() {
-      const { alert, warning, info } = COLOR_CODES;
+      const {alert, warning, info} = COLOR_CODES;
 
       if (this.timeLeft <= alert.threshold) {
         return alert.color;
@@ -307,7 +328,6 @@ export default {
       }
     }
   },
-
   watch: {
     timeLeft(newValue) {
       if (newValue === 0) {
@@ -315,11 +335,7 @@ export default {
       }
     }
   },
-
-
   methods: {
-
-
     createWeather() {
       const apiUrl = this.$store.state.host.api_url
       const url = new URL(apiUrl + '/weather/new')
@@ -387,7 +403,6 @@ export default {
             this.rows = data
           })
     },
-
     deleteWeather(weather) {
       const apiUrl = this.$store.state.host.api_url
       const url = `${apiUrl}/weather/delete/${weather.wetterid}`
@@ -407,13 +422,12 @@ export default {
             }
           })
     },
-
     getDiagramData() {
-      this.chartDataAir = []
+      this.series[0].data = []
+      this.series[1].data = []
       const apiUrl = 'https://limla.ml:8443/api/v1/weather/all'
       const url = apiUrl
       const jwt = this.$store.state.user.jwt
-
       const requestOptions = {
         method: 'GET',
         headers: {
@@ -432,35 +446,33 @@ export default {
             return response.json()
           })
           .then(data => {
-            for (let i = 0; i < data.length; i++) {
-              //this.series.data1(data[i].airtemperatur);
-              this.series[0].data.push(data[i].tracktemperatur);
-              this.series[1].data.push(data[i].airtemperatur);
-
+            let updateData = []
+            for (const dataKey in data) {
+              updateData = {
+                x: data[dataKey].time,
+                y: data[dataKey].tracktemperatur
+              }
+              this.series[0].data.push(updateData)
+              updateData = {
+                x: data[dataKey].time,
+                y: data[dataKey].airtemperatur
+              }
+              this.series[1].data.push(updateData)
             }
-            return
-            });
-
-
-
-
+          });
     },
-
-
     onTimesUp() {
       clearInterval(this.timerInterval);
     },
-
     startTimer() {
       this.getMinutes();
       this.timerInterval = setInterval(() => (this.timePassed += 1), 1000);
 
     },
-    getMinutes(){
-      TIME_LIMIT =(this.countdown * 60);
+    getMinutes() {
+      TIME_LIMIT = (this.countdown * 60);
     },
-
-    fetchWeather (e) {
+    fetchWeather(e) {
       if (e.key == "Enter") {
         fetch(`${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`)
             .then(res => {
@@ -468,12 +480,11 @@ export default {
             }).then(this.setResults);
       }
     },
-    setResults (results) {
+    setResults(results) {
       this.weather = results;
       this.weather.icon = results;
     },
-
-    dateBuilder () {
+    dateBuilder() {
       let d = new Date();
       let months = ["Januar", "Feburar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
       let days = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
@@ -483,92 +494,23 @@ export default {
       let year = d.getFullYear();
       return `${day} ${date} ${month} ${year}`;
     }
-
-
-
-
-
-
-
-
-
-    /* getRaceLoctaion(){
-      const apiUrl = 'https://limla.ml:8443/api/v1/race/all'
-      const url = apiUrl
-      const jwt = this.$store.state.user.jwt
-
-      const requestOptions = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + jwt
-        },
-      }
-      fetch(url, requestOptions)
-          .then(response => {
-            if (response.status !== 200) {
-              console.log(response)
-              return
-
-            }
-
-            return response.json()
-          })
-          .then(data => {
-          (this.location.data[0].location);
-
-          })
-    },
-
-*/
-
- /*   getWeatherforecast(){
-      const apiUrl = 'https://api.openweathermap.org/data/2.5/weather?q='++'&appid=328d654fb1486a9cf4fd992026fafb41'
-      const url = apiUrl
-
-      const requestOptions = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-
-        },
-      }
-      fetch(url, requestOptions)
-          .then(response => {
-            if (response.status !== 200) {
-              console.log(response)
-              return
-
-            }
-            328d654fb1486a9cf4fd992026fafb41
-            return response.json()
-          })
-
-
-    },
-    */
-
-
-
   },
 
-  mounted(){
+  mounted() {
     this.getWeatherData()
     this.getDiagramData()
-
 
 
   }
 }
 
 
-
 </script>
 
 
-<style scoped lang="sass" >
+<style lang="sass" scoped>
 
- .base-timer
+.base-timer
   position: relative
   width: 150px
   height: 150px
@@ -607,7 +549,6 @@ export default {
       color: red
 
 
-
   &__label
     position: absolute
     width: 150px
@@ -622,12 +563,10 @@ body
   font-family: Arial, Helvetica, sans-serif
 
 
-
 .search-box
   width: 100%
   margin-bottom: 30px
   text-underline-color: white
-
 
 
 .search-box .search-bar
