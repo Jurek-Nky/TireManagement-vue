@@ -22,7 +22,7 @@ const routes = [
         }
     }, {
         path: '/bestellungen',
-        name: 'Order',
+        name: 'Bestellung',
         component: () => import('@/views/Order'),
         beforeEnter: (to, from, next) => {
             const role = store.state.user.userRole
@@ -34,7 +34,7 @@ const routes = [
         }
     }, {
         path: '/wetter',
-        name: 'Weather',
+        name: 'Wetter',
         component: () => import('@/views/Weather'),
         beforeEnter: (to, from, next) => {
             const role = store.state.user.userRole
@@ -44,7 +44,7 @@ const routes = [
                 next(false)
             }
         }
-    },  {
+    }, {
         path: '/statistik',
         name: 'Statistik',
         component: () => import('@/views/Statistic'),
@@ -57,20 +57,8 @@ const routes = [
             }
         }
     }, {
-        path: '/statistic',
-        name: 'Statistic',
-        component: () => import('@/views/Statistic'),
-        beforeEnter: (to, from, next) => {
-            const role = store.state.user.userRole
-            if (role !== '') {
-                next()
-            } else {
-                next(false)
-            }
-        }
-    }, {
         path: '/bestand',
-        name: 'Tires',
+        name: 'Bestand',
         component: () => import('@/views/Tires'),
         beforeEnter: (to, from, next) => {
             const role = store.state.user.userRole
@@ -85,8 +73,8 @@ const routes = [
         name: 'Login',
         component: () => import('@/views/Login')
     }, {
-        path: '/profile',
-        name: 'profile',
+        path: '/profil',
+        name: 'Profil',
         component: () => import('../views/Profile.vue'),
         beforeEnter: (to, from, next) => {
             const role = store.state.user.userRole
@@ -98,7 +86,7 @@ const routes = [
         }
     }, {
         path: '/admin',
-        name: 'admin',
+        name: 'Admin',
         component: () => import('../views/Admin'),
         beforeEnter: (to, from, next) => {
             const role = store.state.user.userRole
