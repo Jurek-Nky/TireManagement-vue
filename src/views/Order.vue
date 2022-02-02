@@ -1,34 +1,37 @@
 <template>
-  <q-page>
-    <div class="row">
-      <div class="col-md-6">
-        <q-card rounded bordered class="q-pa-md q-ma-lg shadow-5 bg-primary">
-          <q-card-section>
+  <q-page class="q-pa-lg">
+    <div class="row q-gutter-lg">
+      <div class="col-grow col-7">
+        <q-card bordered class="q-pa-md shadow-5 bg-primary" rounded>
+          <q-card-section class="q-gutter-md">
             <div class="row">
-              <div class="col-sm-10 text-white text-h5">
-                Bestellformular
+              <div class="col-grow">
+                <span class="text-white text-h5">Bestellformular</span>
               </div>
-              <div class="col-sm-2 text-white" style="align-content: end">
-                Kontingent:
-                <q-input v-model="contingent" dark filled label-color="white" outlined dense type= "text" readonly :model-value = "contingent"/>
+              <div class="col-auto text-white">
+                <q-input v-model="contingent" dark dense filled label="Kontingent" label-color="white"
+                         outlined readonly stack-label type="text"/>
               </div>
             </div>
           </q-card-section>
-          <q-card-section>
-            <div class="q-gutter-y-sm">
-              <q-select dark filled label-color="white" outlined dense v-model="art" :options="reifenartOptions"
-                        label="Reifenart auswählen">
-                <template v-slot:error>
+          <q-card-section class="q-gutter-md">
+            <q-select v-model="art" :options="reifenartOptions" dark dense filled label="Reifenart auswählen"
+                      label-color="white"
+                      outlined>
+              <template v-slot:error>
                 Please choose one option!
-                </template>
-              </q-select>
-              <q-select dark filled label-color="white" outlined dense v-model="mischung" :options="mischungOptions"
-                        label="Mischung auswählen"/>
-              <q-select dark filled label-color="white" outlined dense v-model="modification"
-                        :options="modificationOptions" label="Bearbeitungsvariante auswählen"/>
-              <q-btn label-color="white" class="full-width" :color="orderAddBtnColor" :label="orderAddBtnLabel"
-                     @click="setOrderData"/>
-            </div>
+              </template>
+            </q-select>
+            <q-select v-model="mischung" :options="mischungOptions" dark dense filled label="Mischung auswählen"
+                      label-color="white"
+                      outlined/>
+            <q-select v-model="modification" :options="modificationOptions" dark dense filled
+                      label="Bearbeitungsvariante auswählen"
+                      label-color="white" outlined/>
+          </q-card-section>
+          <q-card-section>
+            <q-btn :color="orderAddBtnColor" :label="orderAddBtnLabel" class="full-width" label-color="white"
+                   @click="setOrderData"/>
           </q-card-section>
         </q-card>
       </div>
@@ -59,32 +62,29 @@
         </q-card>
       </div>
     </div>
-    <q-card rounded bordered class="q-pa-md q-ma-lg shadow-5 bg-primary">
-      <div class="column">
-        <q-card-section>
-          <q-table
-              title="Bestellübersicht"
-              :rows="rows"
-              :columns="columns"
-              row-key="bezeichnung"
-              hide-bottom
-              dark
-              card-class="bg-primary bordered"
-              separator="horizontal"
-              no-data-label="Keine Einträge verfügbar"
-              :rows-per-page-options="[0]">
+    <div class="row q-mt-lg">
+      <q-table
+          v-if="rows.length >= 1"
+          :columns="columns"
+          :rows="rows"
+          :rows-per-page-options="[0]"
+          card-class="bg-primary bordered col-grow"
+          dark
+          hide-bottom
+          no-data-label="Keine Einträge verfügbar"
+          row-key="bezeichnung"
+          separator="horizontal"
+          title="Bestellübersicht">
 
-            <template v-slot:body-cell-aktion="props">
-              <q-td :props="props">
-                <q-btn icon="mdi-delete" @click="deleteTireSet(props.row)" color="negative" dense flat></q-btn>
-                <q-btn icon="mdi-truck-check" @click="tireSetStatusInStorage(props.row)" color="accent"
-                       dense flat></q-btn>
-              </q-td>
-            </template>
-          </q-table>
-        </q-card-section>
-      </div>
-    </q-card>
+        <template v-slot:body-cell-aktion="props">
+          <q-td :props="props">
+            <q-btn color="white" dense flat icon="mdi-delete" @click="deleteTireSet(props.row)"></q-btn>
+            <q-btn color="white" dense flat
+                   icon="mdi-truck-check" @click="tireSetStatusInStorage(props.row)"></q-btn>
+          </q-td>
+        </template>
+      </q-table>
+    </div>
   </q-page>
 </template>
 
@@ -93,8 +93,8 @@ import {ref} from 'vue'
 
 const columns = [
   {name: 'uhrzeit', sortable: true, label: 'Uhrzeit', align: 'center', field: row => row.tires[0].bestelltUm},
-  {name:'tireSetNr', sortable: true, label: 'Reifenset-Nr', align: 'center', field: row => row.tireSetNr},
-  {name: 'bezeichnung', sortable: true,label: 'Bezeichnung', align: 'center', field: row => row.tires[0].bezeichnung},
+  {name: 'tireSetNr', sortable: true, label: 'Reifenset-Nr', align: 'center', field: row => row.tireSetNr},
+  {name: 'bezeichnung', sortable: true, label: 'Bezeichnung', align: 'center', field: row => row.tires[0].bezeichnung},
   {name: 'art', sortable: true, label: 'Reifenart', align: 'center', field: row => row.tires[0].art},
   {name: 'mischung', sortable: true, label: 'Mischung', align: 'center', field: row => row.tires[0].mischung},
   {
@@ -130,14 +130,14 @@ export default {
       bestellAuswahlOptions: [],
       columns,
       rows: [],
-      contingent : 0,
+      contingent: 0,
       orderAddBtnColor: 'accent',
       orderAddBtnLabel: 'Bestellen',
       initialTime: ref(null)
     }
   },
 
-  computed:{
+  computed: {
 
     orderTimeString() {
       let time = this.$store.state.timer.orderTime
@@ -192,10 +192,11 @@ export default {
                     console.log(data)
                   }
                 }
-            )
-      },
+              }
+          )
+    },
 
-    getTimerValue(){
+    getTimerValue() {
       const x = document.getElementById("orderValue").value
       print(parseInt(x))
       return parseInt(x)
@@ -226,8 +227,9 @@ export default {
             return response.json()
           })
           .then(data => {
-            console.log(data)
-            this.rows = data
+            if (resp.status === 200) {
+              this.rows = data;
+            }
           })
     },
     setOrderData() {
