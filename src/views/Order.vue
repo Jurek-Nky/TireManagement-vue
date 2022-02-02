@@ -36,7 +36,7 @@
         </q-card>
       </div>
       <div class="col-sm-3">
-        <q-card bordered class="q-pa-sm q-ma-lg shadow-5 bg-primary" rounded>
+        <q-card bordered class="q-pa-sm shadow-5 bg-primary" rounded>
           <q-card-section class="text-white text-h5" style="text-align: center">Bestelltimer</q-card-section>
           <q-card-section>
             <q-separator dark/>
@@ -76,13 +76,42 @@
           row-key="bezeichnung"
           separator="horizontal"
           title="Bestellübersicht">
-
+<!--
         <template v-slot:body-cell-aktion="props">
           <q-td :props="props">
             <q-btn color="white" dense flat icon="mdi-delete" @click="deleteTireSet(props.row)"></q-btn>
             <q-btn color="white" dense flat
                    icon="mdi-truck-check" @click="tireSetStatusInStorage(props.row)"></q-btn>
+
           </q-td>
+        </template>
+        -->
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td v-for="col in props.cols"
+                  :key="col.name"
+                  :props="props">
+              <div v-if="col.name === 'orderTimer'">
+                <q-badge v-if="col.value === null || col.value === ''" class="cursor-pointer" color="accent" text-color="white">
+                  {{'--'}}
+                </q-badge>
+                <q-badge v-else class="cursor-pointer" color="accent" text-color="white">
+                  {{'----'}}
+                </q-badge>
+                <q-popup-edit v-slot="scope" v-model="props.row.orderTimer" buttons
+                              color="accent" persistent title="Abholbereit in">
+                  <q-input v-model="scope.value" label="Zeit eingeben" stack-label></q-input>
+                </q-popup-edit>
+              </div>
+              <div v-else-if="col.name === 'aktion'">
+                <q-btn color="white" dense flat icon="mdi-delete" @click="deleteTireSet(props.row)"></q-btn>
+                <q-btn color="white" dense flat icon="mdi-truck-check" @click="tireSetStatusInStorage(props.row)"></q-btn>
+              </div>
+              <div v-else>
+                {{col.value}}
+              </div>
+            </q-td>
+          </q-tr>
         </template>
       </q-table>
     </div>
@@ -154,8 +183,7 @@ export default {
         if (minutes === 0) {
           return `${seconds}s`
         }
-        return `${minutes}
-          m:${seconds}s`
+        return `${minutes}m:${seconds}s`
       }
       return `${houres}h:${minutes}m:${seconds}s`
     },
@@ -167,9 +195,21 @@ export default {
     },
   },
   methods: {
-    setOrderTimer() {
 
+    setOrderTimer() {
+      const apiUrl = this.$store.state.host.api_url
+      let url = new URL(`${apiUrl}/tire/ordertimer`)
+      url.searchParams.append('time', this.initialTime)
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        }
+      }
+      fetch(url, requestOptions)
     },
+
     updateOrderTimer(tireSet) {
       const apiUrl = this.$store.state.host.api_url
       const url = `${apiUrl}/tireset/update/${tireSet.id}/orderTimer`
