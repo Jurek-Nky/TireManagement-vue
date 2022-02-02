@@ -231,7 +231,7 @@ export default {
               })
         }
         this.getUserSettings()
-      }, 5000)
+      }, 2000)
     },
     getUserSettings() {
       const apiUrl = this.$store.state.host.api_url
