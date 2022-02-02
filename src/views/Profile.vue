@@ -6,7 +6,7 @@
           <q-card-section class="text-white text-h5">Passwort aendern</q-card-section>
           <q-card-section>
             <q-form class="q-gutter-md">
-              <q-input v-model="username" dark disable filled label="username" label-color="white"
+              <q-input v-model="username" dark readonly filled label="username" label-color="white"
                        type="text"/>
               <q-input ref="passwordOld" v-model="passwordOld" :hint="pwOldHint" dark filled
                        label="Altes Passwort"
