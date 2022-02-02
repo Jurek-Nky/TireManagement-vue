@@ -37,43 +37,27 @@
 
 
         <div class="col-2" dark>
-          <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
 
-            <q-card-section>
-              <q-form class="q-gutter-md">
-                <div class="base-timer">
-                  <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <g class="base-timer__circle">
-                      <circle class="base-timer__path-elapsed text-white" cx="50" cy="50" r="45"></circle>
-                      <path
-
-                          :class="remainingPathColor"
-                          :stroke-dasharray="circleDasharray"
-                          class="base-timer__path-remaining"
-                          d="
-                            M 50, 50
-                            m -45, 0
-                            a 45,45 0 1,0 90,0
-                            a 45,45 0 1,0 -90,0
-                          "
-                      ></path>
-                    </g>
-                  </svg>
-                  <span class="base-timer__label">{{ formattedTimeLeft }}</span>
-
-                </div>
-                <q-form class="q-gutter-md">
-                  <q-input ref="countdown" v-model.number="countdown" color="accent" dark
-                           label="Minuten" label-color="white" type="number"/>
-                </q-form>
-                <q-card-actions>
-                  <q-btn :color="weatherAddBtnColor" :label="countdownStartBtnLabel" class="bg-accent"
-                         @click="this.startTimer"/>
-                </q-card-actions>
-              </q-form>
-            </q-card-section>
-
-          </q-card>
+            <q-card bordered class="q-pa-lg bg-primary shadow-5">
+              <q-card-section>
+                <span class="text-white text-subtitle1">Timer</span>
+              </q-card-section>
+              <q-separator dark/>
+              <q-card-section>
+                <q-circular-progress
+                    :max="weatherInitialTime"
+                    :thickness="0.1"
+                    :value="weatherTime"
+                    class="text-white q-mb-none q-mt-lg"
+                    color="accent"
+                    show-value
+                    size="240px"
+                    track-color="dark"
+                >
+                  <span class="text-white text-h4 text-center">{{ weatherTimeString }}</span>
+                </q-circular-progress>
+              </q-card-section>
+            </q-card>
         </div>
 
         <div class="col-4">
@@ -141,7 +125,19 @@
                 >
                   <template v-slot:body-cell-aktion="props">
                     <q-td :props="props">
-                      <q-btn color="white" dense flat icon="mdi-delete" @click="confirm(id)"></q-btn>
+                      <q-btn color="white" dense flat icon="mdi-delete" @click="confirmDialog(props.row)"></q-btn>
+                      <q-dialog v-model="confirm">
+                        <q-card class="bg-primary">
+                          <q-card-section class="row items-center">
+                            <span class="q-ml-sm text-white">Do you really want do delete this Note</span>
+                          </q-card-section>
+                          <q-card-actions align="right">
+                            <q-btn v-close-popup color="grey" label="cancel" text-color="white"></q-btn>
+                            <q-btn color="negative" label="delete"
+                                   @click="deleteWeather(this.confirmId)"></q-btn>
+                          </q-card-actions>
+                        </q-card>
+                      </q-dialog>
                     </q-td>
                   </template>
                 </q-table>
@@ -159,7 +155,7 @@ import {ref} from 'vue'
 import {useQuasar} from 'quasar'
 
 const columns = [
-  {name: 'time', label: 'Uhrzeit', align: 'left', field: row => row.time, sortable: true},
+  {name: 'time', label: 'Uhrzeit', align: 'left', field: row => row.time.split(".")[0].split("T")[1], sortable: true},
   {name: 'airtemp', label: 'Lufttemperatur in °C', align: 'left', field: row => row.airtemperatur, sortable: true},
   {
     name: 'tracktemp',
@@ -172,7 +168,7 @@ const columns = [
   {name: 'aktion', label: 'Aktion', align: 'center'},
 ]
 
-const FULL_DASH_ARRAY = 283;
+/* const FULL_DASH_ARRAY = 283;
 const WARNING_THRESHOLD = 300;
 const ALERT_THRESHOLD = 60;
 
@@ -191,43 +187,13 @@ const COLOR_CODES = {
   }
 };
 
-let TIME_LIMIT = 0;
+let TIME_LIMIT = 0;*/
 
 export default {
 
 
   name: "Weather",
-  setup() {
-    const $q = useQuasar()
 
-    function confirm(id) {
-      this.cId = id
-      $q.dialog({
-        dark: true,
-        message: 'Do you really want to DELETE this input ?',
-        color: 'primary',
-        cancel: {
-          push: true,
-        },
-        persistent: true,
-        ok: {
-          label: 'DELETE',
-          color: 'negative'
-        }
-
-      }).onOk(() => {
-        this.deleteWeather(props.row)
-      }).onOk(() => {
-        this.deleteWeather(props.row)
-      }).onCancel(() => {
-
-      }).onDismiss(() => {
-        // console.log('I am triggered on both OK and Cancel')
-      })
-    }
-
-    return {confirm}
-  },
   data: () => {
 
 
@@ -235,14 +201,15 @@ export default {
 
       api_key: '328d654fb1486a9cf4fd992026fafb41',
       url_base: 'https://api.openweathermap.org/data/2.5/',
+      confirm: false,
+      confirmId: '',
+      confirmIndex: '',
       query: '',
       weather: {},
       tab: 'input',
       airtemp: ref(null),
       tracktemp: ref(null),
       cond: ref(null),
-      timePassed: 0,
-      timerInterval: null,
       optionstrack: [
         'wet', 'dry', 'drying off ', 'drizzle', 'sunny', 'cloudy'
       ],
@@ -250,7 +217,6 @@ export default {
       rows: [],
       value: 81,
       columns,
-      cId: '',
       weatherAddBtnColor: 'accent',
       weatherAddBtnLabel: 'Eintragen',
       countdownStartBtnLabel: 'Starten',
@@ -291,273 +257,223 @@ export default {
     }
   },
   computed: {
-    circleDasharray() {
-      return `${(this.timeFraction * FULL_DASH_ARRAY).toFixed(0)} 283`;
+    weatherTime() {
+      return this.$store.state.timer.weatherTime
     },
-
-    formattedTimeLeft() {
-      const timeLeft = this.timeLeft;
-      const minutes = Math.floor(timeLeft / 60);
-      let seconds = timeLeft % 60;
-
-      if (seconds < 10) {
-        seconds = `0${seconds}`;
+    weatherInitialTime() {
+      return this.$store.state.timer.weatherInitialTime
+    },
+    weatherTimeString() {
+      const time = this.$store.state.timer.weatherTime
+      if (time <= 0) {
+        return "abgelaufen"
       }
-
-      return `${minutes}:${seconds}`;
-    },
-
-    timeLeft() {
-      return TIME_LIMIT - this.timePassed;
-    },
-
-    timeFraction() {
-      const rawTimeFraction = this.timeLeft / TIME_LIMIT;
-      return rawTimeFraction - (1 / TIME_LIMIT) * (1 - rawTimeFraction);
-    },
-
-    remainingPathColor() {
-      const {alert, warning, info} = COLOR_CODES;
-
-      if (this.timeLeft <= alert.threshold) {
-        return alert.color;
-      } else if (this.timeLeft <= warning.threshold) {
-        return warning.color;
-      } else {
-        return info.color;
+      const houres = Math.floor(time / 60 / 60)
+      const minutes = Math.floor(time / 60)
+      const seconds = time - (minutes * 60)
+      if (houres === 0) {
+        if (minutes === 0) {
+          return `${seconds}s`
+        }
+        return `${minutes}
+          m:${seconds}s`
       }
-    }
+      return `${houres}h:${minutes}m:${seconds}s`
+    },
   },
-  watch: {
-    timeLeft(newValue) {
-      if (newValue === 0) {
-        this.onTimesUp();
-      }
-    }
-  },
-  methods: {
-    createWeather() {
-      const apiUrl = this.$store.state.host.api_url
-      const url = new URL(apiUrl + '/weather/new')
-      const data = {
-        airtemp: this.airtemp,
-        tracktemp: this.tracktemp,
-        cond: this.cond,
-      }
-      const jwt = this.$store.state.user.jwt
-      const requestOptions = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + jwt
-        },
-        body: JSON.stringify(data)
-      }
-      let resp;
-      fetch(url, requestOptions)
-          .then(response => {
-            resp = response
-            if (response.status !== 200) {
-              console.log(response)
-              return
-            }
-            return response.json()
-          })
-          .then(() => {
-            this.getWeatherData()
-            this.getDiagramData()
-            this.clearWeatherFields()
-            this.orderAddBtnLabel = 'Erfolgreich eingetragen'
-            this.orderAddBtnColor = 'positive'
-            setTimeout(() => {
-              this.orderAddBtnColor = 'accent'
-              this.orderAddBtnLabel = 'Eintragen'
-            }, 1500)
-          })
-    },
-    clearWeatherFields() {
-      this.airtemp = ''
-      this.tracktemp = ''
-      this.cond = ''
-    },
-    getWeatherData() {
-      const apiUrl = 'https://limla.ml:8443/api/v1/weather/all'
-      const url = apiUrl
-      const jwt = this.$store.state.user.jwt
-      const requestOptions = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + jwt
-        },
-      }
-      fetch(url, requestOptions)
-          .then(response => {
-            if (response.status !== 200) {
-              console.log(response)
-              return
-            }
-            return response.json()
-          })
-          .then(data => {
-            this.rows = data
-          })
-    },
-    deleteWeather(weather) {
-      const apiUrl = this.$store.state.host.api_url
-      const url = `${apiUrl}/weather/delete/${weather.wetterid}`
-      const jwt = this.$store.state.user.jwt
-      const requestOptions = {
-        method: 'DELETE',
-        headers: {
-          'Authorization': 'Bearer ' + jwt
-        },
-      }
-      fetch(url, requestOptions)
-          .then(response => {
-            if (response.status === 200) {
+    methods: {
+      confirmDialog(id) {
+        this.confirm = true
+        this.confirmId = id
+
+      },
+      createWeather() {
+        const apiUrl = this.$store.state.host.api_url
+        const url = new URL(apiUrl + '/weather/new')
+        const data = {
+          airtemp: this.airtemp,
+          tracktemp: this.tracktemp,
+          cond: this.cond,
+        }
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwt
+          },
+          body: JSON.stringify(data)
+        }
+        let resp;
+        fetch(url, requestOptions)
+            .then(response => {
+              resp = response
+              if (response.status !== 200) {
+                console.log(response)
+                return
+              }
+              return response.json()
+            })
+            .then(() => {
               this.getWeatherData()
-            } else if (response.status === 500) {
-              console.log(response.message)
-            }
-          })
-    },
-    getDiagramData() {
-      this.series[0].data = []
-      this.series[1].data = []
-      const apiUrl = 'https://limla.ml:8443/api/v1/weather/all'
-      const url = apiUrl
-      const jwt = this.$store.state.user.jwt
-      const requestOptions = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + jwt
-        },
-      }
-      fetch(url, requestOptions)
-          .then(response => {
-            if (response.status !== 200) {
-              console.log(response)
-              return
-
-            }
-
-            return response.json()
-          })
-          .then(data => {
-            let updateData = []
-            for (const dataKey in data) {
-              updateData = {
-                x: data[dataKey].time.split("T")[1].split(".")[0],
-                y: data[dataKey].tracktemperatur
+              this.getDiagramData()
+              this.clearWeatherFields()
+              this.orderAddBtnLabel = 'Erfolgreich eingetragen'
+              this.orderAddBtnColor = 'positive'
+              setTimeout(() => {
+                this.orderAddBtnColor = 'accent'
+                this.orderAddBtnLabel = 'Eintragen'
+              }, 1500)
+            })
+      },
+      clearWeatherFields() {
+        this.airtemp = ''
+        this.tracktemp = ''
+        this.cond = ''
+      },
+      getWeatherData() {
+        const apiUrl = 'https://limla.ml:8443/api/v1/weather/all'
+        const url = apiUrl
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        fetch(url, requestOptions)
+            .then(response => {
+              if (response.status !== 200) {
+                console.log(response)
+                return
               }
-              this.series[0].data.push(updateData)
-              updateData = {
-                x: data[dataKey].time.split("T")[1].split(".")[0],
-                y: data[dataKey].airtemperatur
+              return response.json()
+            })
+            .then(data => {
+              this.rows = data
+            })
+      },
+      deleteWeather(weather) {
+        const apiUrl = this.$store.state.host.api_url
+        const url = `${apiUrl}/weather/delete/${weather.wetterid}`
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        fetch(url, requestOptions)
+            .then(response => {
+              if (response.status === 200) {
+                this.confirm = false
+                this.getWeatherData()
+              } else if (response.status === 500) {
+                console.log(response.message)
               }
-              this.series[1].data.push(updateData)
-            }
-          });
-    },
-    onTimesUp() {
-      clearInterval(this.timerInterval);
-    },
-    startTimer() {
-      this.getMinutes();
-      this.timerInterval = setInterval(() => (this.timePassed += 1), 1000);
+            })
+      },
+      getDiagramData() {
+        this.series[0].data = []
+        this.series[1].data = []
+        const apiUrl = 'https://limla.ml:8443/api/v1/weather/all'
+        const url = apiUrl
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        fetch(url, requestOptions)
+            .then(response => {
+              if (response.status !== 200) {
+                console.log(response)
+                return
 
-    },
-    getMinutes() {
-      TIME_LIMIT = (this.countdown * 60);
-    },
-    fetchWeather(e) {
-      if (e.key == "Enter") {
-        fetch(`${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`)
-            .then(res => {
-              return res.json();
-            }).then(this.setResults);
+              }
+
+              return response.json()
+            })
+            .then(data => {
+              let updateData = []
+              for (const dataKey in data) {
+                updateData = {
+                  x: data[dataKey].time,
+                  y: data[dataKey].tracktemperatur
+                }
+                this.series[0].data.push(updateData)
+                updateData = {
+                  x: data[dataKey].time,
+                  y: data[dataKey].airtemperatur
+                }
+                this.series[1].data.push(updateData)
+              }
+            });
+      },
+      fetchWeather(e) {
+        if (e.key == "Enter") {
+          fetch(`${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`)
+              .then(res => {
+                return res.json();
+              }).then(this.setResults);
+        }
+      },
+      setResults(results) {
+        this.weather = results;
+        this.weather.icon = results;
+      },
+      dateBuilder() {
+        let d = new Date();
+        let months = ["Januar", "Feburar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+        let days = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
+        let day = days[d.getDay()];
+        let date = d.getDate();
+        let month = months[d.getMonth()];
+        let year = d.getFullYear();
+        return `${day} ${date} ${month} ${year}`;w
+      },
+      getTimer(){
+        const apiUrl = 'https://limla.ml:8443/api/v1/weather/timer'
+        const url = apiUrl
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        fetch(url, requestOptions)
+            .then(response => {
+              if (response.status !== 200) {
+                console.log(response)
+                return
+              }
+              return response.json()
+            })
+            .then(data => {
+              this.weatherTimeString = data
+            })
+
       }
     },
-    setResults(results) {
-      this.weather = results;
-      this.weather.icon = results;
-    },
-    dateBuilder() {
-      let d = new Date();
-      let months = ["Januar", "Feburar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
-      let days = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
-      let day = days[d.getDay()];
-      let date = d.getDate();
-      let month = months[d.getMonth()];
-      let year = d.getFullYear();
-      return `${day} ${date} ${month} ${year}`;
+
+    mounted() {
+      this.getWeatherData()
+      this.getDiagramData()
+
+
     }
-  },
-
-  mounted() {
-    this.getWeatherData()
-    this.getDiagramData()
-
-
   }
-}
 
 
 </script>
 
 
 <style lang="sass" scoped>
-
-.base-timer
-  position: relative
-  width: 150px
-  height: 150px
-
-  &__svg
-    transform: scaleX(-1)
-
-
-  &__circle
-    fill: none
-    stroke: none
-
-  &__path-elapsed
-    stroke-width: 7px
-    stroke: grey
-
-
-  &__path-remaining
-    stroke-width: 7px
-    stroke-linecap: round
-    transform: rotate(90deg)
-    transform-origin: center
-    transition: 1s linear all
-    fill-rule: nonzero
-    stroke: currentColor
-
-    &.green
-      color: rgb(65, 184, 131)
-
-
-    &.orange
-      color: orange
-
-
-    &.red
-      color: red
-
-
-  &__label
-    position: absolute
-    width: 150px
-    height: 150px
-    top: 0
-    display: flex
-    align-items: center
-    justify-content: center
-    font-size: 48px
 
 body
   font-family: Arial, Helvetica, sans-serif
