@@ -449,12 +449,12 @@ export default {
             let updateData = []
             for (const dataKey in data) {
               updateData = {
-                x: data[dataKey].time,
+                x: data[dataKey].time.split("T")[1].split(".")[0],
                 y: data[dataKey].tracktemperatur
               }
               this.series[0].data.push(updateData)
               updateData = {
-                x: data[dataKey].time,
+                x: data[dataKey].time.split("T")[1].split(".")[0],
                 y: data[dataKey].airtemperatur
               }
               this.series[1].data.push(updateData)
