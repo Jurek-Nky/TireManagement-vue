@@ -15,7 +15,7 @@
           <q-card bordered class="shadow-5 bg-primary" rounded>
             <q-card-section class="text-white text-h5">Rennen erstellen</q-card-section>
             <q-card-section>
-              <q-input v-model="date" :rules="['date']" dark filled mask="date">
+              <q-input v-model="date" :rules="['date']" dark filled dense mask="date">
                 <template v-slot:append>
                   <q-icon class="cursor-pointer" name="mdi-calendar">
                     <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
@@ -35,7 +35,7 @@
                          label-color="white" type="text"/>
                 <q-input ref="cont" v-model="cont" dark dense filled label="Kontingent"
                          label-color="white" type="number"/>
-                <q-input ref="cont" v-model="raceLength" dark dense filled label="Laenge"
+                <q-input ref="cont" v-model="raceLength" dark dense filled label="Länge"
                          label-color="white" type="number"/>
               </q-form>
             </q-card-section>
@@ -109,9 +109,9 @@
             <q-card-section>
               <q-form class="q-gutter-sm">
                 <q-input v-model="username" :hint="userNameHint" dark dense filled hide-bottom-space
-                         label="Username" label-color="white" type="text" @keydown="clearUserHints"/>
+                         label="Benutzername" label-color="white" type="text" @keydown="clearUserHints"/>
                 <q-input ref="password" v-model="password" :hint="passwordHint" dark dense filled
-                         hide-bottom-space label="Password" label-color="white" type="password"
+                         hide-bottom-space label="Passwort" label-color="white" type="password"
                          @keydown="clearUserHints"/>
                 <q-select v-model="role" :hint="roleHint" :options="options" dark dense filled hide-bottom-space
                           label="Rolle" label-color="white" outlined transition-hide="jump-up"
