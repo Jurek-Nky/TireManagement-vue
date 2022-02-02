@@ -57,6 +57,18 @@ const routes = [
             }
         }
     }, {
+        path: '/statistic',
+        name: 'Statistic',
+        component: () => import('@/views/Statistic'),
+        beforeEnter: (to, from, next) => {
+            const role = store.state.user.userRole
+            if (role !== '') {
+                next()
+            } else {
+                next(false)
+            }
+        }
+    }, {
         path: '/bestand',
         name: 'Tires',
         component: () => import('@/views/Tires'),
@@ -96,10 +108,6 @@ const routes = [
                 next(false)
             }
         }
-    }, {
-        path: '/statistic',
-        name: 'statistic',
-        component: () => import('../views/Statistic')
     }
 ]
 

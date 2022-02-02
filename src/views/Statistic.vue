@@ -288,6 +288,7 @@ const tireSetColumns_used = [
   {name: 'nr', align: 'left', label: 'SetNr', field: row => row.tireSetNr, sortable: true},
   {name: 'race', align: 'left', label: 'RaceID', field: row => row.race.raceID, sortable: true}
 ]
+
 const tireColumns = [
   {name: 'name', required: true, label: 'ID', align: 'left', field: row => row.tireID, sortable: true, sortOrder: 'da'},
   {name: 'bezeichnung', required: true, label: 'Bezeichnung', align: 'left', field: row => row.bezeichnung, sortable: true},
@@ -339,10 +340,12 @@ export default {
       columns,
       race_columns,
       statistik_columns,
+
       loading_used: false,
       tireSetColumns_used,
       tireColumns,
       tireSetRows_used: [],
+
       tireRows: [],
       weather_rows: [],
       tireIds: [],
@@ -357,6 +360,7 @@ export default {
       showTire: false,
       showWeather: false,
       showRace: false,
+
       expanded: [],
       noOfSlicks: 0,
       noOfInters: 0,
