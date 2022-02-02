@@ -107,6 +107,7 @@
                           :columns="statistik_columns"
                           row-key="name"
                           dark
+                          :rows-per-page-options="[0]"
                           card-class="bg-primary bordered"
                           separator="vertical">
                         <template v-slot:loading>
@@ -134,7 +135,12 @@
                                 {{ col.value }}
                               </div>
                               <div v-else>
-                                null
+                                <div v-if="col.label == 'Air Temperature'">
+                                  {{ lastAirTemp }}
+                                </div>
+                                <div v-if="col.label == 'Track Temperature'">
+                                  {{ lastTrackTemp }}
+                                </div>
                               </div>
                             </q-td>
                           </q-tr>
@@ -291,6 +297,8 @@ const tireColumns = [
   {name: 'mischung', required: true, label: 'Mischung', align: 'left', field: row => row.mischung, sortable: true},
   {name: 'bestellt', required: true, label: 'Bestellt', align: 'left', field: row => row.bestelltUm, sortable: true},
   {name: 'erhalten', required: true, label: 'Erhalten', align: 'left', field: row => row.erhaltenUm, sortable: true},
+  {name: 'laufleistung',required: true, label: 'Laufleistung', align: 'left', field: row => row.laufleistung, sortable: true},
+  {name: 'modification',required: true, label: 'Modification', align: 'left', field: row => row.modification, sortable: true},
   {name: 'heizbeginn',required: true, label: 'Heiz-Beginn', align: 'left', field: row => row.heatingStart, sortable: true},
   {name: 'heizende', required: true, label: 'Heiz-Ende', align: 'left', field: row => row.heatingStop, sortable: true},
   {name: 'temperatur', required: true, label: 'Temperatur', align: 'left', field: row => row.heatingTemp, sortable: true},
@@ -325,7 +333,9 @@ export default {
       rows: [],
       race_rows: [],
       races: [],
+      statistiknull_rows: [],
       statistik_rows: [],
+      new_statistik_rows: [],
 
       columns,
       race_columns,
@@ -359,6 +369,9 @@ export default {
       avgAirTemp: 0,
       trackTemp: 0,
       avgTrackTemp: 0,
+      wetterNoOfRows: 0,
+      lastAirTemp: 0,
+      lastTrackTemp: 0,
 
       model: ref(null),
       options: [{
@@ -642,15 +655,24 @@ export default {
               data => {
                 this.loading_used = false
                 if (resp1.status === 200) {
-                  console.log(this.statistik_rows)
+                  console.log(this.new_statistik_rows.length)
+
                   for(let i=0; i<=data.length-1; i++) {
                     this.weather_rows[i] = data[i]
-                    this.statistik_rows[i].airtemperatur = this.weather_rows[i].airtemperatur;
+                    if (this.weather_rows[i].airtemperatur == 0) {
+                      //this.statistik_rows[i].airtemperatur = "0"
+                    }
+                    else this.statistik_rows[i].airtemperatur = this.weather_rows[i].airtemperatur;
                     this.statistik_rows[i].tracktemperatur = this.weather_rows[i].tracktemperatur;
                     this.airTemp += this.weather_rows[i].airtemperatur
                     this.trackTemp += this.weather_rows[i].tracktemperatur
+                    this.wetterNoOfRows = i
                   }
-                  console.log(this.statistik_rows)
+
+                  this.lastAirTemp = this.weather_rows[this.wetterNoOfRows].airtemperatur
+                  this.lastTrackTemp = this.weather_rows[this.wetterNoOfRows].tracktemperatur
+
+
                   this.avgAirTemp =  this.airTemp/this.weather_rows.length
                   this.avgAirTemp = this.avgAirTemp.toFixed(2)
                   this.avgTrackTemp = this.trackTemp/this.weather_rows.length
@@ -683,7 +705,19 @@ export default {
             return response.json()
           })
           .then(data => {
-            this.statistik_rows = data
+            //this.statistik_rows = data
+            var index = 0
+            for(let i=0; i<data.length; i++) {
+              if (data[i].modification == null || data[i].modification == "" || data[i].benutztUm == null) {
+                this.statistiknull_rows[i] = data[i]
+              } else {
+                this.statistik_rows[index] = data[i]
+                console.log( index + " " + this.statistik_rows[index].benutztUm)
+                index = index + 1
+              }
+              this.new_statistik_rows = this.statistik_rows
+            }
+
             /*
             for (let i = 0; i < data.length; i++) {
               //this.series.data1(data[i].airtemperatur);
