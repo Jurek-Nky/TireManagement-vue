@@ -93,6 +93,8 @@ export default {
     startTimers() {
       this.$store.state.timer.weatherRunning = false
       this.$store.state.timer.orderRunning = false
+      this.$store.state.timer.weatherTime = -1
+      this.$store.state.timer.orderTime = -1
       const apiUrl = this.$store.state.host.api_url
       const url_weather = apiUrl + '/weather/timer'
       const jwt = this.$store.state.user.jwt

@@ -94,6 +94,11 @@
                 </q-dialog>
               </q-td>
             </template>
+            <template v-slot:body-cell-select="props">
+              <q-td :props="props">
+                <q-checkbox v-model="props.row.selected" @update:model-value="updateSelected(props.row)"></q-checkbox>
+              </q-td>
+            </template>
           </q-table>
         </div>
       </q-tab-panel>
@@ -188,6 +193,7 @@ const race_columns = [
   {name: 'length', align: 'left', label: 'Laenge', field: row => row.length, sortable: true},
   {name: 'contingent', align: 'left', label: 'Kontingent', field: row => row.tireContingent, sortable: true},
   {name: 'id', required: true, align: 'left', label: 'ID', field: row => row.raceID, sortable: true},
+  {name: 'select', label: 'Select', align: 'left'},
   {name: 'action', label: 'Delete', align: 'left'},
 ]
 export default {
@@ -279,6 +285,24 @@ export default {
       this.location = ''
       this.cont = ''
       this.raceLength = ''
+    },
+    updateSelected(race) {
+      console.log(race)
+      for (const rowsKey in this.race_rows) {
+        if (this.race_rows[rowsKey].selected && this.race_rows[rowsKey].raceID !== race.raceID) {
+          this.race_rows[rowsKey].selected = false
+        }
+      }
+      const apiUrl = this.$store.state.host.api_url
+      const url = `${apiUrl}/race/select/${race.raceID}`
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
     },
     createUser() {
       this.clearUserHints()
