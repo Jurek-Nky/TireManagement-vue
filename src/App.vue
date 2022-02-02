@@ -82,7 +82,6 @@ export default {
   },
   mounted() {
     this.startTimers()
-    this.update()
   },
   methods: {
     logout() {
@@ -106,15 +105,22 @@ export default {
             if (response.status !== 200) {
               throw new Error("no timer available")
             }
-            return response.json()
+            return response.text()
           })
-          .then(data => {
-            const dataSplit = data.split(":")
+          .then(d => {
+            const data = d.replace("\"", "").split(".")[0]
+            const dataSplit = data.split("T")
+            const date = dataSplit[0].split("-")
+            const time = dataSplit[1].split(":")
+            const now = new Date()
             let lastEntry = new Date()
-            lastEntry.setHours(dataSplit[0])
-            lastEntry.setMinutes(dataSplit[1])
-            lastEntry.setSeconds(dataSplit[2])
-            const timerInSec = 1800 + ((lastEntry.getTime() - new Date().getTime()) / 1000) // 30 minutes - lastEntry + localtime
+            lastEntry.setUTCFullYear(date[0])
+            lastEntry.setUTCMonth(date[1] - 1) // for some reason Date.Month is zero based
+            lastEntry.setUTCDate(date[2])
+            lastEntry.setUTCHours(time[0])
+            lastEntry.setUTCMinutes(time[1])
+            lastEntry.setUTCSeconds(time[2])
+            const timerInSec = ((lastEntry.getTime() - now.getTime() + 1800000) / 1000)
             this.$store.commit("startWeatherTimer", timerInSec)
           })
       const url_order = apiUrl + '/tire/ordertimer'
@@ -123,18 +129,23 @@ export default {
             if (response.status !== 200) {
               throw new Error("no timer available")
             }
-            return response.json()
+            return response.text()
           })
-          .then(data => {
-            const dataSplit = data.split(":")
-            let lastEntry = new Date()
-            lastEntry.setHours(dataSplit[0])
-            lastEntry.setMinutes(dataSplit[1])
-            lastEntry.setSeconds(dataSplit[2])
-            const timerInSec = ((lastEntry.getTime() - new Date().getTime()) / 1000)  // timer - localtime
+          .then(d => {
+            const data = d.split(".")[0].split(" ")
+            const time = data[1].split(":")
+            const date = data[0].split("-")
+            const now = new Date()
+            let timer = new Date()
+            timer.setFullYear(date[0])
+            timer.setMonth(date[1] - 1)
+            timer.setDate(date[2])
+            timer.setHours(time[0])
+            timer.setMinutes(time[1])
+            timer.setUTCSeconds(time[2])
+            const timerInSec = (timer.getTime() - now.getTime()) / 1000
             this.$store.commit("startOrderTimer", timerInSec)
           })
-
       setTimeout(() => {
         this.update()
       }, 2000)
@@ -156,15 +167,22 @@ export default {
                 if (response.status !== 200) {
                   throw new Error("no timer available")
                 }
-                return response.json()
+                return response.text()
               })
-              .then(data => {
-                const dataSplit = data.split(":")
+              .then(d => {
+                const data = d.replace("\"", "").split(".")[0]
+                const dataSplit = data.split("T")
+                const date = dataSplit[0].split("-")
+                const time = dataSplit[1].split(":")
+                const now = new Date()
                 let lastEntry = new Date()
-                lastEntry.setHours(dataSplit[0])
-                lastEntry.setMinutes(dataSplit[1])
-                lastEntry.setSeconds(dataSplit[2])
-                const timerInSec = 1800 + ((lastEntry.getTime() - new Date().getTime()) / 1000) // 30 minutes - lastEntry + localtime
+                lastEntry.setUTCFullYear(date[0])
+                lastEntry.setUTCMonth(date[1] - 1) // for some reason Date.Month is zero based
+                lastEntry.setUTCDate(date[2])
+                lastEntry.setUTCHours(time[0])
+                lastEntry.setUTCMinutes(time[1])
+                lastEntry.setUTCSeconds(time[2])
+                const timerInSec = ((lastEntry.getTime() - now.getTime() + 1800000) / 1000)
                 if (timerInSec >= 0) {
                   this.$store.commit("startWeatherTimer", timerInSec)
                 }
@@ -185,15 +203,21 @@ export default {
                 if (response.status !== 200) {
                   throw new Error("no timer available")
                 }
-                return response.json()
+                return response.text()
               })
-              .then(data => {
-                const dataSplit = data.split(":")
+              .then(d => {
+                const data = d.split(".")[0].split(" ")
+                const time = data[1].split(":")
+                const date = data[0].split("-")
+                const now = new Date()
                 let timer = new Date()
-                timer.setHours(dataSplit[0])
-                timer.setMinutes(dataSplit[1])
-                timer.setSeconds(dataSplit[2])
-                const timerInSec = ((timer.getTime() - new Date().getTime()) / 1000) // timer - localtime
+                timer.setFullYear(date[0])
+                timer.setMonth(date[1] - 1)
+                timer.setDate(date[2])
+                timer.setHours(time[0])
+                timer.setMinutes(time[1])
+                timer.setUTCSeconds(time[2])
+                const timerInSec = (timer.getTime() - now.getTime()) / 1000
                 if (timerInSec >= 0) {
                   this.$store.commit("startOrderTimer", timerInSec)
                 }
