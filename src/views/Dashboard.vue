@@ -1,7 +1,7 @@
 <template>
-  <q-page class="q-ma-lg">
+  <q-page class="q-mt-lg q-mx-lg">
     <div class="row justify-center q-gutter-lg">
-      <div class="column">
+      <div class="col-grow">
         <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
           <q-card-section class="q-gutter-sm text-white text-h5" style="text-align: center">
             <span>To-Do-Liste</span>
@@ -17,14 +17,20 @@
             <q-list>
               <q-item v-for="(item, index) in noteList" :key="item.id">
                 <q-item-section>
-                  <span v-if="!item.done" class="text-white">{{ item.message }}</span>
-                  <span v-else class="text-strike text-white">{{ item.message }}</span>
+                  <span v-if="!item.done" class="text-white text-weight-bolder">{{ item.message }}</span>
+                  <span v-else class="text-strike  text-white text-weight-bolder">{{ item.message }}</span>
                 </q-item-section>
                 <q-item-section avatar class="row">
-                  <q-btn v-if="item.done" color="white" flat icon="mdi-delete"
-                         @click="confirmDialog(item.id,index)"></q-btn>
-                  <q-btn v-if="!item.done" color="white" flat icon="mdi-check"
-                         @click="noteCheck(item.id,index)"></q-btn>
+                  <div v-if="item.done">
+                    <q-btn color="white" flat icon="mdi-undo"
+                           @click="noteUncheck(item.id,index)"></q-btn>
+                    <q-btn color="white" flat icon="mdi-delete"
+                           @click="confirmDialog(item.id,index)"></q-btn>
+                  </div>
+                  <div v-else>
+                    <q-btn color="white" flat icon="mdi-check"
+                           @click="noteCheck(item.id,index)"></q-btn>
+                  </div>
                 </q-item-section>
                 <q-dialog v-model="confirm">
                   <q-card class="bg-primary">
@@ -43,7 +49,7 @@
           </q-card-section>
         </q-card>
       </div>
-      <div class="column">
+      <div class="col-auto">
         <q-card bordered class="q-pa-lg bg-primary shadow-5">
           <q-card-section class="text-white text-h5" style="text-align: center">
             <span>Wetter Timer</span>
@@ -65,7 +71,7 @@
           </q-card-section>
         </q-card>
       </div>
-      <div class="column">
+      <div class="col-auto">
         <q-card bordered class="q-pa-lg bg-primary shadow-5">
           <q-card-section class="text-white text-h5" style="text-align: center">
             <span>Bestell timer</span>
@@ -118,14 +124,13 @@ export default {
         return "abgelaufen"
       }
       const houres = Math.floor(time / 60 / 60)
-      const minutes = Math.floor(time / 60)
-      const seconds = time - (minutes * 60)
+      const minutes = Math.floor((time - houres * 3600) / 60)
+      const seconds = Math.floor(time - (minutes * 60))
       if (houres === 0) {
         if (minutes === 0) {
           return `${seconds}s`
         }
-        return `${minutes}
-          m:${seconds}s`
+        return `${minutes}m:${seconds}s`
       }
       return `${houres}h:${minutes}m:${seconds}s`
     },
@@ -135,16 +140,13 @@ export default {
         return "abgelaufen"
       }
       const houres = Math.floor(time / 60 / 60)
-      time = time - (houres * 60 * 60)
-      const minutes = Math.floor(time / 60)
-      time = time - (minutes * 60)
-      const seconds = time
+      const minutes = Math.floor((time - houres * 3600) / 60)
+      const seconds = Math.floor(time - (minutes * 60))
       if (houres === 0) {
         if (minutes === 0) {
           return `${seconds}s`
         }
-        return `${minutes}
-          m:${seconds}s`
+        return `${minutes}m:${seconds}s`
       }
       return `${houres}h:${minutes}m:${seconds}s`
     },
@@ -218,6 +220,29 @@ export default {
             })
       }
 
+    },
+    noteUncheck(id, index) {
+      const apiUrl = this.$store.state.host.api_url
+      let url = new URL(`${apiUrl}/note/update/${id}/status`)
+      url.searchParams.append('s', false)
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        }
+      }
+      let resp
+      fetch(url, requestOptions)
+          .then(response => {
+            resp = response
+            return response.json()
+          })
+          .then(data => {
+            if (resp.status === 200) {
+              this.noteList[index] = data
+            }
+          })
     },
     noteCheck(id, index) {
       const apiUrl = this.$store.state.host.api_url

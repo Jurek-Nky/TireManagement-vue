@@ -1,16 +1,16 @@
 <template>
   <q-page class="q-pa-lg">
     <div class="row q-gutter-lg">
-      <div class="col-grow">
+      <div class="col-grow col-7">
         <q-card bordered class="q-pa-md shadow-5 bg-primary" rounded>
           <q-card-section class="q-gutter-md">
             <div class="row">
               <div class="col-grow">
                 <span class="text-white text-h5">Bestellformular</span>
               </div>
-              <div class="col-3 text-white">
-                <q-input v-model="contingent" :model-value="contingent" dark dense disable filled label="Kontingent"
-                         label-color="white" outlined stack-label style="max-width: 100px" type="text"/>
+              <div class="col-auto text-white">
+                <q-input v-model="contingent" dark dense filled label="Kontingent" label-color="white"
+                         outlined readonly stack-label type="text"/>
               </div>
             </div>
           </q-card-section>
@@ -35,7 +35,7 @@
           </q-card-section>
         </q-card>
       </div>
-      <div class="col-grow col-md-4">
+      <div class="col-grow">
         <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
           <q-card-section class="text-white text-h5">Timer setzen</q-card-section>
           <q-card-section>
@@ -68,8 +68,8 @@
 
         <template v-slot:body-cell-aktion="props">
           <q-td :props="props">
-            <q-btn color="negative" dense flat icon="mdi-delete" @click="deleteTireSet(props.row)"></q-btn>
-            <q-btn color="accent" dense flat
+            <q-btn color="white" dense flat icon="mdi-delete" @click="deleteTireSet(props.row)"></q-btn>
+            <q-btn color="white" dense flat
                    icon="mdi-truck-check" @click="tireSetStatusInStorage(props.row)"></q-btn>
           </q-td>
         </template>
@@ -83,8 +83,8 @@ import {ref} from 'vue'
 
 const columns = [
   {name: 'uhrzeit', sortable: true, label: 'Uhrzeit', align: 'center', field: row => row.tires[0].bestelltUm},
-  {name:'tireSetNr', sortable: true, label: 'Reifenset-Nr', align: 'center', field: row => row.tireSetNr},
-  {name: 'bezeichnung', sortable: true,label: 'Bezeichnung', align: 'center', field: row => row.tires[0].bezeichnung},
+  {name: 'tireSetNr', sortable: true, label: 'Reifenset-Nr', align: 'center', field: row => row.tireSetNr},
+  {name: 'bezeichnung', sortable: true, label: 'Bezeichnung', align: 'center', field: row => row.tires[0].bezeichnung},
   {name: 'art', sortable: true, label: 'Reifenart', align: 'center', field: row => row.tires[0].art},
   {name: 'mischung', sortable: true, label: 'Mischung', align: 'center', field: row => row.tires[0].mischung},
   {
@@ -120,14 +120,14 @@ export default {
       bestellAuswahlOptions: [],
       columns,
       rows: [],
-      contingent : 0,
+      contingent: 0,
       orderAddBtnColor: 'accent',
       orderAddBtnLabel: 'Bestellen',
 
     }
   },
 
-  computed:{
+  computed: {
 
     orderTimeString() {
       const time = this.$store.state.timer.orderTime
@@ -152,33 +152,33 @@ export default {
     },
   },
   methods: {
-    updateOrderTimer(tireSet){
-        const apiUrl = this.$store.state.host.api_url
-        const url = `${apiUrl}/tireset/update/${tireSet.id}/orderTimer`
-        const jwt = this.$store.state.user.jwt
-        const requestOptions = {
-          method: 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + jwt
-          },
-        }
-        let resp
-        fetch(url, requestOptions)
-            .then(response => {
-              resp = response
-              return response.json()
-            })
-            .then(data => {
-                  if (resp.ok) {
-                    this.getOrderData()
-                  } else {
-                    console.log(data)
-                  }
+    updateOrderTimer(tireSet) {
+      const apiUrl = this.$store.state.host.api_url
+      const url = `${apiUrl}/tireset/update/${tireSet.id}/orderTimer`
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      let resp
+      fetch(url, requestOptions)
+          .then(response => {
+            resp = response
+            return response.json()
+          })
+          .then(data => {
+                if (resp.ok) {
+                  this.getOrderData()
+                } else {
+                  console.log(data)
                 }
-            )
-      },
+              }
+          )
+    },
 
-    getTimerValue(){
+    getTimerValue() {
       const x = document.getElementById("orderValue").value
       print(parseInt(x))
       return parseInt(x)
