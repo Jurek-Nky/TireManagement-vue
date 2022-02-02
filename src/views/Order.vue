@@ -35,7 +35,7 @@
           </q-card-section>
         </q-card>
       </div>
-      <div class="col-sm-3">
+      <div class="col-auto">
         <q-card bordered class="q-pa-sm shadow-5 bg-primary" rounded>
           <q-card-section class="text-white text-h5" style="text-align: center">Bestelltimer</q-card-section>
           <q-card-section>
@@ -93,13 +93,13 @@
                   :props="props">
               <div v-if="col.name === 'orderTimer'">
                 <q-badge v-if="col.value === null || col.value === ''" class="cursor-pointer" color="accent" text-color="white">
-                  {{'--'}}
+                  {{'---'}}
                 </q-badge>
                 <q-badge v-else class="cursor-pointer" color="accent" text-color="white">
-                  {{'----'}}
+                  {{col.value}}
                 </q-badge>
                 <q-popup-edit v-slot="scope" v-model="props.row.orderTimer" buttons
-                              color="accent" persistent title="Abholbereit in">
+                              color="accent" persistent title="Abholbereit in" @save="addOrderTimer(props.row)">
                   <q-input v-model="scope.value" label="Zeit eingeben" stack-label></q-input>
                 </q-popup-edit>
               </div>
@@ -133,7 +133,7 @@ const columns = [
     align: 'center',
     field: row => row.tires[0].modification
   },
-  {name: 'orderTimer', sortable: true, label: 'Abholbereit in', align: 'center'},
+  {name: 'orderTimer', sortable: true, label: 'Abholbereit in', align: 'center', field: row => row.orderTimer},
   {name: 'status', label: 'Status', align: 'center', field: row => row.status},
   {name: 'aktion', label: 'Aktion', align: 'center'}
 ]
@@ -196,6 +196,20 @@ export default {
   },
   methods: {
 
+    addOrderTimer(tireSet) {
+        const apiUrl = this.$store.state.host.api_url
+        let url = new URL(`${apiUrl}/tireSet/update/${tireSet.id}/orderTimer`)
+        url.searchParams.append('orderTimer', tireSet.orderTimer)
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        fetch(url, requestOptions)
+    },
+
     setOrderTimer() {
       const apiUrl = this.$store.state.host.api_url
       let url = new URL(`${apiUrl}/tire/ordertimer`)
@@ -208,38 +222,6 @@ export default {
         }
       }
       fetch(url, requestOptions)
-    },
-
-    updateOrderTimer(tireSet) {
-      const apiUrl = this.$store.state.host.api_url
-      const url = `${apiUrl}/tireset/update/${tireSet.id}/orderTimer`
-      const jwt = this.$store.state.user.jwt
-      const requestOptions = {
-        method: 'PUT',
-        headers: {
-          'Authorization': 'Bearer ' + jwt
-        },
-      }
-      let resp
-      fetch(url, requestOptions)
-          .then(response => {
-            resp = response
-            return response.json()
-          })
-          .then(data => {
-                if (resp.ok) {
-                  this.getOrderData()
-                } else {
-                  console.log(data)
-                }
-              }
-          )
-    },
-
-    getTimerValue() {
-      const x = document.getElementById("orderValue").value
-      print(parseInt(x))
-      return parseInt(x)
     },
 
     getOrderData() {
