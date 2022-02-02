@@ -154,6 +154,9 @@ export default {
     },
     update() {
       const interval = setInterval(() => {
+        if (this.$store.state.user.userRole === '') {
+          return
+        }
         if (!this.$store.state.timer.weatherRunning) {
           const apiUrl = this.$store.state.host.api_url
           const url = apiUrl + '/weather/timer'
