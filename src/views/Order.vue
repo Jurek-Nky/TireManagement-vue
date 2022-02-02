@@ -35,17 +35,27 @@
           </q-card-section>
         </q-card>
       </div>
-      <div class="col-grow">
-        <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
-          <q-card-section class="text-white text-h5">Timer setzen</q-card-section>
+      <div class="col-sm-3">
+        <q-card rounded bordered class="q-pa-sm q-ma-lg shadow-5 bg-primary">
+          <q-card-section class="text-white text-h5" style="text-align: center">Bestelltimer</q-card-section>
           <q-card-section>
-            <div class="q-gutter-y-sm">
-              <!-- <q-select dark filled label-color="accent" outlined dense v-model="bestellAuswahl" :options="bestellAuswahlOptions"
-                        label="Bestellung auswählen"/> -->
-              <q-input v-model="timerValue" dark dense filled label="Zeit eingeben" label-color="white" outlined
-                       type="number"/>
+            <q-separator dark/>
+            <div class="q-gutter-y-sm" style="text-align: center">
+              <q-circular-progress
+                  :max="orderInitialTime"
+                  :thickness="0.1"
+                  :value="orderTime"
+                  class="text-white q-mb-none q-mt-lg"
+                  color="accent"
+                  show-value
+                  size="170px"
+                  track-color="dark"
+              >
+                <span class="text-white text-h4 text-center">{{ orderTimeString }}</span>
+              </q-circular-progress>
+              <q-input v-model="initialTime" dark filled label-color="white" outlined dense type="number" label="Zeit eingeben"/>
+              <q-btn label-color="white" class="full-width" color="accent" label="Timer setzen" @click="setOrderTimer"/>
               <div>
-                <!-- <q-btn class="full-width" color="accent" label="Timer setzen"/> -->
               </div>
             </div>
           </q-card-section>
@@ -123,27 +133,31 @@ export default {
       contingent: 0,
       orderAddBtnColor: 'accent',
       orderAddBtnLabel: 'Bestellen',
-
+      initialTime: ref(null)
     }
   },
 
   computed: {
 
     orderTimeString() {
-      const time = this.$store.state.timer.orderTime
-      const hours = Math.floor(time / 60 / 60)
+      let time = this.$store.state.timer.orderTime
+      if (time <= 0) {
+        return "abgelaufen"
+      }
+      const houres = Math.floor(time / 60 / 60)
+      time = time - (houres * 60 * 60)
       const minutes = Math.floor(time / 60)
-      const seconds = time - (minutes * 60)
-      if (hours === 0) {
+      time = time - (minutes * 60)
+      const seconds = time
+      if (houres === 0) {
         if (minutes === 0) {
           return `${seconds}s`
         }
         return `${minutes}
           m:${seconds}s`
       }
-      return `${hours}h:${minutes}m:${seconds}s`
+      return `${houres}h:${minutes}m:${seconds}s`
     },
-
     orderTime() {
       return this.$store.state.timer.orderTime
     },
@@ -152,27 +166,31 @@ export default {
     },
   },
   methods: {
-    updateOrderTimer(tireSet) {
-      const apiUrl = this.$store.state.host.api_url
-      const url = `${apiUrl}/tireset/update/${tireSet.id}/orderTimer`
-      const jwt = this.$store.state.user.jwt
-      const requestOptions = {
-        method: 'PUT',
-        headers: {
-          'Authorization': 'Bearer ' + jwt
-        },
-      }
-      let resp
-      fetch(url, requestOptions)
-          .then(response => {
-            resp = response
-            return response.json()
-          })
-          .then(data => {
-                if (resp.ok) {
-                  this.getOrderData()
-                } else {
-                  console.log(data)
+    setOrderTimer() {
+
+    },
+    updateOrderTimer(tireSet){
+        const apiUrl = this.$store.state.host.api_url
+        const url = `${apiUrl}/tireset/update/${tireSet.id}/orderTimer`
+        const jwt = this.$store.state.user.jwt
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          },
+        }
+        let resp
+        fetch(url, requestOptions)
+            .then(response => {
+              resp = response
+              return response.json()
+            })
+            .then(data => {
+                  if (resp.ok) {
+                    this.getOrderData()
+                  } else {
+                    console.log(data)
+                  }
                 }
               }
           )
