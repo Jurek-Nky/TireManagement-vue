@@ -76,39 +76,31 @@
           row-key="bezeichnung"
           separator="horizontal"
           title="Bestellübersicht">
-<!--
-        <template v-slot:body-cell-aktion="props">
-          <q-td :props="props">
-            <q-btn color="white" dense flat icon="mdi-delete" @click="deleteTireSet(props.row)"></q-btn>
-            <q-btn color="white" dense flat
-                   icon="mdi-truck-check" @click="tireSetStatusInStorage(props.row)"></q-btn>
-
-          </q-td>
-        </template>
-        -->
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td v-for="col in props.cols"
                   :key="col.name"
                   :props="props">
               <div v-if="col.name === 'orderTimer'">
-                <q-badge v-if="col.value === null || col.value === ''" class="cursor-pointer" color="accent" text-color="white">
-                  {{'---'}}
+                <q-badge v-if="col.value === null || col.value === ''" class="cursor-pointer" color="accent"
+                         text-color="white">
+                  {{ '---' }}
                 </q-badge>
-                <q-badge v-else class="cursor-pointer" color="accent" text-color="white">
-                  {{col.value}}
+                <q-badge v-else :color="timerColor(col.value)" class="cursor-pointer" text-color="white">
+                  {{ formatedTimer(col.value) }}
                 </q-badge>
                 <q-popup-edit v-slot="scope" v-model="props.row.orderTimer" buttons
                               color="accent" persistent title="Abholbereit in" @save="addOrderTimer(props.row)">
-                  <q-input v-model="scope.value" label="Zeit eingeben" stack-label></q-input>
+                  <q-input v-model="scope.value" label="Zeit eingeben in Minuten" model-value="" stack-label></q-input>
                 </q-popup-edit>
               </div>
               <div v-else-if="col.name === 'aktion'">
                 <q-btn color="white" dense flat icon="mdi-delete" @click="deleteTireSet(props.row)"></q-btn>
-                <q-btn color="white" dense flat icon="mdi-truck-check" @click="tireSetStatusInStorage(props.row)"></q-btn>
+                <q-btn color="white" dense flat icon="mdi-truck-check"
+                       @click="tireSetStatusInStorage(props.row)"></q-btn>
               </div>
               <div v-else>
-                {{col.value}}
+                {{ col.value }}
               </div>
             </q-td>
           </q-tr>
@@ -195,11 +187,36 @@ export default {
     },
   },
   methods: {
-
+    formatedTimer(time) {
+      if (time < 0) {
+        return "Abholbereit"
+      }
+      const houres = Math.floor(time / 60 / 60)
+      const minutes = Math.floor((time - houres * 3600) / 60)
+      const seconds = Math.floor(time - (minutes * 60))
+      if (houres === 0) {
+        if (minutes === 0) {
+          return `${seconds}s`
+        }
+        return `${minutes}m:${seconds}s`
+      }
+      return `${houres}h:${minutes}m:${seconds}s`
+    }, timerColor(time) {
+      if (time >= 0) {
+        return 'accent'
+      }
+      return 'positive'
+    },
+    clearOrderTimer(tireSet) {
+      tireSet.orderTimer = ''
+    },
     addOrderTimer(tireSet) {
+      setTimeout(() => {
         const apiUrl = this.$store.state.host.api_url
-        let url = new URL(`${apiUrl}/tireSet/update/${tireSet.id}/orderTimer`)
-        url.searchParams.append('orderTimer', tireSet.orderTimer)
+        let timeReady = new Date()
+        timeReady.setMinutes(timeReady.getMinutes() + Number(tireSet.orderTimer))
+        tireSet.orderTimer = tireSet.orderTimer * 60
+        let url = `${apiUrl}/tireset/update/${tireSet.id}/orderTimer?orderTimer=${timeReady.getHours()}:${timeReady.getMinutes()}:${timeReady.getSeconds()}`
         const jwt = this.$store.state.user.jwt
         const requestOptions = {
           method: 'PUT',
@@ -208,8 +225,18 @@ export default {
           },
         }
         fetch(url, requestOptions)
-    },
+      }, 1)
 
+    },
+    tiresetTimerUpdate() {
+      setInterval(() => {
+        for (const rowsKey in this.rows) {
+          if (this.rows[rowsKey].orderTimer >= 0) {
+            this.rows[rowsKey].orderTimer--
+          }
+        }
+      }, 1000)
+    },
     setOrderTimer() {
       const apiUrl = this.$store.state.host.api_url
       let url = new URL(`${apiUrl}/tire/ordertimer`)
@@ -251,6 +278,15 @@ export default {
           .then(data => {
             if (resp.status === 200) {
               this.rows = data;
+              for (const rowsKey in this.rows) {
+                const now = new Date()
+                const orderReady = new Date()
+                orderReady.setHours(this.rows[rowsKey].orderTimer.split(":")[0])
+                orderReady.setMinutes(this.rows[rowsKey].orderTimer.split(":")[1])
+                orderReady.setSeconds(this.rows[rowsKey].orderTimer.split(":")[2])
+                this.rows[rowsKey].orderTimer = (orderReady.getTime() - now.getTime()) / 1000
+              }
+              this.tiresetTimerUpdate()
             }
           })
     },
