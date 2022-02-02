@@ -36,7 +36,7 @@
         </q-card>
       </div>
       <div class="col-sm-3">
-        <q-card rounded bordered class="q-pa-sm q-ma-lg shadow-5 bg-primary">
+        <q-card bordered class="q-pa-sm q-ma-lg shadow-5 bg-primary" rounded>
           <q-card-section class="text-white text-h5" style="text-align: center">Bestelltimer</q-card-section>
           <q-card-section>
             <q-separator dark/>
@@ -53,8 +53,9 @@
               >
                 <span class="text-white text-h4 text-center">{{ orderTimeString }}</span>
               </q-circular-progress>
-              <q-input v-model="initialTime" dark filled label-color="white" outlined dense type="number" label="Zeit eingeben"/>
-              <q-btn label-color="white" class="full-width" color="accent" label="Timer setzen" @click="setOrderTimer"/>
+              <q-input v-model="initialTime" dark dense filled label="Zeit eingeben" label-color="white" outlined
+                       type="number"/>
+              <q-btn class="full-width" color="accent" label="Timer setzen" label-color="white" @click="setOrderTimer"/>
               <div>
               </div>
             </div>
@@ -169,28 +170,27 @@ export default {
     setOrderTimer() {
 
     },
-    updateOrderTimer(tireSet){
-        const apiUrl = this.$store.state.host.api_url
-        const url = `${apiUrl}/tireset/update/${tireSet.id}/orderTimer`
-        const jwt = this.$store.state.user.jwt
-        const requestOptions = {
-          method: 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + jwt
-          },
-        }
-        let resp
-        fetch(url, requestOptions)
-            .then(response => {
-              resp = response
-              return response.json()
-            })
-            .then(data => {
-                  if (resp.ok) {
-                    this.getOrderData()
-                  } else {
-                    console.log(data)
-                  }
+    updateOrderTimer(tireSet) {
+      const apiUrl = this.$store.state.host.api_url
+      const url = `${apiUrl}/tireset/update/${tireSet.id}/orderTimer`
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      let resp
+      fetch(url, requestOptions)
+          .then(response => {
+            resp = response
+            return response.json()
+          })
+          .then(data => {
+                if (resp.ok) {
+                  this.getOrderData()
+                } else {
+                  console.log(data)
                 }
               }
           )
