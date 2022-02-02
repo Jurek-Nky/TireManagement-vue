@@ -13,7 +13,7 @@
     <q-tab-panels v-model="tab" animated class="transparent">
       <q-tab-panel class="row q-col-gutter-md full-height" name="input">
 
-        <div class="col-6">
+        <div class="col-grow col-6">
           <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
             <q-card-section>
               <q-form class="q-gutter-md">
@@ -36,11 +36,10 @@
         </div>
 
 
-        <div class="col-2" dark>
-
-            <q-card bordered class="q-pa-lg bg-primary shadow-5">
+        <div class="col-auto" dark>
+            <q-card bordered class="q-pa-lg bg-primary shadow-5 full-height">
               <q-card-section>
-                <span class="text-white text-subtitle1">Timer</span>
+                <span class="text-white text-subtitle1 ">Timer</span>
               </q-card-section>
               <q-separator dark/>
               <q-card-section>
@@ -60,7 +59,7 @@
             </q-card>
         </div>
 
-        <div class="col-4">
+        <div class="col-grow">
           <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
             <q-card-section>
               <div id="app" :class="typeof weather.main != 'undefined' && weather.main.temp > 16 ? 'warm' : ''">
@@ -97,7 +96,7 @@
 
 
         <div class="row fit content-md-center">
-          <div class="col-12">
+          <div class="col-grow col-12">
             <q-card class="bg-primary text-white q-pa-lg shadow-5 " dark>
               <q-card-section>
                 <apexchart ref="weatherChart" :options="chartOptions" :series="series" height="450px"
@@ -110,9 +109,7 @@
       </q-tab-panel>
 
       <q-tab-panel class="fit row justify-center full-height q-gutter-lg" name="weather_table">
-        <div class="justify-center q-gutter-md">
-          <div class=" q-pa-md" dark>
-
+        <div class="justify-center col-grow q-gutter-md" dark>
             <q-card class="bg-primary text-white q-pa-lg shadow-5" dark>
               <q-card-section>
                 <q-table :columns="columns"
@@ -144,7 +141,6 @@
               </q-card-section>
             </q-card>
           </div>
-        </div>
       </q-tab-panel>
     </q-tab-panels>
   </q-page>
@@ -168,26 +164,6 @@ const columns = [
   {name: 'aktion', label: 'Aktion', align: 'center'},
 ]
 
-/* const FULL_DASH_ARRAY = 283;
-const WARNING_THRESHOLD = 300;
-const ALERT_THRESHOLD = 60;
-
-
-const COLOR_CODES = {
-  info: {
-    color: "green"
-  },
-  warning: {
-    color: "orange",
-    threshold: WARNING_THRESHOLD
-  },
-  alert: {
-    color: "red",
-    threshold: ALERT_THRESHOLD
-  }
-};
-
-let TIME_LIMIT = 0;*/
 
 export default {
 
@@ -227,17 +203,21 @@ export default {
       },
       series: [{
         name: 'Streckentemperatur in °C',
+        color: '#f4a261',
         data: [],
       }, {
         name: 'Lufttemperatur in °C',
+        color: '#168aad' ,
         data: [],
       }],
       chartOptions: {
         chart: {
           foreColor: 'white',
           height: 350,
-          type: 'area'
+          type: 'area',
+
         },
+
         markers: {
           colors: ['#F44336', '#E91E63', '#9C27B0']
         },
@@ -275,8 +255,7 @@ export default {
         if (minutes === 0) {
           return `${seconds}s`
         }
-        return `${minutes}
-          m:${seconds}s`
+        return `${minutes}m:${seconds}s`
       }
       return `${houres}h:${minutes}m:${seconds}s`
     },
@@ -401,12 +380,12 @@ export default {
               let updateData = []
               for (const dataKey in data) {
                 updateData = {
-                  x: data[dataKey].time,
+                  x: data[dataKey].time.split(".")[0].split("T")[1],
                   y: data[dataKey].tracktemperatur
                 }
                 this.series[0].data.push(updateData)
                 updateData = {
-                  x: data[dataKey].time,
+                  x: data[dataKey].time.split(".")[0].split("T")[1],
                   y: data[dataKey].airtemperatur
                 }
                 this.series[1].data.push(updateData)
