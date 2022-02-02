@@ -12,9 +12,8 @@
               <q-btn color="white" flat icon="mdi-chevron-down" @click="addItem"></q-btn>
             </div>
           </q-card-section>
-          <q-separator dark/>
           <q-card-section class="q-gutter-sm">
-            <q-list>
+            <q-list bordered dark class="rounded-borders">
               <q-item v-for="(item, index) in noteList" :key="item.id">
                 <q-item-section>
                   <span v-if="!item.done" class="text-white text-weight-bolder">{{ item.message }}</span>
@@ -74,7 +73,7 @@
       <div class="col-auto">
         <q-card bordered class="q-pa-lg bg-primary shadow-5">
           <q-card-section class="text-white text-h5" style="text-align: center">
-            <span>Bestell timer</span>
+            <span>Bestell Timer</span>
           </q-card-section>
           <q-separator dark/>
           <q-card-section>

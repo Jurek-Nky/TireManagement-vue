@@ -2,23 +2,29 @@
   <q-page class="row justify-center items-center bg-image">
     <div class="column">
       <div class="row">
-        <q-card rounded bordered class="q-pa-lg shadow-5 bg-primary">
+        <q-card bordered class="q-pa-lg shadow-5 bg-primary" rounded>
           <q-card-section class="row justify-center">
-<!--            <div class="text-white text-h5">Login</div>-->
-              <q-img src="../assets/lms_logo_midsize.png" width="200px"/>
+            <!--            <div class="text-white text-h5">Login</div>-->
+            <q-img src="../assets/lms_logo_midsize.png" width="200px"/>
           </q-card-section>
           <q-card-section>
             <q-form class="q-gutter-md">
 
-              <q-input label-color="accent" dark filled v-model="username" type="text" label="username"
+              <q-input v-model="username" dark filled label="Username" label-color="white" type="text"
                        @keydown.enter="login"/>
-              <q-input label-color="accent" dark filled v-model="password" type="password" label="password"
-                       @keydown.enter="login"/>
+              <q-input v-model="password" :type="passwordType" dark filled label="Password" label-color="white"
+                       @keydown.enter="login">
+                <template v-slot:append>
+                  <q-btn type="" :ripple="false" color="white" flat icon="mdi-eye" unelevated
+                         @click="passwordTypeBool = !passwordTypeBool"/>
+                </template>
+              </q-input>
+
             </q-form>
           </q-card-section>
-          <q-card-actions class="q-px-md" :class="{ shake: error }">
-            <q-btn color="accent" size="lg" class="full-width" label="Login" @click="login" v-if="!error"/>
-            <q-btn color="negative" icon="mdi-alert" size="lg" class="full-width" v-else-if="error"/>
+          <q-card-actions :class="{ shake: error }" class="q-px-md">
+            <q-btn v-if="!error" class="full-width" color="accent" label="Login" size="lg" @click="login"/>
+            <q-btn v-else-if="error" class="full-width" color="negative" icon="mdi-alert" size="lg"/>
           </q-card-actions>
         </q-card>
       </div>
@@ -34,7 +40,16 @@ export default {
     return {
       error: false,
       username: '',
-      password: ''
+      password: '',
+      passwordTypeBool: true,
+    }
+  },
+  computed: {
+    passwordType() {
+      if (this.passwordTypeBool) {
+        return 'password'
+      }
+      return 'text'
     }
   },
   methods: {
@@ -101,7 +116,7 @@ export default {
     }
   },
   mounted() {
-    if (this.$store.state.user.jwt !== ''){
+    if (this.$store.state.user.jwt !== '') {
       this.$router.push('/dashboard')
     }
   }

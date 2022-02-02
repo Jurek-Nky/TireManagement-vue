@@ -3,7 +3,8 @@
     <q-header v-if="(usernameComp !== '')" elevated>
       <q-toolbar class="bg-primary">
         <q-btn dense flat icon="mdi-menu" round @click="toggleLeftDrawer"/>
-        <q-img class="q-ml-md gt-xs" src="./assets/lms_logo_midsize.png" width="120px"/>
+        <q-img class="q-ml-md gt-xs" src="./assets/lms_logo_midsize.png" width="120px"
+               @click="$router.push('/dashboard')"/>
         <q-toolbar-title class="gt-sm" shrink>Reifenverwaltung</q-toolbar-title>
         <q-space/>
         <q-toolbar-title class="gt-xs" shrink>{{ $route.name }}</q-toolbar-title>
@@ -13,8 +14,9 @@
         <q-btn class="q-mr-sm" color="negative" dense icon="mdi-logout" label="logout" size="md" @click="logout"/>
       </q-toolbar>
     </q-header>
-    <q-drawer v-if="(usernameComp !== '')" v-model="leftDrawerOpen" class="bg-primary" elevated overlay show-if-above
-              side="left">
+    <q-drawer v-if="(usernameComp !== '')" v-model="leftDrawerOpen" :mini="miniState" :width="200"
+              class="bg-primary" elevated mini-to-overlay show-if-above side="left" @mouseout="miniState = true"
+              @mouseover="miniState = false">
       <!-- admin items-->
       <q-list v-if="(this.$store.state.user.userRole === 'Admin')" class="rounded-borders" padding>
         <q-item v-for="item in adminItems" :key="item.title" v-ripple :to="item.to" class="text-white" clickable link>
@@ -152,6 +154,9 @@ export default {
     },
     update() {
       const interval = setInterval(() => {
+        if (this.$store.state.user.userRole === '') {
+          return
+        }
         if (!this.$store.state.timer.weatherRunning) {
           const apiUrl = this.$store.state.host.api_url
           const url = apiUrl + '/weather/timer'
@@ -223,7 +228,28 @@ export default {
                 }
               })
         }
-      }, 10000)
+        this.getUserSettings()
+      }, 5000)
+    },
+    getUserSettings() {
+      const apiUrl = this.$store.state.host.api_url
+      let url = new URL(`${apiUrl}/user/userSettings`)
+      url.searchParams.append('u', this.$store.state.user.userName)
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
+          .then(response => {
+            return response.json()
+          })
+          .then(data => {
+            this.$store.commit('setWeatherNotifications', data.getWeatherNotifications)
+            this.$store.commit('setOrderNotifications', data.getOrderNotifications)
+          })
     }
   },
   computed: {
@@ -236,6 +262,7 @@ export default {
     }
   },
   data: () => ({
+    miniState: true,
     drawer: null,
     username: '',
     adminItems: [

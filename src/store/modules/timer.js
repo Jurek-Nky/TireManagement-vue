@@ -15,6 +15,9 @@ import store from "../index";
 
 const mutations = {
     startWeatherTimer(state, timeInSec) {
+        if (timeInSec < 0) {
+            return
+        }
         state.weatherRunning = true
         state.weatherInitialTime = 1800
         state.weatherTime = timeInSec
@@ -61,6 +64,9 @@ const mutations = {
     },
 
     startOrderTimer(state, initialTime) {
+        if (initialTime < 0) {
+            return
+        }
         state.orderRunning = true
         if (initialTime > (60 * 60)) {
             state.orderInitialTime = initialTime
