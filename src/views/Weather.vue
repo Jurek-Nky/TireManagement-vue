@@ -15,22 +15,23 @@
 
         <div class="col-grow col-6">
           <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
+            <q-card-section class="text-white text-h5">Wetterdaten eintragen</q-card-section>
             <q-card-section>
               <q-form class="q-gutter-md">
-                <q-input ref="airtemp" v-model.number="airtemp" color="accent" dark
+                <q-input ref="airtemp" v-model.number="airtemp" color="accent" dark dense filled
                          label="Lufttemperatur in °C" label-color="white" type="number"/>
-                <q-input ref="tracktemp" v-model.number="tracktemp" color="accent" dark
+                <q-input ref="tracktemp" v-model.number="tracktemp" color="accent" dark dense filled
                          label="Streckentemperatur in °C" label-color="white" type="number"/>
-                <q-select ref="cond" v-model="cond" :options="optionstrack" color="accent" dark
-                          filled label="Streckenverhältnis" label-color="white"/>
+                <q-select ref="cond" v-model="cond" :options="optionstrack" color="accent" dark dense filled
+                          label="Streckenverhältnis" label-color="white"/>
               </q-form>
             </q-card-section>
             <q-separator dark/>
             <q-form class="q-gutter-md">
-              <q-card-actions>
+              <q-card-section>
                 <q-btn :color="weatherAddBtnColor" :label="weatherAddBtnLabel" class="bg-accent"
                        @click="createWeather"/>
-              </q-card-actions>
+              </q-card-section>
             </q-form>
           </q-card>
         </div>
@@ -38,9 +39,7 @@
 
         <div class="col-auto" dark>
             <q-card bordered class="q-pa-lg bg-primary shadow-5 full-height">
-              <q-card-section>
-                <span class="text-white text-subtitle1 ">Timer</span>
-              </q-card-section>
+              <q-card-section class="text-white text-h5" style="text-align: center">Wettertimer</q-card-section>
               <q-separator dark/>
               <q-card-section>
                 <q-circular-progress
@@ -61,15 +60,17 @@
 
         <div class="col-grow">
           <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
+            <q-card-section class="text-white text-h5" style="text-align: center">Wettervorhersage abrufen</q-card-section>
             <q-card-section>
               <div id="app" :class="typeof weather.main != 'undefined' && weather.main.temp > 16 ? 'warm' : ''">
                 <main>
                   <div class="search-box text-white" dark>
                     <q-input v-model="query" class="search-bar text-white" color="white"
                              dark
+                             dense
+                             filled
                              label="Ort eingeben..."
                              label-color="white"
-                             outlined
                              q-field
                              type="text"
                              @keypress="fetchWeather"
@@ -98,6 +99,7 @@
         <div class="row fit content-md-center">
           <div class="col-grow col-12">
             <q-card class="bg-primary text-white q-pa-lg shadow-5 " dark>
+              <q-card-section class="text-white text-h5" style="text-align: center">Wetterdiagramm</q-card-section>
               <q-card-section>
                 <apexchart ref="weatherChart" :options="chartOptions" :series="series" height="450px"
                            type="area"></apexchart>

@@ -16,7 +16,7 @@
             <q-card-section>
               <div class="q-pa-md" style="max-width: 300px">
                 <div class="q-gutter-md">
-                  <q-select dark filled label-color="accent" outlined dense v-model="model" :options="options" label="Race Options" />
+                  <q-select dark filled label-color="white" outlined dense v-model="model" :options="options" label="Race Options" />
                 </div>
               </div>
 
