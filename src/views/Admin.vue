@@ -15,7 +15,7 @@
           <q-card bordered class="shadow-5 bg-primary" rounded>
             <q-card-section class="text-white text-h5">Rennen erstellen</q-card-section>
             <q-card-section>
-              <q-input v-model="date" :rules="['date']" dark filled dense mask="date">
+              <q-input v-model="date" :rules="['date']" dark dense filled mask="date">
                 <template v-slot:append>
                   <q-icon class="cursor-pointer" name="mdi-calendar">
                     <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
@@ -287,7 +287,6 @@ export default {
       this.raceLength = ''
     },
     updateSelected(race) {
-      console.log(race)
       for (const rowsKey in this.race_rows) {
         if (this.race_rows[rowsKey].selected && this.race_rows[rowsKey].raceID !== race.raceID) {
           this.race_rows[rowsKey].selected = false
@@ -303,6 +302,14 @@ export default {
         },
       }
       fetch(url, requestOptions)
+          .then(() => {
+            this.$store.commit("resetWeatherTimer")
+            this.$store.commit("resetOrderTimer")
+            this.$store.state.timer.weatherRunning = false
+            this.$store.state.timer.orderRunning = false
+            this.$store.state.timer.weatherTime = -1
+            this.$store.state.timer.orderTime = -1
+          })
     },
     createUser() {
       this.clearUserHints()
