@@ -201,11 +201,11 @@ const race_columns = [
   {name: 'name', required: true, label: 'Name', align: 'left', field: row => row.name, sortable: true},
   {name: 'date', align: 'left', label: 'Datum', field: row => row.date, sortable: true},
   {name: 'location', align: 'left', label: 'Ort', field: row => row.location, sortable: true},
-  {name: 'length', align: 'left', label: 'Laenge', field: row => row.length, sortable: true},
+  {name: 'length', align: 'left', label: 'Länge', field: row => row.length, sortable: true},
   {name: 'contingent', align: 'left', label: 'Kontingent', field: row => row.tireContingent, sortable: true},
   {name: 'id', required: true, align: 'left', label: 'ID', field: row => row.raceID, sortable: true},
-  {name: 'select', label: 'Select', align: 'left'},
-  {name: 'action', label: 'Delete', align: 'left'},
+  {name: 'select', label: 'Ausgewählt', align: 'left'},
+  {name: 'action', label: 'Löschen', align: 'left'},
 ]
 export default {
   name: "Admin",
@@ -332,13 +332,13 @@ export default {
     createUser() {
       this.clearUserHints()
       if (this.username.length < 4) {
-        this.userNameHint = 'Username must be at least 4 characters'
+        this.userNameHint = 'Name muss mindestens 4 Buchstaben lang sein'
         return
       } else if (this.password.length < 8) {
-        this.passwordHint = 'Password must be at least 8 characters'
+        this.passwordHint = 'Passwort muss mindestens 8 Buchstaben lang sein'
         return
       } else if (this.role === '') {
-        this.roleHint = 'Select a role'
+        this.roleHint = 'Rolle auswählen'
         return
       }
       const apiUrl = this.$store.state.host.api_url

@@ -4,8 +4,9 @@
             align="justify"
             class="text-white bg-primary"
             dense
-            indicator-color="secondary">
-      <q-select v-model="raceSelect" :options="raceSelectOptions" dark dense label="Renne auswaehlen"
+            indicator-color="secondary"
+    no-caps>
+      <q-select v-model="raceSelect" :options="raceSelectOptions" dark dense label="Rennen auswählen"
                 label-color="white" style="width: 300px" bg-color="accent" color="white">
         <template v-slot:prepend>
           <div style="width: 10px"></div>
@@ -140,17 +141,17 @@ const raceColumns = [
   {name: 'id', required: true, align: 'left', label: 'ID', field: row => row.raceID, sortable: true},
   {name: 'date', align: 'left', label: 'Datum', field: row => row.date, sortable: true},
   {name: 'location', align: 'left', label: 'Ort', field: row => row.location, sortable: true},
-  {name: 'length', align: 'left', label: 'Laenge', field: row => row.length, sortable: true},
+  {name: 'length', align: 'left', label: 'Länge', field: row => row.length, sortable: true},
   {name: 'contingent', align: 'left', label: 'Kontingent', field: row => row.tireContingent, sortable: true}
 ]
 const statisticColumns = [
   {name: 'mischung', required: true, align: 'left', label: 'Mischung', field: row => row.mischung, sortable: true},
   {name: 'benutztUm', align: 'left', label: 'BenutztUm', field: row => row.benutztUm, sortable: true},
-  {name: 'airtemperatur', align: 'left', label: 'Air Temperature', field: row => row.airtemperatur, sortable: true},
+  {name: 'airtemperatur', align: 'left', label: 'Lufttemperatur', field: row => row.airtemperatur, sortable: true},
   {
     name: 'tracktemperatur',
     align: 'left',
-    label: 'Track Temperature',
+    label: 'Streckentemperatur',
     field: row => row.tracktemperatur,
     sortable: true
   }
