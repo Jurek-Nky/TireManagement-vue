@@ -57,7 +57,7 @@
               <q-input v-model="prefix_heavy_wet" :dense="dense" dark filled label="Heavy Wet"/>
             </q-card-section>
             <q-card-section>
-              <q-item-label align="center" class="text-negative">{{ prefixHint }}</q-item-label>
+              <q-item-label class="text-negative">{{ prefixHint }}</q-item-label>
               <q-btn :color="prefixBtnColor" :icon="prefixBtnIcon" class="full-width" size="md"
                      @click="changePrefixes"></q-btn>
             </q-card-section>

@@ -732,7 +732,6 @@ export default {
             'Authorization': 'Bearer ' + jwt
           },
         }
-        let resp
         fetch(url, requestOptions)
       }, 1)
     },
@@ -763,7 +762,6 @@ export default {
             'Authorization': 'Bearer ' + jwt
           },
         }
-        let resp
         fetch(url, requestOptions)
       }, 1)
     },
@@ -793,7 +791,6 @@ export default {
             'Authorization': 'Bearer ' + jwt
           },
         }
-        let resp
         fetch(url, requestOptions)
       }, 1)
     },
