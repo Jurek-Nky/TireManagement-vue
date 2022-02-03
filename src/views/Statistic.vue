@@ -5,9 +5,9 @@
             class="text-white bg-primary"
             dense
             indicator-color="secondary"
-    no-caps>
-      <q-select v-model="raceSelect" :options="raceSelectOptions" dark dense label="Rennen auswählen"
-                label-color="white" style="width: 300px" bg-color="accent" color="white">
+            no-caps>
+      <q-select v-model="raceSelect" :options="raceSelectOptions" bg-color="accent" color="white" dark
+                dense label="Rennen auswählen" label-color="white" style="width: 300px">
         <template v-slot:prepend>
           <div style="width: 10px"></div>
         </template>
@@ -247,13 +247,16 @@ export default {
         return []
       }
       for (let i = 0; i < selectedRace.tireSets.length; i++) {
-        if (selectedRace.tireSets[i].tires[0].art === 'Slicks') {
-          retArr[0]++
-        } else if (selectedRace.tireSets[i].tires[0].art === 'Inters') {
-          retArr[1]++
-        } else if (selectedRace.tireSets[i].tires[0].art === 'Rains') {
-          retArr[2]++
+        if (selectedRace.tireSets[i].status === 'benutzt') {
+          if (selectedRace.tireSets[i].tires[0].art === 'Slicks') {
+            retArr[0]++
+          } else if (selectedRace.tireSets[i].tires[0].art === 'Inters') {
+            retArr[1]++
+          } else if (selectedRace.tireSets[i].tires[0].art === 'Rains') {
+            retArr[2]++
+          }
         }
+
       }
       return retArr
     },
