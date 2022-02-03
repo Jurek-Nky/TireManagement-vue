@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-lg">
-    <div class="row q-gutter-lg">
-      <div class="col-grow col-7">
+    <div class="row q-mb-lg">
+      <div class="col-grow col-10">
         <q-card bordered class="q-pa-md shadow-5 bg-primary" rounded>
           <q-card-section class="q-gutter-md">
             <div class="row">
@@ -35,7 +35,9 @@
           </q-card-section>
         </q-card>
       </div>
-      <div class="col-auto">
+    </div>
+    <div class="row q-gutter-lg justify-center">
+      <div class="col-grow">
         <q-card bordered class="q-pa-sm shadow-5 bg-primary" rounded>
           <q-card-section class="text-white text-h5" style="text-align: center">Bestelltimer</q-card-section>
           <q-card-section>
@@ -48,10 +50,10 @@
                   class="text-white q-mb-none q-mt-lg"
                   color="accent"
                   show-value
-                  size="200px"
+                  size="150px"
                   track-color="dark"
               >
-                <span class="text-white text-h4 text-center">{{ orderTimeString }}</span>
+                <span class="text-white text-h5 text-center">{{ orderTimeString }}</span>
               </q-circular-progress>
               <q-input v-model="initialTime" dark dense filled label="Zeit eingeben" label-color="white" outlined/>
               <q-btn class="full-width" color="accent" label="Timer setzen" label-color="white"
@@ -60,61 +62,62 @@
           </q-card-section>
         </q-card>
       </div>
-    </div>
-    <div class="row q-mt-lg">
-      <q-table
-          v-if="rows.length >= 1"
-          :columns="columns"
-          :rows="rows"
-          :rows-per-page-options="[0]"
-          card-class="bg-primary bordered col-grow"
-          dark
-          hide-bottom
-          no-data-label="Keine Einträge verfügbar"
-          row-key="bezeichnung"
-          separator="horizontal"
-          title="Bestellübersicht"
-      >
-        <template v-slot:header="props">
-          <q-tr :props="props">
-            <q-th auto-width/>
-            <q-th
-                v-for="col in props.cols"
-                :key="col.name"
-                :props="props"
-            >
-              {{ col.label }}
-            </q-th>
-          </q-tr>
-        </template>
-        <template v-slot:body="props">
-          <q-tr :props="props">
-            <q-td>
-              <q-checkbox :model-value="(selected.includes(props.row))"
-                          color="secondary" dark
-                          size="sm"
-                          @click="(!selected.includes(props.row))?selected.push(props.row):selected.splice(selected.indexOf(props.row),1)"/>
-            </q-td>
-            <q-td v-for="col in props.cols"
+      <div class="col-grow col-9">
+        <q-table
+            v-if="rows.length >= 1"
+            :columns="columns"
+            :rows="rows"
+            :rows-per-page-options="[0]"
+            card-class="bg-primary bordered"
+            dark
+            dense
+            hide-bottom
+            no-data-label="Keine Einträge verfügbar"
+            row-key="bezeichnung"
+            separator="horizontal"
+            title="Bestellübersicht"
+        >
+          <template v-slot:header="props">
+            <q-tr :props="props">
+              <q-th auto-width/>
+              <q-th
+                  v-for="col in props.cols"
                   :key="col.name"
-                  :props="props">
-              <div v-if="col.name === 'orderTimer'">
-                <q-badge :color="timerColor(col.value)" text-color="white">
-                  {{ formatedTimer(props.row.orderTimer) }}
-                </q-badge>
-              </div>
-              <div v-else-if="col.name === 'aktion'">
-                <q-btn color="white" dense flat icon="mdi-delete" @click="deleteTireSet(props.row)"></q-btn>
-                <q-btn color="white" dense flat icon="mdi-truck-check"
-                       @click="tireSetStatusInStorage(props.row)"></q-btn>
-              </div>
-              <div v-else>
-                {{ col.value }}
-              </div>
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
+                  :props="props"
+              >
+                {{ col.label }}
+              </q-th>
+            </q-tr>
+          </template>
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <q-td>
+                <q-checkbox :model-value="(selected.includes(props.row))"
+                            color="secondary" dark
+                            size="sm"
+                            @click="(!selected.includes(props.row))?selected.push(props.row):selected.splice(selected.indexOf(props.row),1)"/>
+              </q-td>
+              <q-td v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props">
+                <div v-if="col.name === 'orderTimer'">
+                  <q-badge :color="timerColor(col.value)" text-color="white">
+                    {{ formatedTimer(props.row.orderTimer) }}
+                  </q-badge>
+                </div>
+                <div v-else-if="col.name === 'aktion'">
+                  <q-btn color="white" dense flat icon="mdi-delete" @click="deleteTireSet(props.row)"></q-btn>
+                  <q-btn color="white" dense flat icon="mdi-truck-check"
+                         @click="tireSetStatusInStorage(props.row)"></q-btn>
+                </div>
+                <div v-else>
+                  {{ col.value }}
+                </div>
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+      </div>
     </div>
   </q-page>
 </template>
