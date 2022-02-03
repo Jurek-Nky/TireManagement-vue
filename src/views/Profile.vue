@@ -92,7 +92,6 @@ export default {
         },
         body: JSON.stringify(data)
       }
-      let resp
       fetch(url, requestOptions)
     },
     changePassword() {

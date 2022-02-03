@@ -6,7 +6,11 @@
             dense
             indicator-color="secondary">
       <q-select v-model="raceSelect" :options="raceSelectOptions" dark dense label="Renne auswaehlen"
-                label-color="white" style="width: 300px" bg-color="accent" color="white"/>
+                label-color="white" style="width: 300px" bg-color="accent" color="white">
+        <template v-slot:prepend>
+          <div style="width: 10px"></div>
+        </template>
+      </q-select>
       <q-tab label="Statistik" name="stats"/>
       <q-tab label="Reifenübersicht" name="used"/>
 

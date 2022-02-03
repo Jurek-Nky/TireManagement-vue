@@ -37,34 +37,35 @@
         </div>
 
 
-        <div class="col-auto" dark>
-            <q-card bordered class="q-pa-lg bg-primary shadow-5 full-height">
-              <q-card-section class="text-white text-h5" style="text-align: center">Wettertimer</q-card-section>
-              <q-separator dark/>
-              <q-card-section>
-                <q-circular-progress
-                    :max="weatherInitialTime"
-                    :thickness="0.1"
-                    :value="weatherTime"
-                    class="text-white q-mb-none q-mt-lg"
-                    color="accent"
-                    show-value
-                    size="240px"
-                    track-color="dark"
-                >
-                  <span class="text-white text-h4 text-center">{{ weatherTimeString }}</span>
-                </q-circular-progress>
-              </q-card-section>
-            </q-card>
+        <div class="col-auto">
+          <q-card bordered class="q-pa-lg bg-primary shadow-5 full-height">
+            <q-card-section class="text-white text-h5" style="text-align: center">Wettertimer</q-card-section>
+            <q-separator dark/>
+            <q-card-section>
+              <q-circular-progress
+                  :max="weatherInitialTime"
+                  :thickness="0.1"
+                  :value="weatherTime"
+                  class="text-white q-mb-none q-mt-lg"
+                  color="accent"
+                  show-value
+                  size="240px"
+                  track-color="dark"
+              >
+                <span class="text-white text-h4 text-center">{{ weatherTimeString }}</span>
+              </q-circular-progress>
+            </q-card-section>
+          </q-card>
         </div>
 
         <div class="col-grow">
           <q-card class="bg-primary text-white q-pa-lg shadow-5 full-height " dark>
-            <q-card-section class="text-white text-h5" style="text-align: center">Wettervorhersage abrufen</q-card-section>
+            <q-card-section class="text-white text-h5" style="text-align: center">Wettervorhersage abrufen
+            </q-card-section>
             <q-card-section>
               <div id="app" :class="typeof weather.main != 'undefined' && weather.main.temp > 16 ? 'warm' : ''">
                 <main>
-                  <div class="search-box text-white" dark>
+                  <div class="search-box text-white">
                     <q-input v-model="query" class="search-bar text-white" color="white"
                              dark
                              dense
@@ -83,7 +84,7 @@
                       <div class="date">{{ dateBuilder() }}</div>
                     </div>
                     <div class="weather-box">
-                      <div class="temp">{{ Math.round(weather.main.temp) }}°c</div>
+                      <div class="temp">{{ Number(weather.main.temp).toFixed(1) }}°c</div>
                       <div class="weather">{{ weather.weather[0].main }}</div>
                     </div>
 
@@ -111,38 +112,38 @@
       </q-tab-panel>
 
       <q-tab-panel class="fit row justify-center full-height q-gutter-lg" name="weather_table">
-        <div class="justify-center col-grow q-gutter-md" dark>
-            <q-card class="bg-primary text-white q-pa-lg shadow-5" dark>
-              <q-card-section>
-                <q-table :columns="columns"
-                         :rows="rows"
-                         :rows-per-page-options="[0]"
-                         binary-state-sort
-                         class="bg-primary text-white"
-                         row-key="name"
-                         title="Wetterdaten"
-                >
-                  <template v-slot:body-cell-aktion="props">
-                    <q-td :props="props">
-                      <q-btn color="white" dense flat icon="mdi-delete" @click="confirmDialog(props.row)"></q-btn>
-                      <q-dialog v-model="confirm">
-                        <q-card class="bg-primary">
-                          <q-card-section class="row items-center">
-                            <span class="q-ml-sm text-white">Do you really want do delete this Note</span>
-                          </q-card-section>
-                          <q-card-actions align="right">
-                            <q-btn v-close-popup color="grey" label="cancel" text-color="white"></q-btn>
-                            <q-btn color="negative" label="delete"
-                                   @click="deleteWeather(this.confirmId)"></q-btn>
-                          </q-card-actions>
-                        </q-card>
-                      </q-dialog>
-                    </q-td>
-                  </template>
-                </q-table>
-              </q-card-section>
-            </q-card>
-          </div>
+        <div class="justify-center col-grow q-gutter-md">
+          <q-card class="bg-primary text-white q-pa-lg shadow-5" dark>
+            <q-card-section>
+              <q-table :columns="columns"
+                       :rows="rows"
+                       :rows-per-page-options="[0]"
+                       binary-state-sort
+                       class="bg-primary text-white"
+                       row-key="name"
+                       title="Wetterdaten"
+              >
+                <template v-slot:body-cell-aktion="props">
+                  <q-td :props="props">
+                    <q-btn color="white" dense flat icon="mdi-delete" @click="confirmDialog(props.row)"></q-btn>
+                    <q-dialog v-model="confirm">
+                      <q-card class="bg-primary">
+                        <q-card-section class="row items-center">
+                          <span class="q-ml-sm text-white">Do you really want do delete this Note</span>
+                        </q-card-section>
+                        <q-card-actions align="right">
+                          <q-btn v-close-popup color="grey" label="cancel" text-color="white"></q-btn>
+                          <q-btn color="negative" label="delete"
+                                 @click="deleteWeather(this.confirmId)"></q-btn>
+                        </q-card-actions>
+                      </q-card>
+                    </q-dialog>
+                  </q-td>
+                </template>
+              </q-table>
+            </q-card-section>
+          </q-card>
+        </div>
       </q-tab-panel>
     </q-tab-panels>
   </q-page>
@@ -150,7 +151,6 @@
 
 <script>
 import {ref} from 'vue'
-import {useQuasar} from 'quasar'
 
 const columns = [
   {name: 'time', label: 'Uhrzeit', align: 'left', field: row => row.time.split(".")[0].split("T")[1], sortable: true},
@@ -209,7 +209,7 @@ export default {
         data: [],
       }, {
         name: 'Lufttemperatur in °C',
-        color: '#168aad' ,
+        color: '#168aad',
         data: [],
       }],
       chartOptions: {
@@ -262,193 +262,193 @@ export default {
       return `${houres}h:${minutes}m:${seconds}s`
     },
   },
-    methods: {
-      confirmDialog(id) {
-        this.confirm = true
-        this.confirmId = id
+  methods: {
+    confirmDialog(id) {
+      this.confirm = true
+      this.confirmId = id
 
-      },
-      createWeather() {
-        const apiUrl = this.$store.state.host.api_url
-        const url = new URL(apiUrl + '/weather/new')
-        const data = {
-          airtemp: this.airtemp,
-          tracktemp: this.tracktemp,
-          cond: this.cond,
-        }
-        const jwt = this.$store.state.user.jwt
-        const requestOptions = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + jwt
-          },
-          body: JSON.stringify(data)
-        }
-        let resp;
-        fetch(url, requestOptions)
-            .then(response => {
-              resp = response
-              if (response.status !== 200) {
-                console.log(response)
-                return
-              }
-              return response.json()
-            })
-            .then(() => {
+    },
+    createWeather() {
+      const apiUrl = this.$store.state.host.api_url
+      const url = new URL(apiUrl + '/weather/new')
+      const data = {
+        airtemp: this.airtemp,
+        tracktemp: this.tracktemp,
+        cond: this.cond,
+      }
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + jwt
+        },
+        body: JSON.stringify(data)
+      }
+      let resp;
+      fetch(url, requestOptions)
+          .then(response => {
+            resp = response
+            if (response.status !== 200) {
+              console.log(response)
+              return
+            }
+            return response.json()
+          })
+          .then(() => {
+            this.getWeatherData()
+            this.getDiagramData()
+            this.clearWeatherFields()
+            this.orderAddBtnLabel = 'Erfolgreich eingetragen'
+            this.orderAddBtnColor = 'positive'
+            setTimeout(() => {
+              this.orderAddBtnColor = 'accent'
+              this.orderAddBtnLabel = 'Eintragen'
+            }, 1500)
+          })
+    },
+    clearWeatherFields() {
+      this.airtemp = ''
+      this.tracktemp = ''
+      this.cond = ''
+    },
+    getWeatherData() {
+      const apiUrl = this.$store.state.host.api_url
+      const url = apiUrl + '/weather/all'
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
+          .then(response => {
+            if (response.status !== 200) {
+              console.log(response)
+              return
+            }
+            return response.json()
+          })
+          .then(data => {
+            this.rows = data
+          })
+    },
+    deleteWeather(weather) {
+      const apiUrl = this.$store.state.host.api_url
+      const url = `${apiUrl}/weather/delete/${weather.wetterid}`
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
+          .then(response => {
+            if (response.status === 200) {
+              this.confirm = false
               this.getWeatherData()
-              this.getDiagramData()
-              this.clearWeatherFields()
-              this.orderAddBtnLabel = 'Erfolgreich eingetragen'
-              this.orderAddBtnColor = 'positive'
-              setTimeout(() => {
-                this.orderAddBtnColor = 'accent'
-                this.orderAddBtnLabel = 'Eintragen'
-              }, 1500)
-            })
-      },
-      clearWeatherFields() {
-        this.airtemp = ''
-        this.tracktemp = ''
-        this.cond = ''
-      },
-      getWeatherData() {
-        const apiUrl = 'https://limla.ml:8443/api/v1/weather/all'
-        const url = apiUrl
-        const jwt = this.$store.state.user.jwt
-        const requestOptions = {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + jwt
-          },
-        }
-        fetch(url, requestOptions)
-            .then(response => {
-              if (response.status !== 200) {
-                console.log(response)
-                return
-              }
-              return response.json()
-            })
-            .then(data => {
-              this.rows = data
-            })
-      },
-      deleteWeather(weather) {
-        const apiUrl = this.$store.state.host.api_url
-        const url = `${apiUrl}/weather/delete/${weather.wetterid}`
-        const jwt = this.$store.state.user.jwt
-        const requestOptions = {
-          method: 'DELETE',
-          headers: {
-            'Authorization': 'Bearer ' + jwt
-          },
-        }
-        fetch(url, requestOptions)
-            .then(response => {
-              if (response.status === 200) {
-                this.confirm = false
-                this.getWeatherData()
-              } else if (response.status === 500) {
-                console.log(response.message)
-              }
-            })
-      },
-      getDiagramData() {
-        this.series[0].data = []
-        this.series[1].data = []
-        const apiUrl = 'https://limla.ml:8443/api/v1/weather/all'
-        const url = apiUrl
-        const jwt = this.$store.state.user.jwt
-        const requestOptions = {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + jwt
-          },
-        }
-        fetch(url, requestOptions)
-            .then(response => {
-              if (response.status !== 200) {
-                console.log(response)
-                return
+            } else if (response.status === 500) {
+              console.log(response.message)
+            }
+          })
+    },
+    getDiagramData() {
+      this.series[0].data = []
+      this.series[1].data = []
+      const apiUrl = this.$store.state.host.api_url
+      const url = apiUrl + '/weather/all'
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
+          .then(response => {
+            if (response.status !== 200) {
+              console.log(response)
+              return
 
-              }
+            }
 
-              return response.json()
-            })
-            .then(data => {
-              let updateData = []
-              for (const dataKey in data) {
-                updateData = {
-                  x: data[dataKey].time.split(".")[0].split("T")[1],
-                  y: data[dataKey].tracktemperatur
-                }
-                this.series[0].data.push(updateData)
-                updateData = {
-                  x: data[dataKey].time.split(".")[0].split("T")[1],
-                  y: data[dataKey].airtemperatur
-                }
-                this.series[1].data.push(updateData)
+            return response.json()
+          })
+          .then(data => {
+            let updateData = []
+            for (const dataKey in data) {
+              updateData = {
+                x: data[dataKey].time.split(".")[0].split("T")[1],
+                y: data[dataKey].tracktemperatur
               }
-            });
-      },
-      fetchWeather(e) {
-        if (e.key == "Enter") {
-          fetch(`${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`)
-              .then(res => {
-                return res.json();
-              }).then(this.setResults);
-        }
-      },
-      setResults(results) {
-        this.weather = results;
-        this.weather.icon = results;
-      },
-      dateBuilder() {
-        let d = new Date();
-        let months = ["Januar", "Feburar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
-        let days = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
-        let day = days[d.getDay()];
-        let date = d.getDate();
-        let month = months[d.getMonth()];
-        let year = d.getFullYear();
-        return `${day} ${date} ${month} ${year}`;w
-      },
-      getTimer(){
-        const apiUrl = 'https://limla.ml:8443/api/v1/weather/timer'
-        const url = apiUrl
-        const jwt = this.$store.state.user.jwt
-        const requestOptions = {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + jwt
-          },
-        }
-        fetch(url, requestOptions)
-            .then(response => {
-              if (response.status !== 200) {
-                console.log(response)
-                return
+              this.series[0].data.push(updateData)
+              updateData = {
+                x: data[dataKey].time.split(".")[0].split("T")[1],
+                y: data[dataKey].airtemperatur
               }
-              return response.json()
-            })
-            .then(data => {
-              this.weatherTimeString = data
-            })
-
+              this.series[1].data.push(updateData)
+            }
+          });
+    },
+    fetchWeather(e) {
+      if (e.key === "Enter") {
+        fetch(`${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`)
+            .then(res => {
+              return res.json();
+            }).then(this.setResults);
       }
     },
-
-    mounted() {
-      this.getWeatherData()
-      this.getDiagramData()
-
+    setResults(results) {
+      this.weather = results;
+      this.weather.icon = results;
+    },
+    dateBuilder() {
+      let d = new Date();
+      let months = ["Januar", "Feburar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+      let days = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
+      let day = days[d.getDay()];
+      let date = d.getDate();
+      let month = months[d.getMonth()];
+      let year = d.getFullYear();
+      return `${day} ${date} ${month} ${year}`;
+    },
+    getTimer() {
+      const apiUrl= this.$store.state.host.api_url
+      const url = apiUrl + '/weather/timer'
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
+          .then(response => {
+            if (response.status !== 200) {
+              console.log(response)
+              return
+            }
+            return response.json()
+          })
+          .then(data => {
+            this.weatherTimeString = data
+          })
 
     }
+  },
+
+  mounted() {
+    this.getWeatherData()
+    this.getDiagramData()
+
+
   }
+}
 
 
 </script>
@@ -507,7 +507,7 @@ body
   font-weight: 900
   text-shadow: 3px 6px rgba(0, 0, 0, 0.25)
   border-radius: 10px
-  margin: 30px 0px
+  margin: 30px 0
   box-shadow: 3px 6px rgba(0, 0, 0, 0.25)
 
 .weather-box .weather

@@ -266,7 +266,7 @@ export default {
             }
           })
     },
-    noteDelete(id, index) {
+    noteDelete(id) {
       const apiUrl = this.$store.state.host.api_url
       let url = `${apiUrl}/note/delete/${id}`
       const jwt = this.$store.state.user.jwt
