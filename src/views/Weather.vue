@@ -348,6 +348,7 @@ export default {
               if (response.status === 200) {
                 this.confirm = false
                 this.getWeatherData()
+                this.getDiagramData()
               } else if (response.status === 500) {
                 console.log(response.message)
               }
