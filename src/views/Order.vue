@@ -201,7 +201,8 @@ export default {
         return `${minutes}m:${seconds}s`
       }
       return `${houres}h:${minutes}m:${seconds}s`
-    }, timerColor(time) {
+    },
+    timerColor(time) {
       if (time >= 0) {
         return 'accent'
       }
@@ -293,18 +294,34 @@ export default {
     setOrderData() {
       const apiUrl = this.$store.state.host.api_url
       const url = new URL(`${apiUrl}/tireset/new`)
-      const exempleTire = {
+      const FL = {
         art: this.art,
         mischung: this.mischung,
         modification: this.modification,
+        position: 'FL'
+      }
+      const FR = {
+        art: this.art,
+        mischung: this.mischung,
+        modification: this.modification,
+        position: 'FR'
+      }
+      const RL = {
+        art: this.art,
+        mischung: this.mischung,
+        modification: this.modification,
+        position: 'RL'
+      }
+      const RR = {
+        art: this.art,
+        mischung: this.mischung,
+        modification: this.modification,
+        position: 'RR'
       }
       const data = {
         status: 'bestellt',
         tires: [
-          exempleTire,
-          exempleTire,
-          exempleTire,
-          exempleTire
+          FL,FR,RL,RR
         ]
       }
       const jwt = this.$store.state.user.jwt
