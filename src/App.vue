@@ -104,14 +104,17 @@ export default {
           'Authorization': 'Bearer ' + jwt
         },
       }
+      let resp
       fetch(url_weather, requestOptions)
           .then(response => {
-            if (response.status !== 200) {
-              throw new Error("no timer available")
-            }
+            resp = response
             return response.text()
           })
           .then(d => {
+            if (resp.status !== 200 || d === '') {
+              return
+
+            }
             const data = d.replace("\"", "").split(".")[0]
             const dataSplit = data.split("T")
             const date = dataSplit[0].split("-")
@@ -128,14 +131,16 @@ export default {
             this.$store.commit("startWeatherTimer", timerInSec)
           })
       const url_order = apiUrl + '/tire/ordertimer'
+      let resp2
       fetch(url_order, requestOptions)
           .then(response => {
-            if (response.status !== 200) {
-              throw new Error("no timer available")
-            }
+            resp2 = response
             return response.text()
           })
           .then(d => {
+            if (resp2.status !== 200 || d === '') {
+              return
+            }
             const data = d.split(".")[0].split(" ")
             const time = data[1].split(":")
             const date = data[0].split("-")
@@ -154,8 +159,9 @@ export default {
         this.update()
       }, 2000)
     },
-    update() {
-      const interval = setInterval(() => {
+    update()
+    {
+      setInterval(() => {
         if (this.$store.state.user.userRole === '') {
           return
         }
@@ -169,14 +175,16 @@ export default {
               'Authorization': 'Bearer ' + jwt
             },
           }
+          let resp
           fetch(url, requestOptions)
               .then(response => {
-                if (response.status !== 200) {
-                  throw new Error("no timer available")
-                }
+                resp = response
                 return response.text()
               })
               .then(d => {
+                if (resp.status !== 200 || d === '') {
+                  return
+                }
                 const data = d.replace("\"", "").split(".")[0]
                 const dataSplit = data.split("T")
                 const date = dataSplit[0].split("-")
@@ -205,14 +213,16 @@ export default {
               'Authorization': 'Bearer ' + jwt
             },
           }
+          let resp;
           fetch(url, requestOptions)
               .then(response => {
-                if (response.status !== 200) {
-                  throw new Error("no timer available")
-                }
+                resp = response
                 return response.text()
               })
               .then(d => {
+                if (resp.status !== 200 || d === '') {
+                  return
+                }
                 const data = d.split(".")[0].split(" ")
                 const time = data[1].split(":")
                 const date = data[0].split("-")
@@ -231,8 +241,9 @@ export default {
               })
         }
         this.getUserSettings()
-      }, 2000)
-    },
+      }, 2000);
+    }
+,
     getUserSettings() {
       const apiUrl = this.$store.state.host.api_url
       let url = new URL(`${apiUrl}/user/userSettings`)
