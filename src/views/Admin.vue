@@ -191,10 +191,10 @@
 
 <script>
 const columns = [
-  {name: 'name', required: true, label: 'Username', align: 'left', field: row => row.username, sortable: true},
-  {name: 'role', align: 'left', label: 'Role', field: row => row.rolle.roleName, sortable: true},
+  {name: 'name', required: true, label: 'Benutzername', align: 'left', field: row => row.username, sortable: true},
+  {name: 'role', align: 'left', label: 'Rolle', field: row => row.rolle.roleName, sortable: true},
   {name: 'id', align: 'left', label: 'ID', field: row => row.userid, sortable: true},
-  {name: 'delete', label: 'Delete', align: 'center'},
+  {name: 'delete', label: 'Löschen', align: 'center'},
   {name: 'password', label: 'Passwort reset', align: 'center'},
 ]
 const race_columns = [
