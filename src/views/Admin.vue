@@ -15,7 +15,7 @@
           <q-card bordered class="shadow-5 bg-primary" rounded>
             <q-card-section class="text-white text-h5">Rennen erstellen</q-card-section>
             <q-card-section>
-              <q-input v-model="date" :rules="['date']" dark filled dense mask="date">
+              <q-input v-model="date" :rules="['date']" dark dense filled mask="date">
                 <template v-slot:append>
                   <q-icon class="cursor-pointer" name="mdi-calendar">
                     <q-popup-proxy ref="qDateProxy" cover transition-hide="scale" transition-show="scale">
@@ -94,6 +94,11 @@
                 </q-dialog>
               </q-td>
             </template>
+            <template v-slot:body-cell-select="props">
+              <q-td :props="props">
+                <q-checkbox v-model="props.row.selected" @update:model-value="updateSelected(props.row)"></q-checkbox>
+              </q-td>
+            </template>
           </q-table>
         </div>
       </q-tab-panel>
@@ -149,7 +154,18 @@
                   </div>
                   <div v-else-if="col.name === 'delete'">
                     <q-btn v-if="props.row.rolle.roleName !== 'Admin'" color="white" dense
-                           flat icon="mdi-delete" @click="userDelete(props.row)"></q-btn>
+                           flat icon="mdi-delete" @click="userDeleteConfirm(props.row)"></q-btn>
+                    <q-dialog v-model="confirmUD">
+                      <q-card class="bg-primary">
+                        <q-card-section class="text-white">
+                          Do you really want to delete this user??
+                        </q-card-section>
+                        <q-card-actions align="right">
+                          <q-btn v-close-popup color="accent" label="Cancel"></q-btn>
+                          <q-btn label="Delete" color="negative" @click="userDelete"></q-btn>
+                        </q-card-actions>
+                      </q-card>
+                    </q-dialog>
                   </div>
                   <div v-else-if="col.name === 'password'">
                     <q-btn v-if="props.row.rolle.roleName !== 'Admin'" dark dense flat icon="mdi-cached" no-caps/>
@@ -188,6 +204,7 @@ const race_columns = [
   {name: 'length', align: 'left', label: 'Laenge', field: row => row.length, sortable: true},
   {name: 'contingent', align: 'left', label: 'Kontingent', field: row => row.tireContingent, sortable: true},
   {name: 'id', required: true, align: 'left', label: 'ID', field: row => row.raceID, sortable: true},
+  {name: 'select', label: 'Select', align: 'left'},
   {name: 'action', label: 'Delete', align: 'left'},
 ]
 export default {
@@ -230,10 +247,17 @@ export default {
       newUserRole: '',
       confirmRD: false,
       confirmRaceID: null,
+      confirmUD: false,
+      confirmUserID: null,
+
 
     }
   },
   methods: {
+    userDeleteConfirm(user) {
+      this.confirmUD = true
+      this.confirmUserID = user.userid
+    },
     createRace() {
       const apiUrl = this.$store.state.host.api_url
       const url = apiUrl + '/race/new'
@@ -279,6 +303,31 @@ export default {
       this.location = ''
       this.cont = ''
       this.raceLength = ''
+    },
+    updateSelected(race) {
+      for (const rowsKey in this.race_rows) {
+        if (this.race_rows[rowsKey].selected && this.race_rows[rowsKey].raceID !== race.raceID) {
+          this.race_rows[rowsKey].selected = false
+        }
+      }
+      const apiUrl = this.$store.state.host.api_url
+      const url = `${apiUrl}/race/select/${race.raceID}`
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
+          .then(() => {
+            this.$store.commit("resetWeatherTimer")
+            this.$store.commit("resetOrderTimer")
+            this.$store.state.timer.weatherRunning = false
+            this.$store.state.timer.orderRunning = false
+            this.$store.state.timer.weatherTime = -1
+            this.$store.state.timer.orderTime = -1
+          })
     },
     createUser() {
       this.clearUserHints()
@@ -375,10 +424,10 @@ export default {
             this.rows = data
           })
     },
-    userDelete(user) {
+    userDelete() {
       const jwt = this.$store.state.user.jwt
       const apiUrl = this.$store.state.host.api_url
-      const url = `${apiUrl}/user/${user.userid}/delete`
+      const url = `${apiUrl}/user/${this.confirmUserID}/delete`
       const requestOptions = {
         method: 'Delete',
         headers: {
@@ -389,6 +438,7 @@ export default {
           .then(response => {
             if (response.ok) {
               this.getUserData()
+              this.confirmUD = false
             }
           })
 
@@ -434,6 +484,7 @@ export default {
           .then(response => {
             if (response.ok) {
               this.getRaceData()
+              this.confirmRD = false
             }
           })
 

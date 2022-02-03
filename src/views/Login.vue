@@ -15,8 +15,8 @@
               <q-input v-model="password" :type="passwordType" dark filled label="Password" label-color="white"
                        @keydown.enter="login">
                 <template v-slot:append>
-                  <q-btn type="" :ripple="false" color="white" flat icon="mdi-eye" unelevated
-                         @click="passwordTypeBool = !passwordTypeBool"/>
+                  <q-btn :ripple="false" color="white" flat icon="mdi-eye" type="" unelevated
+                         @mousedown="togglePasswordType" @mouseup="togglePasswordType"/>
                 </template>
               </q-input>
 
@@ -41,18 +41,17 @@ export default {
       error: false,
       username: '',
       password: '',
-      passwordTypeBool: true,
-    }
-  },
-  computed: {
-    passwordType() {
-      if (this.passwordTypeBool) {
-        return 'password'
-      }
-      return 'text'
+      passwordType: 'password',
     }
   },
   methods: {
+    togglePasswordType() {
+      if (this.passwordType === 'password') {
+        this.passwordType = 'text'
+      } else {
+        this.passwordType = 'password'
+      }
+    },
     login() {
       const data = {
         username: this.username,

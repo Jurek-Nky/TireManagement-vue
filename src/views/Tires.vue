@@ -39,12 +39,14 @@
             </template>
             <template v-slot:body="props">
               <q-tr :props="props">
-                <q-td auto-width>
+                <q-td :class="(pressureCalcTireset !== null && props.row.id === pressureCalcTireset.id)?'bg-accent':''"
+                      auto-width>
                   <q-btn :icon="props.expand ? 'mdi-minus' : 'mdi-plus'" color="white" outline rounded size="sm"
                          @click="props.expand = !props.expand"/>
                 </q-td>
                 <q-td v-for="col in props.cols"
                       :key="col.name"
+                      :class="(pressureCalcTireset !== null && props.row.id === pressureCalcTireset.id)?'bg-accent':''"
                       :props="props">
                   <div v-if="col.name==='delete'">
                     <q-btn color="white" dense flat icon="mdi-delete"
@@ -76,7 +78,6 @@
                   <div v-else>
                     {{ col.value }}
                   </div>
-
                 </q-td>
 
               </q-tr>
@@ -105,26 +106,17 @@
                               {{ col.value }}
                             </q-badge>
                             <q-popup-edit v-slot="scope" v-model="props.row.modification" buttons
-                                          color="accent" persistent title="Bearbeitungsvariante"
-                                          @save="setModification(props.row)">
-                              <q-select v-model="scope.value" :options="modificationOptions" emit-value>
+                                          class="bg-dark text-white" color="white" persistent
+                                          title="Bearbeitungsvariante" @save="setModification(props.row)">
+                              <q-select v-model="scope.value" :options="modificationOptions" dark emit-value>
                               </q-select>
                             </q-popup-edit>
 
                           </div>
-                          <div v-else-if="col.name === 'laufleistung'">
-                            <q-badge v-if="col.value === null || col.value === ''" class="cursor-pointer"
-                                     color="accent" text-color="white">
-                              {{ "----" }}
-                            </q-badge>
-                            <q-badge v-else class="cursor-pointer" color="accent" text-color="white">
-                              {{ col.value }}
-                            </q-badge>
-                            <q-popup-edit v-slot="scope" v-model="props.row.laufleistung" buttons
-                                          color="accent" persistent title="Laufleistung"
-                                          @save="setLaufleistung(props.row)">
-                              <q-input v-model="scope.value" label="laufleistung" stack-label></q-input>
-                            </q-popup-edit>
+                          <div v-if="col.name === 'heatingTimer'">
+                            <div :class="(props.row.heatingTimer === 'fertig')?'text-positive':'text-negative'">
+                              {{ props.row.heatingTimer }}
+                            </div>
                           </div>
                           <div v-else>
                             {{ col.value }}
@@ -337,6 +329,32 @@
                            hide-bottom
                            row-key="tireID"
                            title="Tires">
+                    <template v-slot:body="props">
+                      <q-tr :props="props">
+                        <q-td v-for="col in props.cols"
+                              :key="col.name"
+                              :props="props">
+                          <div v-if="col.name === 'laufleistung'">
+                            <q-badge v-if="col.value === null || col.value === ''" class="cursor-pointer"
+                                     color="accent" text-color="white">
+                              {{ "----" }}
+                            </q-badge>
+                            <q-badge v-else class="cursor-pointer" color="accent" text-color="white">
+                              {{ col.value }}
+                            </q-badge>
+                            <q-popup-edit v-slot="scope" v-model="props.row.laufleistung" buttons
+                                          color="accent" persistent title="Laufleistung"
+                                          @save="setLaufleistung(props.row)">
+                              <q-input v-model="scope.value" label="laufleistung" stack-label></q-input>
+                            </q-popup-edit>
+                          </div>
+                          <div v-else>
+                            {{ col.value }}
+                          </div>
+                        </q-td>
+                      </q-tr>
+                    </template>
+
                   </q-table>
                 </q-td>
               </q-tr>
@@ -390,14 +408,26 @@ const tireColumns = [
   {name: 'erhalten', required: true, label: 'Erhalten', align: 'left', field: row => row.erhaltenUm, sortable: true},
   {name: 'benutzt', required: true, label: 'Benutzt', align: 'left', field: row => row.benutztUm, sortable: true},
   {
-    name: 'heizbeginn',
+    name: 'heatingStart',
     required: true,
     label: 'Heiz-Beginn',
     align: 'left',
     field: row => row.heatingStart,
     sortable: true
+  }, {
+    name: 'heatingTimer',
+    label: 'Timer',
+    align: 'left',
+    sortable: true
   },
-  {name: 'heizende', required: true, label: 'Heiz-Ende', align: 'left', field: row => row.heatingStop, sortable: true},
+  {
+    name: 'heatingStop',
+    required: true,
+    label: 'Heiz-Ende',
+    align: 'left',
+    field: row => row.heatingStop,
+    sortable: true
+  },
   {
     name: 'temperatur',
     required: true,
@@ -437,10 +467,37 @@ export default {
       alertText: '',
       confirm: false,
       confirmDeleteTireId: null,
+      interval: null,
 
     }
   },
   methods: {
+    updateHeatingTimersLeft() {
+      this.interval = setInterval(() => {
+        for (const setKey in this.tireSetRows_inStock) {
+          for (const tiresKey in this.tireSetRows_inStock[setKey].tires) {
+            if (this.tireSetRows_inStock[setKey].tires[tiresKey].heatingStart !== null) {
+              const now = new Date()
+              const t = new Date()
+              t.setHours(this.tireSetRows_inStock[setKey].tires[tiresKey].heatingStart.split(":")[0])
+              t.setMinutes(this.tireSetRows_inStock[setKey].tires[tiresKey].heatingStart.split(":")[1])
+              t.setSeconds(this.tireSetRows_inStock[setKey].tires[tiresKey].heatingStart.split(":")[2])
+              const diff = (t.getTime() - now.getTime() + 5400000) / 1000
+              const hours = Math.floor(diff / 60 / 60)
+              const minutes = Math.floor((diff - hours * 3600) / 60)
+              const seconds = diff - (minutes * 60) - (hours * 3600)
+              if (diff <= 0 || this.tireSetRows_inStock[setKey].tires[tiresKey].heatingStop !== null) {
+                this.tireSetRows_inStock[setKey].tires[tiresKey].heatingTimer = "fertig"
+              } else {
+                this.tireSetRows_inStock[setKey].tires[tiresKey].heatingTimer = `${hours}:${minutes}:${seconds}`
+              }
+
+
+            }
+          }
+        }
+      }, 1000)
+    },
     getAllTireSets() {
       this.loading_inStock = true
       this.loading_used = true
@@ -749,6 +806,10 @@ export default {
   ,
   mounted() {
     this.getAllTireSets()
+    this.updateHeatingTimersLeft()
+  },
+  unmounted() {
+    clearInterval(this.interval)
   }
 }
 </script>
