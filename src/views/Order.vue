@@ -48,17 +48,14 @@
                   class="text-white q-mb-none q-mt-lg"
                   color="accent"
                   show-value
-                  size="170px"
+                  size="200px"
                   track-color="dark"
               >
                 <span class="text-white text-h4 text-center">{{ orderTimeString }}</span>
               </q-circular-progress>
-              <q-input v-model="initialTime" dark dense filled label="Zeit eingeben" label-color="white" outlined
-                       type="number"/>
+              <q-input v-model="initialTime" dark dense filled label="Zeit eingeben" label-color="white" outlined/>
               <q-btn class="full-width" color="accent" label="Timer setzen" label-color="white"
                      @click="addTimerToTiresetList(initialTime)"/>
-              <div>
-              </div>
             </div>
           </q-card-section>
         </q-card>
@@ -206,7 +203,6 @@ export default {
     update() {
       this.interval = setInterval(() => {
         for (let i = 0; i < this.rows.length; i++) {
-          console.log(this.rows[i].orderTimer)
           if (this.rows[i].orderTimer !== '' && this.rows[i].orderTimer !== null && this.rows[i].orderTimer >= 0) {
             this.rows[i].orderTimer--
           }
@@ -234,8 +230,7 @@ export default {
     timerColor(time) {
       if (time > 0) {
         return 'accent'
-      }
-      else if(time < 0){
+      } else if (time < 0) {
         return 'positive'
       }
       return 'negative'
@@ -243,25 +238,8 @@ export default {
     clearOrderTimer(tireSet) {
       tireSet.orderTimer = ''
     },
-    addOrderTimer(tireSet) {
-      setTimeout(() => {
-        const apiUrl = this.$store.state.host.api_url
-        let timeReady = new Date()
-        timeReady.setMinutes(timeReady.getMinutes() + Number(tireSet.orderTimer))
-        tireSet.orderTimer = tireSet.orderTimer * 60
-        let url = `${apiUrl}/tireset/update/${tireSet.id}/orderTimer?orderTimer=${timeReady.getHours()}:${timeReady.getMinutes()}:${timeReady.getSeconds()}`
-        const jwt = this.$store.state.user.jwt
-        const requestOptions = {
-          method: 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + jwt
-          },
-        }
-        fetch(url, requestOptions)
-      }, 1)
-
-    },
     addTimerToTiresetList(timerTime) {
+      this.addTimerToDB(timerTime)
       const apiUrl = this.$store.state.host.api_url
       let timeReady = new Date()
       timeReady.setMinutes(timeReady.getMinutes() + Number(timerTime))
@@ -279,7 +257,19 @@ export default {
       }
       this.selected = []
     },
-
+    addTimerToDB(timerTime) {
+      this.$store.commit("pauseOrderTimer")
+      const apiUrl = this.$store.state.host.api_url
+      const url = new URL(`${apiUrl}/tire/ordertimer?time=${timerTime}`)
+      const jwt = this.$store.state.user.jwt
+      const requestOptions = {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + jwt
+        },
+      }
+      fetch(url, requestOptions)
+    },
     getOrderData() {
       this.rows = []
       const apiUrl = this.$store.state.host.api_url

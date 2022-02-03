@@ -99,7 +99,7 @@ const mutations = {
             state.orderRunning = false
             if (store.state.user.getOrderNotifications) {
                 Notify.create({
-                    message: 'Bestelltimer ist abgelaufen',
+                    message: 'Bestellung ist bereit zur Abholung',
                     closeBtn: 'Done',
                     color: 'warning',
                     timeout: 0,
