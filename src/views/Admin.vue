@@ -154,7 +154,18 @@
                   </div>
                   <div v-else-if="col.name === 'delete'">
                     <q-btn v-if="props.row.rolle.roleName !== 'Admin'" color="white" dense
-                           flat icon="mdi-delete" @click="userDelete(props.row)"></q-btn>
+                           flat icon="mdi-delete" @click="userDeleteConfirm(props.row)"></q-btn>
+                    <q-dialog v-model="confirmUD">
+                      <q-card class="bg-primary">
+                        <q-card-section class="text-white">
+                          Do you really want to delete this user??
+                        </q-card-section>
+                        <q-card-actions align="right">
+                          <q-btn v-close-popup color="accent" label="Cancel"></q-btn>
+                          <q-btn label="Delete" color="negative" @click="userDelete"></q-btn>
+                        </q-card-actions>
+                      </q-card>
+                    </q-dialog>
                   </div>
                   <div v-else-if="col.name === 'password'">
                     <q-btn v-if="props.row.rolle.roleName !== 'Admin'" dark dense flat icon="mdi-cached" no-caps/>
@@ -236,10 +247,17 @@ export default {
       newUserRole: '',
       confirmRD: false,
       confirmRaceID: null,
+      confirmUD: false,
+      confirmUserID: null,
+
 
     }
   },
   methods: {
+    userDeleteConfirm(user) {
+      this.confirmUD = true
+      this.confirmUserID = user.userid
+    },
     createRace() {
       const apiUrl = this.$store.state.host.api_url
       const url = apiUrl + '/race/new'
@@ -406,10 +424,10 @@ export default {
             this.rows = data
           })
     },
-    userDelete(user) {
+    userDelete() {
       const jwt = this.$store.state.user.jwt
       const apiUrl = this.$store.state.host.api_url
-      const url = `${apiUrl}/user/${user.userid}/delete`
+      const url = `${apiUrl}/user/${this.confirmUserID}/delete`
       const requestOptions = {
         method: 'Delete',
         headers: {
@@ -420,6 +438,7 @@ export default {
           .then(response => {
             if (response.ok) {
               this.getUserData()
+              this.confirmUD = false
             }
           })
 
@@ -465,6 +484,7 @@ export default {
           .then(response => {
             if (response.ok) {
               this.getRaceData()
+              this.confirmRD = false
             }
           })
 
