@@ -296,6 +296,7 @@ export default {
             return response.json()
           })
           .then(() => {
+            this.$store.commit("pauseWeatherTimer")
             this.getWeatherData()
             this.getDiagramData()
             this.clearWeatherFields()
