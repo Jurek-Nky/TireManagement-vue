@@ -373,7 +373,7 @@ const tireSetColumns_inStock = [
   {name: 'nr', align: 'left', label: 'SetNr', field: row => row.tireSetNr, sortable: true},
   {name: 'type', align: 'left', label: 'Art', field: row => row.tires[0].art},
   {name: 'mixture', align: 'left', label: 'Mischung', field: row => row.tires[0].mischung},
-  {name: 'delete', label: 'Delete', align: 'center'},
+  {name: 'delete', label: 'Löschen', align: 'center'},
   {name: 'heating', label: 'Heizen', align: 'center'},
   {name: 'used', label: 'Benutzt', align: 'center'},
   {name: 'pressure', label: 'Druck berechnen', align: 'center'},
@@ -384,7 +384,7 @@ const tireSetColumns_used = [
   {name: 'nr', align: 'left', label: 'SetNr', field: row => row.tireSetNr, sortable: true},
   {name: 'type', align: 'left', label: 'Art', field: row => row.tires[0].art},
   {name: 'mixture', align: 'left', label: 'Mischung', field: row => row.tires[0].mischung},
-  {name: 'delete', label: 'Delete', align: 'center'},
+  {name: 'delete', label: 'Löschen', align: 'center'},
 ]
 const tireColumns = [
   {name: 'tireID', required: true, label: 'ID', align: 'left', field: row => row.tireID, sortable: true},

@@ -6,18 +6,18 @@
           <q-card-section class="text-white text-h5">Passwort aendern</q-card-section>
           <q-card-section>
             <q-form class="q-gutter-md">
-              <q-input v-model="username" dark readonly filled label="username" label-color="white"
+              <q-input v-model="username" dark readonly filled label="Benutzername" label-color="white"
                        type="text"/>
               <q-input ref="passwordOld" v-model="passwordOld" :hint="pwOldHint" dark filled
                        label="Altes Passwort"
                        label-color="white"
                        type="password" @keydown="resetHints"/>
               <q-input ref="passwordNew" v-model="passwordNew" :hint="pwNewHint" dark filled
-                       label="Neues Password"
+                       label="Neues Passwort"
                        label-color="white"
                        type="password" @keydown="resetHints"/>
               <q-input ref="passwordVerify" v-model="passwordVerify" :hint="pwVerifyHint" dark filled
-                       label="Password wiederholen" label-color="white"
+                       label="Passwort wiederholen" label-color="white"
                        type="password" @keydown="resetHints"/>
             </q-form>
           </q-card-section>
@@ -35,9 +35,9 @@
           <q-separator dark/>
           <q-card-section class="column q-gutter-sm">
             <q-toggle v-model="weatherNotification" class="text-white" color="secondary"
-                      dark label="I want to get Notification for Weather Timer"/>
+                      dark label="Benachrichtigungen für Wettermessung"/>
             <q-toggle v-model="orderNotification" class="text-white" color="secondary"
-                      dark label="I want to get Notification for Order Timer"/>
+                      dark label="Benachrichtigungen für fertige Bestellungen"/>
           </q-card-section>
           <q-card-actions align="right">
             <q-btn color="accent" label="save" @click="updateNotifications"></q-btn>
@@ -96,19 +96,19 @@ export default {
     },
     changePassword() {
       if (this.passwordOld === '') {
-        this.pwOldHint = "enter your old password"
+        this.pwOldHint = "altes Passwort eingeben"
         return
       } else if (this.passwordNew === '') {
-        this.pwNewHint = "enter a new password"
+        this.pwNewHint = "neues Passwort eingeben"
         return
       } else if (this.passwordOld === this.passwordNew) {
-        this.pwNewHint = "old and new password are the same"
+        this.pwNewHint = "altes uns neues Passwort sind gleich"
         return
       } else if (this.passwordVerify === '') {
-        this.pwVerifyHint = "retype your new password"
+        this.pwVerifyHint = "Passwort erneut eingeben"
         return
       } else if (this.passwordNew !== this.passwordVerify) {
-        this.pwVerifyHint = "passwords do not match"
+        this.pwVerifyHint = "Passwörter stimmen nicht überein"
         return
       }
 
