@@ -113,7 +113,7 @@
                             </q-popup-edit>
 
                           </div>
-                          <div v-if="col.name === 'heatingTimer'">
+                          <div v-else-if="col.name === 'heatingTimer'">
                             <div :class="(props.row.heatingTimer === 'fertig')?'text-positive':'text-negative'">
                               {{ props.row.heatingTimer }}
                             </div>
