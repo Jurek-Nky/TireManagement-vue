@@ -404,6 +404,13 @@ const tireColumns = [
     field: row => row.laufleistung,
     sortable: true
   },
+  {
+    name: 'bezeichnung',
+    label: 'Bezeichnung',
+    align: 'left',
+    field: row => row.bezeichnung,
+    sortable: true
+  },
   {name: 'bestellt', required: true, label: 'Bestellt', align: 'left', field: row => row.bestelltUm, sortable: true},
   {name: 'erhalten', required: true, label: 'Erhalten', align: 'left', field: row => row.erhaltenUm, sortable: true},
   {name: 'benutzt', required: true, label: 'Benutzt', align: 'left', field: row => row.benutztUm, sortable: true},
